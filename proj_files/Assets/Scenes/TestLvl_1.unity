@@ -971,7 +971,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -2973293992363369732, guid: 4b63980db1735444e90d233284643b18, type: 3}
       propertyPath: jumpForce
-      value: 30
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: -2973293992363369732, guid: 4b63980db1735444e90d233284643b18, type: 3}
       propertyPath: jumpCooldown
@@ -1023,7 +1023,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -2973293992363369732, guid: 4b63980db1735444e90d233284643b18, type: 3}
       propertyPath: fallGravityMultiplier
-      value: 1.37
+      value: 1.39
       objectReference: {fileID: 0}
     - target: {fileID: -2973293992363369732, guid: 4b63980db1735444e90d233284643b18, type: 3}
       propertyPath: TerrainLayerMask.m_Bits
@@ -1031,7 +1031,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -2973293992363369732, guid: 4b63980db1735444e90d233284643b18, type: 3}
       propertyPath: GravityMultiplierThreshold
-      value: 3
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 5062462563073875415, guid: 4b63980db1735444e90d233284643b18, type: 3}
       propertyPath: m_Name

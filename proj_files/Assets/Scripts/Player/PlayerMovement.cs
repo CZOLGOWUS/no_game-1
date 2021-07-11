@@ -25,10 +25,12 @@ public class PlayerMovement : MonoBehaviour
     public float jumpForce;
     [Range( 1f , 5f )]
     public float fallGravityMultiplier;
+    [Range( 0.9f , 1.1f )]
+    public float jumpingGravityScaler;
 
     public float GravityMultiplierThreshold;
-    [Range( 1f , 5f )]
-    public float lowerGravityScaler;
+
+
 
     [Range( 0.0001f , 1f )]
     public float jumpingLinearDrag;
@@ -95,10 +97,11 @@ public class PlayerMovement : MonoBehaviour
         float velocityY = rb2d.velocity.y;
         float velocityX = rb2d.velocity.x;
 
+
         if( movementValue != 0 )
-            rb2d.velocity =  new Vector2( Mathf.Clamp( velocityX + movementValue * accelerationSpeed * currentLinearDrag * Time.deltaTime , -maxSpeed , maxSpeed ),velocityY);
+            rb2d.velocity =  new Vector2( Mathf.Clamp( velocityX + movementValue * accelerationSpeed * Time.deltaTime , -maxSpeed , maxSpeed ) * currentLinearDrag , velocityY);
         else
-            rb2d.velocity -= Mathf.Abs( velocityX ) > 0.1f ? Vector2.right * Mathf.Lerp( velocityX , 0.0f , decelerationSpeed ) * currentLinearDrag : Vector2.right * velocityX;
+            rb2d.velocity -= Mathf.Abs( velocityX ) > 0.1f ? Vector2.right * Mathf.Lerp( velocityX , 0.0f , decelerationSpeed ) : Vector2.right * velocityX;
 
 
         Jump();
@@ -123,7 +126,7 @@ public class PlayerMovement : MonoBehaviour
             if( rb2d.velocity.y < GravityMultiplierThreshold )
                 rb2d.velocity += Physics2D.gravity * (fallGravityMultiplier - 1) * Time.deltaTime * 10f;
             else if( rb2d.velocity.y > 1.0f && jumpBtnValue )
-                rb2d.velocity += -Physics2D.gravity * (lowerGravityScaler - 1) * Time.deltaTime * 10f;
+                rb2d.velocity += Physics2D.gravity * (jumpingGravityScaler - 1) * Time.deltaTime * 10f;
         }
         else
         {

@@ -953,6 +953,10 @@ PrefabInstance:
       value: 30
       objectReference: {fileID: 0}
     - target: {fileID: -2973293992363369732, guid: 4b63980db1735444e90d233284643b18, type: 3}
+      propertyPath: jumpCooldown
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -2973293992363369732, guid: 4b63980db1735444e90d233284643b18, type: 3}
       propertyPath: sizeOfRayBox.x
       value: 0.87
       objectReference: {fileID: 0}
@@ -986,7 +990,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -2973293992363369732, guid: 4b63980db1735444e90d233284643b18, type: 3}
       propertyPath: lowerGravityScaler
-      value: 0.0294
+      value: 1.07
       objectReference: {fileID: 0}
     - target: {fileID: -2973293992363369732, guid: 4b63980db1735444e90d233284643b18, type: 3}
       propertyPath: distanceOfGroundCheck
@@ -994,7 +998,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -2973293992363369732, guid: 4b63980db1735444e90d233284643b18, type: 3}
       propertyPath: fallGravityMultiplier
-      value: 1.2
+      value: 1.37
       objectReference: {fileID: 0}
     - target: {fileID: -2973293992363369732, guid: 4b63980db1735444e90d233284643b18, type: 3}
       propertyPath: TerrainLayerMask.m_Bits

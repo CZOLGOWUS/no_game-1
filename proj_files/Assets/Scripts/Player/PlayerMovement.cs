@@ -10,7 +10,10 @@ public class PlayerMovement : MonoBehaviour
     private BoxCollider2D thisCollider2D;
 
     [Header("moving")]
-    public float speed;
+    public float maxSpeed;
+    public float accelerationSpeed;
+    [Range(1.0f,0.0f)]
+    public float decelerationSpeed;
 
     [Header("ground check")]
     public Vector2 sizeOfRayBox;
@@ -20,10 +23,23 @@ public class PlayerMovement : MonoBehaviour
 
     [Header("jumping settings")]
     public float jumpForce;
-    public float gravityMultiplier;
-    private float lowerGravityScaler;
-    //to do : make it modifiable in editor and fix it overal(fuked up jumping at the begining)
-    public float jumpingLinearDrag = 1.0f;
+    [Range( 1f , 5f )]
+    public float fallGravityMultiplier;
+
+    public float GravityMultiplierThreshold;
+    [Range( 1f , 5f )]
+    public float lowerGravityScaler;
+
+    [Range( 0.0001f , 1f )]
+    public float jumpingLinearDrag;
+
+    public float jumpCooldownLimit;
+    [SerializeField]
+    private float jumpCooldown;
+
+
+    private float currentLinearDrag = 1.0f;
+
 
 
     
@@ -31,7 +47,6 @@ public class PlayerMovement : MonoBehaviour
     [HideInInspector]public bool jumpBtnValue;
     [HideInInspector]public bool downInputValue;
 
-    private bool isAirborn = false;
     private bool isGrounded;
 
     public float JumpForce
@@ -49,7 +64,6 @@ public class PlayerMovement : MonoBehaviour
     private void Update()
     {
         
-        Jump();
         MovePlayer();
 
     }
@@ -68,12 +82,10 @@ public class PlayerMovement : MonoBehaviour
     {
         if( Physics2D.BoxCast( transform.position , sizeOfRayBox , 0.0f , Vector2.down , distanceOfBoxCast , TerrainLayerMask ) )
         {
-            isAirborn = !isAirborn;
             return true;
         }
         else
         {
-            isAirborn = !isAirborn;
             return false;
         }
     }
@@ -81,35 +93,47 @@ public class PlayerMovement : MonoBehaviour
     public void MovePlayer()
     {
         float velocityY = rb2d.velocity.y;
-        rb2d.velocity = new Vector2(movementValue*speed * (jumpingLinearDrag) , velocityY);
+        float velocityX = rb2d.velocity.x;
+
+        if( movementValue != 0 )
+            rb2d.velocity =  new Vector2( Mathf.Clamp( velocityX + movementValue * accelerationSpeed * currentLinearDrag * Time.deltaTime , -maxSpeed , maxSpeed ),velocityY);
+        else
+            rb2d.velocity -= Mathf.Abs( velocityX ) > 0.1f ? Vector2.right * Mathf.Lerp( velocityX , 0.0f , decelerationSpeed ) * currentLinearDrag : Vector2.right * velocityX;
+
+
+        Jump();
+
     }
 
     public void Jump()
     {
         if (jumpBtnValue)
         {
-            if (!isAirborn && isGrounded)
+            if ( isGrounded && jumpCooldown <= 0f)
             {
-                rb2d.AddForce(Vector2.up*jumpForce);
-                isAirborn = true;
-                isGrounded = false;
-                jumpingLinearDrag = 0.2f;
+                rb2d.AddForce(Vector2.up*jumpForce*1000f);
+                currentLinearDrag = jumpingLinearDrag;
+                jumpCooldown = jumpCooldownLimit;
                 return;
             }
         }
 
-        if ( isAirborn && !isGrounded)
+        if (!isGrounded)
         {
-            if( rb2d.velocity.y < 0.0f )
-                rb2d.velocity += Vector2.down * gravityMultiplier * Time.deltaTime;
-            else if( rb2d.velocity.y > 0.0f && jumpBtnValue )
-                rb2d.velocity += Vector2.up * lowerGravityScaler * Time.deltaTime;
+            if( rb2d.velocity.y < GravityMultiplierThreshold )
+                rb2d.velocity += Physics2D.gravity * (fallGravityMultiplier - 1) * Time.deltaTime * 10f;
+            else if( rb2d.velocity.y > 1.0f && jumpBtnValue )
+                rb2d.velocity += -Physics2D.gravity * (lowerGravityScaler - 1) * Time.deltaTime * 10f;
         }
         else
         {
-            jumpingLinearDrag = 1.0f;
+            currentLinearDrag = 1.0f;
+
         }
-        
+
+        if( isGrounded )
+            jumpCooldown -= Time.deltaTime;
+
     }
     
 

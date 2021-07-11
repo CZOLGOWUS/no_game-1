@@ -334,7 +334,7 @@ Transform:
   m_GameObject: {fileID: 801640729}
   m_LocalRotation: {x: -0.056100618, y: -0, z: -0, w: 0.9984251}
   m_LocalPosition: {x: -2.75, y: -4.46, z: 0}
-  m_LocalScale: {x: 67.65768, y: 1, z: 1}
+  m_LocalScale: {x: 1783.6594, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 1
@@ -642,7 +642,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1532282431}
   m_LocalRotation: {x: -0.056100618, y: -0, z: -0, w: 0.9984251}
-  m_LocalPosition: {x: 10.92, y: -1.07, z: -0.000000014588}
+  m_LocalPosition: {x: 8.39, y: 4.76, z: -0.000000014588}
   m_LocalScale: {x: 1.2961062, y: 6.2987, z: 2.0993}
   m_Children: []
   m_Father: {fileID: 0}
@@ -945,8 +945,12 @@ PrefabInstance:
       value: 10
       objectReference: {fileID: 0}
     - target: {fileID: -2973293992363369732, guid: 4b63980db1735444e90d233284643b18, type: 3}
+      propertyPath: maxSpeed
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: -2973293992363369732, guid: 4b63980db1735444e90d233284643b18, type: 3}
       propertyPath: jumpForce
-      value: 150
+      value: 30
       objectReference: {fileID: 0}
     - target: {fileID: -2973293992363369732, guid: 4b63980db1735444e90d233284643b18, type: 3}
       propertyPath: sizeOfRayBox.x
@@ -957,20 +961,48 @@ PrefabInstance:
       value: 0.87
       objectReference: {fileID: 0}
     - target: {fileID: -2973293992363369732, guid: 4b63980db1735444e90d233284643b18, type: 3}
+      propertyPath: accelerationSpeed
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: -2973293992363369732, guid: 4b63980db1735444e90d233284643b18, type: 3}
+      propertyPath: decelerationSpeed
+      value: 0.17
+      objectReference: {fileID: 0}
+    - target: {fileID: -2973293992363369732, guid: 4b63980db1735444e90d233284643b18, type: 3}
       propertyPath: distanceOfBoxCast
       value: 0.86
       objectReference: {fileID: 0}
     - target: {fileID: -2973293992363369732, guid: 4b63980db1735444e90d233284643b18, type: 3}
       propertyPath: gravityMultiplier
-      value: 2.5
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: -2973293992363369732, guid: 4b63980db1735444e90d233284643b18, type: 3}
+      propertyPath: jumpCooldownLimit
+      value: 0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: -2973293992363369732, guid: 4b63980db1735444e90d233284643b18, type: 3}
+      propertyPath: jumpingLinearDrag
+      value: 0.313
+      objectReference: {fileID: 0}
+    - target: {fileID: -2973293992363369732, guid: 4b63980db1735444e90d233284643b18, type: 3}
+      propertyPath: lowerGravityScaler
+      value: 0.0294
       objectReference: {fileID: 0}
     - target: {fileID: -2973293992363369732, guid: 4b63980db1735444e90d233284643b18, type: 3}
       propertyPath: distanceOfGroundCheck
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -2973293992363369732, guid: 4b63980db1735444e90d233284643b18, type: 3}
+      propertyPath: fallGravityMultiplier
+      value: 1.2
+      objectReference: {fileID: 0}
+    - target: {fileID: -2973293992363369732, guid: 4b63980db1735444e90d233284643b18, type: 3}
       propertyPath: TerrainLayerMask.m_Bits
       value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: -2973293992363369732, guid: 4b63980db1735444e90d233284643b18, type: 3}
+      propertyPath: GravityMultiplierThreshold
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 5062462563073875415, guid: 4b63980db1735444e90d233284643b18, type: 3}
       propertyPath: m_Name
@@ -982,11 +1014,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5062462563073875419, guid: 4b63980db1735444e90d233284643b18, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.81
+      value: -3.8
       objectReference: {fileID: 0}
     - target: {fileID: 5062462563073875419, guid: 4b63980db1735444e90d233284643b18, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 2.9
+      value: -2.39
       objectReference: {fileID: 0}
     - target: {fileID: 5062462563073875419, guid: 4b63980db1735444e90d233284643b18, type: 3}
       propertyPath: m_LocalPosition.z
@@ -1019,6 +1051,14 @@ PrefabInstance:
     - target: {fileID: 5062462563073875419, guid: 4b63980db1735444e90d233284643b18, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5062462563073875420, guid: 4b63980db1735444e90d233284643b18, type: 3}
+      propertyPath: m_Mass
+      value: 75
+      objectReference: {fileID: 0}
+    - target: {fileID: 5062462563073875420, guid: 4b63980db1735444e90d233284643b18, type: 3}
+      propertyPath: m_LinearDrag
+      value: 0.8
       objectReference: {fileID: 0}
     - target: {fileID: 5062462563073875420, guid: 4b63980db1735444e90d233284643b18, type: 3}
       propertyPath: m_Constraints

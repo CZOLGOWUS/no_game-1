@@ -933,6 +933,25 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 5062462563073875419, guid: 4b63980db1735444e90d233284643b18, type: 3}
   m_PrefabInstance: {fileID: 5062462564391499952}
   m_PrefabAsset: {fileID: 0}
+--- !u!95 &1734846746
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1734846737}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 550b199dd487840468415409267ec911, type: 2}
+  m_CullingMode: 1
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &1790950894
 GameObject:
   m_ObjectHideFlags: 0
@@ -1100,8 +1119,8 @@ MonoBehaviour:
   m_DeadZoneHeight: 0.078
   m_DeadZoneDepth: 0
   m_UnlimitedSoftZone: 0
-  m_SoftZoneWidth: 0.586
-  m_SoftZoneHeight: 0.508
+  m_SoftZoneWidth: 0.889
+  m_SoftZoneHeight: 0.868
   m_BiasX: 0
   m_BiasY: 0
   m_CenterOnActivate: 1
@@ -1169,7 +1188,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -2973293992363369732, guid: 4b63980db1735444e90d233284643b18, type: 3}
       propertyPath: distanceOfBoxCast
-      value: 0.86
+      value: 0.74
       objectReference: {fileID: 0}
     - target: {fileID: -2973293992363369732, guid: 4b63980db1735444e90d233284643b18, type: 3}
       propertyPath: gravityMultiplier
@@ -1181,7 +1200,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -2973293992363369732, guid: 4b63980db1735444e90d233284643b18, type: 3}
       propertyPath: jumpingLinearDrag
-      value: 0.313
+      value: 0.911
       objectReference: {fileID: 0}
     - target: {fileID: -2973293992363369732, guid: 4b63980db1735444e90d233284643b18, type: 3}
       propertyPath: lowerGravityScaler
@@ -1214,6 +1233,10 @@ PrefabInstance:
     - target: {fileID: 5062462563073875419, guid: 4b63980db1735444e90d233284643b18, type: 3}
       propertyPath: m_RootOrder
       value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5062462563073875419, guid: 4b63980db1735444e90d233284643b18, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5062462563073875419, guid: 4b63980db1735444e90d233284643b18, type: 3}
       propertyPath: m_LocalPosition.x

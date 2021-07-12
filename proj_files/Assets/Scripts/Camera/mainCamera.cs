@@ -17,10 +17,6 @@ public class mainCamera : MonoBehaviour
     void Update()
     {
 
-        Camera.main.transform.position = Vector3.SmoothDamp( 
-            Camera.main.transform.position ,
-            Player.position , 
-            ref currentVelocity,
-            cameraSpeed ) + cameraOffset;
+        Camera.main.transform.position = Vector3.SmoothDamp( Camera.main.transform.position , Player.position , ref currentVelocity,cameraSpeed *Time.fixedDeltaTime) + cameraOffset;
     }
 }

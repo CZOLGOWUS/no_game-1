@@ -90,7 +90,7 @@
                     "name": "",
                     "id": "6243177d-49e6-490f-863b-3f05291a7e94",
                     "path": "<Keyboard>/space",
-                    "interactions": "Press(behavior=2)",
+                    "interactions": "Press",
                     "processors": "",
                     "groups": "Keyboard & Mouse",
                     "action": "jump",

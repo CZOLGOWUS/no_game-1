@@ -83,7 +83,7 @@ public class PlayerMovement : MonoBehaviour
 
     private bool checkIfGrounded()
     {
-        if( Physics2D.BoxCast( transform.position , sizeOfRayBox , 0.0f , Vector2.down , distanceOfBoxCast , TerrainLayerMask ) )
+        if( Physics2D.BoxCast( transform.position , sizeOfRayBox , 0.0f , Vector2.down , distanceOfBoxCast , TerrainLayerMask ) && rb2d.velocity.y <= 0.0f )
         {
             currentLinearDrag = 1.0f;
 
@@ -127,9 +127,9 @@ public class PlayerMovement : MonoBehaviour
                 animator.SetBool( "isJumping" , true );
                 
                 if(movementValue == 0.0f)
-                    rb2d.AddForce(Vector2.up*jumpForce*1000f);
+                    rb2d.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse );
                 else
-                    rb2d.AddForce(new Vector2(MovementValue,jumpForce).normalized * jumpForce * 1000f );
+                    rb2d.AddForce(new Vector2(MovementValue,jumpForce).normalized * jumpForce , ForceMode2D.Impulse );
 
                 currentLinearDrag = jumpingLinearDrag;
                 jumpCooldown = jumpCooldownLimit;

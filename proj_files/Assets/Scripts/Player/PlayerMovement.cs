@@ -40,6 +40,7 @@ public class PlayerMovement : MonoBehaviour
 
     private float jumpCooldown;
     private bool isJumping;
+    private bool isJumpBtnHeldInAir;
 
     private float currentLinearDrag = 1.0f;
 
@@ -65,14 +66,14 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
-        
+        isGrounded = checkIfGrounded();
         MovePlayer();
 
     }
 
     private void FixedUpdate()
     {
-        isGrounded = checkIfGrounded();
+        
     }
 
     private void OnDrawGizmos()
@@ -85,12 +86,18 @@ public class PlayerMovement : MonoBehaviour
         if( Physics2D.BoxCast( transform.position , sizeOfRayBox , 0.0f , Vector2.down , distanceOfBoxCast , TerrainLayerMask ) )
         {
             currentLinearDrag = 1.0f;
+
+            if( isJumpBtnHeldInAir && !jumpBtnValue )
+                isJumpBtnHeldInAir = false;
+
+
             return true;
 
         }
         else
         {
             currentLinearDrag = jumpingLinearDrag;
+            isJumpBtnHeldInAir = jumpBtnValue;
             return false;
         }
     }
@@ -115,9 +122,10 @@ public class PlayerMovement : MonoBehaviour
     {
         if (jumpBtnValue)
         {
-            if ( isGrounded && jumpCooldown <= 0f && !isJumping)
+            if ( isGrounded && jumpCooldown <= 0f && !isJumping && !isJumpBtnHeldInAir )
             {
                 animator.SetBool( "isJumping" , true );
+                
                 if(movementValue == 0.0f)
                     rb2d.AddForce(Vector2.up*jumpForce*1000f);
                 else
@@ -140,12 +148,13 @@ public class PlayerMovement : MonoBehaviour
         else
         {
             isJumping = false;
-
+            animator.SetBool( "isJumping" , false );
         }
 
-        if( isGrounded && jumpCooldown >= 0f && !isJumping)
+        if( isGrounded && jumpCooldown >= 0f && !isJumping )
+        {
             jumpCooldown -= Time.deltaTime;
-
+        }
     }
     
 

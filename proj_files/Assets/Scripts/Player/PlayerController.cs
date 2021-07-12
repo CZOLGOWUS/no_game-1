@@ -11,16 +11,16 @@ public class PlayerController : MonoBehaviour
         
         public void OnMovement(InputAction.CallbackContext value)
         {
-                movementSC.movementValue = value.ReadValue<float>();
+                movementSC.MovementValue = value.ReadValue<float>();
         }
 
         public void OnJump(InputAction.CallbackContext value)
         {
-                movementSC.jumpBtnValue = value.ReadValueAsButton();
+                movementSC.JumpBtnValue = value.ReadValueAsButton();
         }
 
         public void OnDownInput(InputAction.CallbackContext value)
         {
-                movementSC.downInputValue = value.ReadValueAsButton();
+                movementSC.DownInputValue = value.ReadValueAsButton();
         }
 }

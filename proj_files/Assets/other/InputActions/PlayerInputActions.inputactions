@@ -79,7 +79,7 @@
                     "name": "",
                     "id": "6a390674-5af5-4f99-8b71-61184afe913e",
                     "path": "<Keyboard>/w",
-                    "interactions": "Press(behavior=2)",
+                    "interactions": "Press",
                     "processors": "",
                     "groups": "Keyboard & Mouse",
                     "action": "jump",

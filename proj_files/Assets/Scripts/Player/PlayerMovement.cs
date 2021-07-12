@@ -45,18 +45,16 @@ public class PlayerMovement : MonoBehaviour
 
 
     
-    [HideInInspector]public float movementValue;
-    [HideInInspector]public bool jumpBtnValue;
-    [HideInInspector]public bool downInputValue;
+    [HideInInspector] private float movementValue;
+    [HideInInspector] private bool jumpBtnValue;
+    [HideInInspector] private bool downInputValue;
 
     private bool isGrounded;
 
-    public float JumpForce
-    {
-        get => jumpForce;
-        set => jumpForce = value;
-    }
-    
+    public float MovementValue { get => movementValue; set => movementValue = value; }
+    public bool JumpBtnValue { get => jumpBtnValue; set => jumpBtnValue = value; }
+    public bool DownInputValue { get => downInputValue; set => downInputValue = value; }
+
     void Start()
     {
         rb2d = GetComponent<Rigidbody2D>();
@@ -98,8 +96,8 @@ public class PlayerMovement : MonoBehaviour
         float velocityX = rb2d.velocity.x;
 
 
-        if( movementValue != 0 )
-            rb2d.velocity =  new Vector2( Mathf.Clamp( velocityX + movementValue * accelerationSpeed * Time.deltaTime , -maxSpeed , maxSpeed ) * currentLinearDrag , velocityY);
+        if( MovementValue != 0 )
+            rb2d.velocity =  new Vector2( Mathf.Clamp( velocityX + MovementValue * accelerationSpeed * Time.deltaTime , -maxSpeed , maxSpeed ) * currentLinearDrag , velocityY);
         else
             rb2d.velocity -= Mathf.Abs( velocityX ) > 0.1f ? Vector2.right * Mathf.Lerp( velocityX , 0.0f , decelerationSpeed ) : Vector2.right * velocityX;
 
@@ -117,6 +115,7 @@ public class PlayerMovement : MonoBehaviour
                 rb2d.AddForce(Vector2.up*jumpForce*1000f);
                 currentLinearDrag = jumpingLinearDrag;
                 jumpCooldown = jumpCooldownLimit;
+                isGrounded = false;
                 return;
             }
         }
@@ -134,7 +133,7 @@ public class PlayerMovement : MonoBehaviour
 
         }
 
-        if( isGrounded )
+        if( isGrounded && jumpCooldown >= 0f)
             jumpCooldown -= Time.deltaTime;
 
     }

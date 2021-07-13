@@ -83,7 +83,7 @@ public class PlayerMovement : MonoBehaviour
 
     private bool checkIfGrounded()
     {
-        if( Physics2D.BoxCast( transform.position , sizeOfRayBox , 0.0f , Vector2.down , distanceOfBoxCast , TerrainLayerMask ) && rb2d.velocity.y <= 0.0f )
+        if( Physics2D.BoxCast( transform.position , sizeOfRayBox , 0.0f , Vector2.down , distanceOfBoxCast , TerrainLayerMask ) && Mathf.Abs(rb2d.velocity.y) <= 0.01f )
         {
             currentLinearDrag = 1.0f;
 

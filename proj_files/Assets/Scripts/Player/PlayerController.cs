@@ -26,6 +26,7 @@ public class PlayerController : MonoBehaviour
 
     public void OnEscape( InputAction.CallbackContext value )
     {
-        pauseMenuCanvas.GetComponent<PauseMenu>().OnPauseMenu();
+        if(value.performed)
+            pauseMenuCanvas.GetComponent<PauseMenu>().OnPauseMenu();
     }
 }

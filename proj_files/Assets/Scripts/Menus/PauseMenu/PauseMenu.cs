@@ -6,6 +6,7 @@ using UnityEngine.InputSystem;
 public class PauseMenu : MonoBehaviour
 {
     public GameObject pauseMenuPanel;
+    public GameObject optionsMenuPanel;
 
     [HideInInspector]
     public static bool isGamePaused = false;
@@ -13,15 +14,20 @@ public class PauseMenu : MonoBehaviour
 
     public void Pause()
     {
-        isGamePaused = !isGamePaused;
-        pauseMenuPanel.SetActive( isGamePaused );
+        isGamePaused = true;
+
+        pauseMenuPanel.SetActive( true );
+
         Time.timeScale = 0f;
     }
 
     public void Resume()
     {
-        isGamePaused = !isGamePaused;
-        pauseMenuPanel.SetActive( isGamePaused );
+        isGamePaused = false;
+
+        optionsMenuPanel.SetActive( false );
+        pauseMenuPanel.SetActive( false );
+
         Time.timeScale = 1f;
     }
 

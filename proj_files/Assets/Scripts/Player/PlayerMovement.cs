@@ -10,19 +10,19 @@ public class PlayerMovement : MonoBehaviour
     private BoxCollider2D thisCollider2D;
     private Animator animator;
 
-    [Header("moving")]
+    [Header( "moving" )]
     public float maxSpeed;
     public float accelerationSpeed;
-    [Range(1.0f,0.0f)]
+    [Range( 1.0f , 0.0f )]
     public float decelerationSpeed;
 
-    [Header("ground check")]
+    [Header( "ground check" )]
     public Vector2 sizeOfRayBox;
     public float distanceOfBoxCast;
     public LayerMask TerrainLayerMask;
 
 
-    [Header("jumping settings")]
+    [Header( "jumping settings" )]
     public float jumpForce;
     [Range( 1f , 5f )]
     public float fallGravityMultiplier;
@@ -46,7 +46,7 @@ public class PlayerMovement : MonoBehaviour
 
 
 
-    
+
     [HideInInspector] private float movementValue;
     [HideInInspector] private bool jumpBtnValue;
     [HideInInspector] private bool downInputValue;
@@ -73,7 +73,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
-        
+
     }
 
     private void OnDrawGizmos()
@@ -83,7 +83,7 @@ public class PlayerMovement : MonoBehaviour
 
     private bool checkIfGrounded()
     {
-        if( Physics2D.BoxCast( transform.position , sizeOfRayBox , 0.0f , Vector2.down , distanceOfBoxCast , TerrainLayerMask ) && Mathf.Abs(rb2d.velocity.y) <= 0.01f )
+        if( Physics2D.BoxCast( transform.position , sizeOfRayBox , 0.0f , Vector2.down , distanceOfBoxCast , TerrainLayerMask ) && Mathf.Abs( rb2d.velocity.y ) <= 0.01f )
         {
             currentLinearDrag = 1.0f;
 
@@ -101,7 +101,7 @@ public class PlayerMovement : MonoBehaviour
             return false;
         }
     }
-    
+
     public void MovePlayer()
     {
         float velocityY = rb2d.velocity.y;
@@ -109,7 +109,7 @@ public class PlayerMovement : MonoBehaviour
 
 
         if( MovementValue != 0 )
-            rb2d.velocity =  new Vector2( Mathf.Clamp( velocityX + currentLinearDrag * MovementValue * accelerationSpeed * Time.deltaTime , -maxSpeed , maxSpeed ) , velocityY);
+            rb2d.velocity = new Vector2( Mathf.Clamp( velocityX + currentLinearDrag * MovementValue * accelerationSpeed * Time.deltaTime , -maxSpeed , maxSpeed ) , velocityY );
         else
             rb2d.velocity -= Mathf.Abs( velocityX ) > 0.1f ? Vector2.right * Mathf.Lerp( velocityX , 0.0f , decelerationSpeed ) * currentLinearDrag : Vector2.right * velocityX;
 
@@ -120,25 +120,25 @@ public class PlayerMovement : MonoBehaviour
 
     public void Jump()
     {
-        if (jumpBtnValue)
+        if( jumpBtnValue )
         {
-            if ( isGrounded && jumpCooldown <= 0f && !isJumping && !isJumpBtnHeldInAir )
+            if( isGrounded && jumpCooldown <= 0f && !isJumping && !isJumpBtnHeldInAir )
             {
                 animator.SetBool( "isJumping" , true );
-                
-                if(movementValue == 0.0f)
-                    rb2d.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse );
+
+                if( movementValue == 0.0f )
+                    rb2d.AddForce( Vector2.up * jumpForce , ForceMode2D.Impulse );
                 else
-                    rb2d.AddForce(new Vector2(MovementValue,jumpForce).normalized * jumpForce , ForceMode2D.Impulse );
+                    rb2d.AddForce( new Vector2( MovementValue , jumpForce ).normalized * jumpForce , ForceMode2D.Impulse );
 
                 currentLinearDrag = jumpingLinearDrag;
                 jumpCooldown = jumpCooldownLimit;
                 isJumping = true;
-                
+
             }
         }
 
-        if (!isGrounded)
+        if( !isGrounded )
         {
             if( rb2d.velocity.y < GravityMultiplierThreshold )
                 rb2d.velocity += Physics2D.gravity * (fallGravityMultiplier - 1) * Time.deltaTime * 10f;
@@ -156,7 +156,7 @@ public class PlayerMovement : MonoBehaviour
             jumpCooldown -= Time.deltaTime;
         }
     }
-    
 
-    
+
+
 }

@@ -137,7 +137,7 @@ GameObject:
   - component: {fileID: 211928295}
   m_Layer: 5
   m_Name: menu
-  m_TagString: Untagged
+  m_TagString: PauseMenu
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1300,7 +1300,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1100918077}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -3.7999995, y: -3.3300002, z: -10}
+  m_LocalPosition: {x: -3.7999992, y: -3.3300002, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 673309255}
@@ -1849,6 +1849,22 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: 5447597c-689a-431d-9411-ca594aec06ea
     m_ActionName: Movment/down[/Keyboard/s]
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1734846739}
+        m_TargetAssemblyTypeName: 
+        m_MethodName: 
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 2b2c6e24-7294-4184-b315-96813a2a3d5d
+    m_ActionName: Movment/menu[/Keyboard/escape]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Movment
@@ -2298,6 +2314,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5062462563073875415, guid: 4b63980db1735444e90d233284643b18, type: 3}
       propertyPath: m_Name
+      value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 5062462563073875415, guid: 4b63980db1735444e90d233284643b18, type: 3}
+      propertyPath: m_TagString
       value: Player
       objectReference: {fileID: 0}
     - target: {fileID: 5062462563073875419, guid: 4b63980db1735444e90d233284643b18, type: 3}

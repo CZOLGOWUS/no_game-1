@@ -6,21 +6,26 @@ using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
-        public PlayerMovement movementSC;
-        
-        
-        public void OnMovement(InputAction.CallbackContext value)
-        {
-                movementSC.MovementValue = value.ReadValue<float>();
-        }
+    public PlayerMovement movementSC;
+    public GameObject pauseMenuCanvas;
 
-        public void OnJump(InputAction.CallbackContext value)
-        {
-                movementSC.JumpBtnValue = value.ReadValueAsButton();
-        }
+    public void OnMovement(InputAction.CallbackContext value)
+    {
+            movementSC.MovementValue = value.ReadValue<float>();
+    }
 
-        public void OnDownInput(InputAction.CallbackContext value)
-        {
-                movementSC.DownInputValue = value.ReadValueAsButton();
-        }
+    public void OnJump(InputAction.CallbackContext value)
+    {
+            movementSC.JumpBtnValue = value.ReadValueAsButton();
+    }
+
+    public void OnDownInput(InputAction.CallbackContext value)
+    {
+            movementSC.DownInputValue = value.ReadValueAsButton();
+    }
+
+    public void OnEscape(InputAction.CallbackContext value)
+    {
+            pauseMenuCanvas.GetComponent<PauseMenu>().OnPauseMenu();
+    }
 }

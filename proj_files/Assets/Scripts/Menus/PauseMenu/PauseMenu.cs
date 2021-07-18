@@ -11,22 +11,6 @@ public class PauseMenu : MonoBehaviour
     public static bool isGamePaused = false;
 
 
-    void Update()
-    {
-        if(Keyboard.current.escapeKey.wasPressedThisFrame)
-        {
-
-            if(isGamePaused)
-            {
-                Resume();
-            }
-            else
-            {
-                Pause();
-            }
-        }
-    }
-
     public void Pause()
     {
         isGamePaused = !isGamePaused;
@@ -39,5 +23,17 @@ public class PauseMenu : MonoBehaviour
         isGamePaused = !isGamePaused;
         pauseMenuPanel.SetActive( isGamePaused );
         Time.timeScale = 1f;
+    }
+
+    public void OnPauseMenu()
+    {
+        if( isGamePaused )
+        {
+            Resume();
+        }
+        else
+        {
+            Pause();
+        }
     }
 }

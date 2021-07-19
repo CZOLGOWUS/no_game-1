@@ -3202,7 +3202,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -2973293992363369732, guid: 4b63980db1735444e90d233284643b18, type: 3}
       propertyPath: jumpCooldownLimit
-      value: 0.15
+      value: 0.01
       objectReference: {fileID: 0}
     - target: {fileID: -2973293992363369732, guid: 4b63980db1735444e90d233284643b18, type: 3}
       propertyPath: jumpingLinearDrag

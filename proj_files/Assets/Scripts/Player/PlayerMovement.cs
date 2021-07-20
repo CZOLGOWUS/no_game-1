@@ -10,34 +10,26 @@ public class PlayerMovement : MonoBehaviour
     private BoxCollider2D thisCollider2D;
     private Animator animator;
 
-    [Header( "moving" )]
+
+    [Header( "moving settings" )]
     public float maxSpeed;
     public float accelerationSpeed;
-    [Range( 1.0f , 0.0f )]
-    public float decelerationSpeed;
+    [Range( 1.0f , 0.0f )] public float decelerationSpeed;
 
-    [Header( "ground check" )]
-    public Vector2 sizeOfRayBox;
+
+    [Header( "ground check" )] public Vector2 sizeOfRayBox;
     public float distanceOfBoxCast;
     public LayerMask TerrainLayerMask;
 
 
     [Header( "jumping settings" )]
     public float jumpForce;
-    [Range( 1f , 5f )]
-    public float fallGravityMultiplier;
-    [Range( 0.9f , 1.1f )]
-    public float jumpingGravityScaler;
-
+    [Range( 1f , 5f )] public float fallGravityMultiplier;
+    [Range( 0.7f , 1.1f )] public float jumpingGravityScaler;
     public float GravityMultiplierThreshold;
-
-    [Range( 0.0001f , 1f )]
-    public float jumpingLinearDrag;
+    [Range( 0.0001f , 1f )] public float jumpingLinearDrag;
 
     public float jumpCooldownLimit;
-    [SerializeField]
-
-
     private float jumpCooldown;
     private bool isJumping;
     private bool isJumpBtnHeldInAir;
@@ -45,11 +37,9 @@ public class PlayerMovement : MonoBehaviour
     private float currentLinearDrag = 1.0f;
 
 
-
-
-    [HideInInspector] private float movementValue;
-    [HideInInspector] private bool jumpBtnValue;
-    [HideInInspector] private bool downInputValue;
+    private float movementValue;
+    private bool jumpBtnValue;
+    private bool downInputValue;
 
     private bool isGrounded;
 
@@ -68,11 +58,6 @@ public class PlayerMovement : MonoBehaviour
     {
         isGrounded = checkIfGrounded();
         MovePlayer();
-
-    }
-
-    private void FixedUpdate()
-    {
 
     }
 

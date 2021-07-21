@@ -2468,7 +2468,7 @@ MonoBehaviour:
   m_ActionEvents:
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1734846739}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
         m_MethodName: OnMovement
         m_Mode: 0
@@ -2484,7 +2484,7 @@ MonoBehaviour:
     m_ActionName: Movment/move[/Keyboard/a,/Keyboard/d]
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1734846739}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
         m_MethodName: OnJump
         m_Mode: 0
@@ -2500,7 +2500,7 @@ MonoBehaviour:
     m_ActionName: Movment/jump[/Keyboard/w,/Keyboard/space]
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1734846739}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
         m_MethodName: OnDownInput
         m_Mode: 0
@@ -2516,7 +2516,7 @@ MonoBehaviour:
     m_ActionName: Movment/down[/Keyboard/s]
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1734846739}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
         m_MethodName: OnEscape
         m_Mode: 0
@@ -2535,17 +2535,6 @@ MonoBehaviour:
   m_DefaultActionMap: Movment
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
---- !u!114 &1734846739 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6634512897736640150, guid: 4b63980db1735444e90d233284643b18, type: 3}
-  m_PrefabInstance: {fileID: 5062462564391499952}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1734846737}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 530f1d58e8e45384b9fdbcf1b12f1121, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &1734846745 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5062462563073875419, guid: 4b63980db1735444e90d233284643b18, type: 3}
@@ -3232,6 +3221,10 @@ PrefabInstance:
       propertyPath: GravityMultiplierThreshold
       value: 10
       objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: pauseMenuCanvas
+      value: 
+      objectReference: {fileID: 609950164}
     - target: {fileID: 5062462563073875415, guid: 4b63980db1735444e90d233284643b18, type: 3}
       propertyPath: m_Name
       value: Player
@@ -3312,5 +3305,6 @@ PrefabInstance:
       propertyPath: pauseMenuCanvas
       value: 
       objectReference: {fileID: 609950164}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 0}
   m_SourcePrefab: {fileID: 100100000, guid: 4b63980db1735444e90d233284643b18, type: 3}

@@ -5,12 +5,23 @@ using UnityEngine.InputSystem;
 
 public class PauseMenu : MonoBehaviour
 {
+    private PlayerInput uiInput;
+
     public GameObject pauseMenuPanel;
     public GameObject optionsMenuPanel;
 
     [HideInInspector]
     public static bool isGamePaused = false;
 
+    private void Awake()
+    {
+        uiInput = GetComponent<PlayerInput>();
+    }
+
+    private void Start()
+    {
+        uiInput.actions["MenuToggle"].performed += MenuToggle;
+    }
 
     public void Pause()
     {
@@ -31,7 +42,7 @@ public class PauseMenu : MonoBehaviour
         Time.timeScale = 1f;
     }
 
-    public void OnPauseMenu()
+    public void MenuToggle(InputAction.CallbackContext value)
     {
         if( isGamePaused )
         {

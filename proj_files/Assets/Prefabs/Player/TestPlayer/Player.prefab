@@ -13,7 +13,6 @@ GameObject:
   - component: {fileID: 5062462563073875417}
   - component: {fileID: 5062462563073875421}
   - component: {fileID: 5062462563073875420}
-  - component: {fileID: 6634512897736640150}
   - component: {fileID: -2973293992363369732}
   m_Layer: 0
   m_Name: Player
@@ -123,20 +122,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!114 &6634512897736640150
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5062462563073875415}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 530f1d58e8e45384b9fdbcf1b12f1121, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  movementSC: {fileID: -2973293992363369732}
-  pauseMenuCanvas: {fileID: 0}
 --- !u!114 &-2973293992363369732
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -163,6 +148,7 @@ MonoBehaviour:
   GravityMultiplierThreshold: 0
   jumpingLinearDrag: 0
   jumpCooldownLimit: 0
+  jumpCooldown: 0
 --- !u!1 &5354244862288599368
 GameObject:
   m_ObjectHideFlags: 0

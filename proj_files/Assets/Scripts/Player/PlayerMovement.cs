@@ -59,8 +59,11 @@ public class PlayerMovement : MonoBehaviour
     void Start()
     {
         playerAction.actions["walk"].performed += value => movementValue = value.ReadValue<float>();
+
         playerAction.actions["jump"].performed += Jump;
         playerAction.actions["jump"].canceled += _ => jumpBtnValue = false;
+
+        playerAction.actions["down"].performed += _ => { } ;
 
     }
 

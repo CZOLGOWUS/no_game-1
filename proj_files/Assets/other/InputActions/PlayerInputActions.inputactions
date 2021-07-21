@@ -30,7 +30,7 @@
                     "interactions": ""
                 },
                 {
-                    "name": "menu",
+                    "name": "MenuToggle",
                     "type": "Button",
                     "id": "2b2c6e24-7294-4184-b315-96813a2a3d5d",
                     "expectedControlType": "Button",
@@ -145,7 +145,7 @@
                     "interactions": "Press",
                     "processors": "",
                     "groups": "Keyboard & Mouse",
-                    "action": "menu",
+                    "action": "MenuToggle",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -156,7 +156,34 @@
                     "interactions": "Press",
                     "processors": "",
                     "groups": "Gamepad",
-                    "action": "menu",
+                    "action": "MenuToggle",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "Ui",
+            "id": "f33cc3c6-f541-4734-8eea-efdf1a15d3e0",
+            "actions": [
+                {
+                    "name": "MenuToggle",
+                    "type": "Button",
+                    "id": "41b37a09-3d30-47ec-b166-c8693c5e370b",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "fd594dff-12c4-438b-85c6-66f4b471ef22",
+                    "path": "<Keyboard>/escape",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard & Mouse",
+                    "action": "MenuToggle",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

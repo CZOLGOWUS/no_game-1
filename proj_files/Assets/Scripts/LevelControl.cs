@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using  UnityEngine.SceneManagement;
 
-public class LevelControl : MonoBehaviour
+public class LevelControl : Singleton<LevelControl>
 {
 
     public void LoadTestLvL(int levelIndex)

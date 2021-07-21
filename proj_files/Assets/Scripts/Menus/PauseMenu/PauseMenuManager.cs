@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PauseMenu : MonoBehaviour
+public class PauseMenuManager : Singleton<PauseMenuManager>
 {
-    private PlayerInput uiInput;
+    //private PlayerInput uiInput;
 
     public GameObject pauseMenuPanel;
     public GameObject optionsMenuPanel;
@@ -15,12 +15,12 @@ public class PauseMenu : MonoBehaviour
 
     private void Awake()
     {
-        uiInput = GetComponent<PlayerInput>();
+        //uiInput = GetComponent<PlayerInput>();
     }
 
     private void Start()
     {
-        uiInput.actions["MenuToggle"].performed += MenuToggle;
+        //uiInput.actions["MenuToggle"].performed += MenuToggle;
     }
 
     public void Pause()

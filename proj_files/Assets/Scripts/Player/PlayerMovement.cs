@@ -101,6 +101,7 @@ public class PlayerMovement : MonoBehaviour
 
     public void MovePlayer()
     {
+        
         float velocityY = rb2d.velocity.y;
         float velocityX = rb2d.velocity.x;
 

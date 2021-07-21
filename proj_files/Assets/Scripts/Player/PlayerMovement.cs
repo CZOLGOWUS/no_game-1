@@ -7,8 +7,8 @@ using UnityEngine.InputSystem;
 public class PlayerMovement : MonoBehaviour
 {
     private Rigidbody2D rb2d;
-    private BoxCollider2D thisCollider2D;
-    private Animator animator;
+    private BoxCollider2D col2D;
+    private PlayerInput playerAction;
 
 
     [Header( "moving settings" )]
@@ -30,11 +30,14 @@ public class PlayerMovement : MonoBehaviour
     [Range( 0.0001f , 1f )] public float jumpingLinearDrag;
 
     public float jumpCooldownLimit;
+    [SerializeField]
     private float jumpCooldown;
     private bool isJumping;
     private bool isJumpBtnHeldInAir;
 
     private float currentLinearDrag = 1.0f;
+
+
 
 
     private float movementValue;
@@ -43,21 +46,29 @@ public class PlayerMovement : MonoBehaviour
 
     private bool isGrounded;
 
-    public float MovementValue { get => movementValue; set => movementValue = value; }
-    public bool JumpBtnValue { get => jumpBtnValue; set => jumpBtnValue = value; }
     public bool DownInputValue { get => downInputValue; set => downInputValue = value; }
+
+
+    private void Awake()
+    {
+        playerAction = GetComponent<PlayerInput>();
+        rb2d = GetComponent<Rigidbody2D>();
+        col2D = GetComponent<BoxCollider2D>();
+    }
 
     void Start()
     {
-        rb2d = GetComponent<Rigidbody2D>();
-        thisCollider2D = GetComponent<BoxCollider2D>();
-        animator = GetComponent<Animator>();
+        playerAction.actions["walk"].performed += value => movementValue = value.ReadValue<float>();
+        playerAction.actions["jump"].performed += Jump;
+        playerAction.actions["jump"].canceled += _ => jumpBtnValue = false;
+
     }
 
     private void Update()
     {
         isGrounded = checkIfGrounded();
         MovePlayer();
+        FallingImplematation();
 
     }
 
@@ -75,9 +86,7 @@ public class PlayerMovement : MonoBehaviour
             if( isJumpBtnHeldInAir && !jumpBtnValue )
                 isJumpBtnHeldInAir = false;
 
-
             return true;
-
         }
         else
         {
@@ -92,37 +101,38 @@ public class PlayerMovement : MonoBehaviour
         float velocityY = rb2d.velocity.y;
         float velocityX = rb2d.velocity.x;
 
-
-        if( MovementValue != 0 )
-            rb2d.velocity = new Vector2( Mathf.Clamp( velocityX + currentLinearDrag * MovementValue * accelerationSpeed * Time.deltaTime , -maxSpeed , maxSpeed ) , velocityY );
+        if( movementValue != 0 )
+        {
+            rb2d.velocity = new Vector2( Mathf.Clamp( velocityX + currentLinearDrag * movementValue * accelerationSpeed * Time.deltaTime , -maxSpeed , maxSpeed ) , velocityY );
+            RotatePlayer();
+        }
         else
             rb2d.velocity -= Mathf.Abs( velocityX ) > 0.1f ? Vector2.right * Mathf.Lerp( velocityX , 0.0f , decelerationSpeed ) * currentLinearDrag : Vector2.right * velocityX;
+    }
 
+    public void Jump( InputAction.CallbackContext value )
+    {
 
-        Jump();
+        jumpBtnValue = value.performed;
+
+        if( jumpBtnValue && isGrounded && jumpCooldown <= 0f && !isJumping && !isJumpBtnHeldInAir )
+        {
+
+            if( movementValue == 0.0f )
+                rb2d.AddForce( Vector2.up * jumpForce , ForceMode2D.Impulse );
+            else
+                rb2d.AddForce( new Vector2( movementValue , jumpForce ).normalized * jumpForce , ForceMode2D.Impulse );
+
+            currentLinearDrag = jumpingLinearDrag;
+            jumpCooldown = jumpCooldownLimit;
+            isJumping = true;
+
+        }
 
     }
 
-    public void Jump()
+    private void FallingImplematation()
     {
-        if( jumpBtnValue )
-        {
-            if( isGrounded && jumpCooldown <= 0f && !isJumping && !isJumpBtnHeldInAir )
-            {
-                animator.SetBool( "isJumping" , true );
-
-                if( movementValue == 0.0f )
-                    rb2d.AddForce( Vector2.up * jumpForce , ForceMode2D.Impulse );
-                else
-                    rb2d.AddForce( new Vector2( MovementValue , jumpForce ).normalized * jumpForce , ForceMode2D.Impulse );
-
-                currentLinearDrag = jumpingLinearDrag;
-                jumpCooldown = jumpCooldownLimit;
-                isJumping = true;
-
-            }
-        }
-
         if( !isGrounded )
         {
             if( rb2d.velocity.y < GravityMultiplierThreshold )
@@ -130,10 +140,10 @@ public class PlayerMovement : MonoBehaviour
             else if( rb2d.velocity.y > 1.0f && jumpBtnValue )
                 rb2d.velocity += Physics2D.gravity * (jumpingGravityScaler - 1) * Time.deltaTime * 10f;
         }
-        else
+
+        if( isGrounded )
         {
             isJumping = false;
-            animator.SetBool( "isJumping" , false );
         }
 
         if( isGrounded && jumpCooldown >= 0f && !isJumping )
@@ -142,6 +152,12 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-
+    public void RotatePlayer() //might be a problem later - todo : make it not invasive
+    {
+        if( rb2d.velocity.x < 0f )
+            transform.eulerAngles = Vector3.up * 180f;
+        else if( rb2d.velocity.x > 0f )
+            transform.eulerAngles = Vector3.up * 0f;
+    }
 
 }

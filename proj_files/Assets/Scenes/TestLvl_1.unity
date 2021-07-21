@@ -3300,6 +3300,10 @@ PrefabInstance:
       propertyPath: m_Constraints
       value: 4
       objectReference: {fileID: 0}
+    - target: {fileID: 5062462563073875420, guid: 4b63980db1735444e90d233284643b18, type: 3}
+      propertyPath: m_CollisionDetection
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6634512897736640150, guid: 4b63980db1735444e90d233284643b18, type: 3}
       propertyPath: pauseMenuPanel
       value: 

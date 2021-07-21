@@ -10,7 +10,7 @@ public class PlayerController : MonoBehaviour
     public GameObject pauseMenuCanvas;
 
 
-    public void OnMovement( InputAction.CallbackContext value )
+   /* public void OnMovement( InputAction.CallbackContext value )
     {
         movementSC.MovementValue = value.ReadValue<float>();
     }
@@ -18,7 +18,7 @@ public class PlayerController : MonoBehaviour
     public void OnJump( InputAction.CallbackContext value )
     {
         movementSC.JumpBtnValue = value.performed;
-    }
+    }*/
 
     public void OnDownInput( InputAction.CallbackContext value )
     {

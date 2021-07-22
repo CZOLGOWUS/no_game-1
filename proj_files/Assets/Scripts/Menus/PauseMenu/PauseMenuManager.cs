@@ -5,7 +5,6 @@ using UnityEngine.InputSystem;
 
 public class PauseMenuManager : Singleton<PauseMenuManager>
 {
-    //private PlayerInput uiInput;
 
     public GameObject pauseMenuPanel;
     public GameObject optionsMenuPanel;
@@ -15,13 +14,12 @@ public class PauseMenuManager : Singleton<PauseMenuManager>
 
     private void Awake()
     {
-        //uiInput = GetComponent<PlayerInput>();
+        //this seems retarded, but it works
+        var menuPauseToggle = new InputAction( binding: "/*/Escape" );
+        menuPauseToggle.performed += MenuToggle;
+        menuPauseToggle.Enable();
     }
 
-    private void Start()
-    {
-        //uiInput.actions["MenuToggle"].performed += MenuToggle;
-    }
 
     public void Pause()
     {

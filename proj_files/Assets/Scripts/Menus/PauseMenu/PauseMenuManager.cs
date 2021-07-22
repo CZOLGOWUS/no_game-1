@@ -12,14 +12,6 @@ public class PauseMenuManager : Singleton<PauseMenuManager>
     [HideInInspector]
     public static bool isGamePaused = false;
 
-    private void Awake()
-    {
-        //this seems retarded, but it works
-        var menuPauseToggle = new InputAction( binding: "/*/Escape" );
-        menuPauseToggle.performed += MenuToggle;
-        menuPauseToggle.Enable();
-    }
-
 
     public void Pause()
     {
@@ -42,13 +34,14 @@ public class PauseMenuManager : Singleton<PauseMenuManager>
 
     public void MenuToggle(InputAction.CallbackContext value)
     {
-        if( isGamePaused )
-        {
-            Resume();
-        }
-        else
-        {
-            Pause();
-        }
+        if(value.performed)
+            if( isGamePaused )
+            {
+                Resume();
+            }
+            else
+            {
+                Pause();
+            }
     }
 }

@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface IDamageable
+public class PlayerCombatBehaviour : MonoBehaviour
 {
-    public void TakeHit(GameObject weapon);
+    
 }

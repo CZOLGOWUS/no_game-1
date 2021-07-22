@@ -32,8 +32,10 @@ public class PlayerMovement : MonoBehaviour
     public float jumpCooldownLimit;
     [SerializeField]
     private float jumpCooldown;
-    private bool isJumping;
+    private bool isJumping; 
     private bool isJumpBtnHeldInAir;
+
+    public bool IsJumping { get => isJumping; private set => isJumping = value; }
 
     private float currentLinearDrag = 1.0f;
 
@@ -89,6 +91,8 @@ public class PlayerMovement : MonoBehaviour
             if( isJumpBtnHeldInAir && !jumpBtnValue )
                 isJumpBtnHeldInAir = false;
 
+            isJumping = false;
+
             return true;
         }
         else
@@ -143,11 +147,6 @@ public class PlayerMovement : MonoBehaviour
                 rb2d.velocity += Physics2D.gravity * (fallGravityMultiplier - 1) * Time.deltaTime * 10f;
             else if( rb2d.velocity.y > 1.0f && jumpBtnValue )
                 rb2d.velocity += Physics2D.gravity * (jumpingGravityScaler - 1) * Time.deltaTime * 10f;
-        }
-
-        if( isGrounded )
-        {
-            isJumping = false;
         }
 
         if( isGrounded && jumpCooldown >= 0f && !isJumping )

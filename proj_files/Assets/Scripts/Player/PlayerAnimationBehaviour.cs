@@ -8,7 +8,7 @@ public class PlayerAnimationBehaviour : MonoBehaviour
     private Animator animator;
     private PlayerMovement movementScript;
 
-    public int animIsJumping;
+    private int animIsJumping;
     private int animIsRunning;
     private int animVelocity;
 

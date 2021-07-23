@@ -7,7 +7,7 @@ using UnityEngine.InputSystem;
 public class PlayerMovement : MonoBehaviour
 {
     private Rigidbody2D rb2d;
-    private BoxCollider2D col2D;
+    private BoxCollider2D coll2D;
     private PlayerInput playerAction;
 
 
@@ -34,13 +34,12 @@ public class PlayerMovement : MonoBehaviour
     private float jumpCooldown;
     private bool isJumping; 
     private bool isJumpBtnHeldInAir;
+    private float currentLinearDrag = 1.0f;
 
     public bool IsJumping { get => isJumping; private set => isJumping = value; }
 
-    private float currentLinearDrag = 1.0f;
 
-
-
+    private bool isCollidingWithEnemy;
 
     private float movementValue;
     private bool jumpBtnValue;
@@ -55,7 +54,7 @@ public class PlayerMovement : MonoBehaviour
     {
         playerAction = GetComponent<PlayerInput>();
         rb2d = GetComponent<Rigidbody2D>();
-        col2D = GetComponent<BoxCollider2D>();
+        coll2D = GetComponent<BoxCollider2D>();
     }
 
     void Start()
@@ -77,9 +76,9 @@ public class PlayerMovement : MonoBehaviour
 
     }
 
-    private void OnDrawGizmos()
+    private void OnCollisionEnter2D( Collision2D collision )
     {
-        Gizmos.DrawWireCube( transform.position + Vector3.down * distanceOfBoxCast , sizeOfRayBox );
+        isCollidingWithEnemy = collision.gameObject.layer.ToString().Equals( "Enemies" ) ? true : false; 
     }
 
     private bool checkIfGrounded()
@@ -109,7 +108,8 @@ public class PlayerMovement : MonoBehaviour
         float velocityY = rb2d.velocity.y;
         float velocityX = rb2d.velocity.x;
 
-        if( movementValue != 0 )
+
+        if( movementValue != 0 && !isCollidingWithEnemy )
         {
             rb2d.velocity = new Vector2( Mathf.Clamp( velocityX + currentLinearDrag * movementValue * accelerationSpeed * Time.deltaTime , -maxSpeed , maxSpeed ) , velocityY );
             RotatePlayer();
@@ -163,4 +163,8 @@ public class PlayerMovement : MonoBehaviour
             transform.eulerAngles = Vector3.up * 0f;
     }
 
+    private void OnDrawGizmos()
+    {
+        Gizmos.DrawWireCube( transform.position + Vector3.down * distanceOfBoxCast , sizeOfRayBox );
+    }
 }

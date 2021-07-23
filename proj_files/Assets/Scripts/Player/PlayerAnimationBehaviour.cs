@@ -11,6 +11,7 @@ public class PlayerAnimationBehaviour : MonoBehaviour
     private int animIsJumping;
     private int animIsRunning;
     private int animVelocity;
+    private int animAttackTrigger;
 
     private void Start()
     {
@@ -21,25 +22,24 @@ public class PlayerAnimationBehaviour : MonoBehaviour
         animIsJumping = Animator.StringToHash("isJumping");
         animIsRunning = Animator.StringToHash( "isRunning" );
         animVelocity = Animator.StringToHash("Velocity");
+        animAttackTrigger = Animator.StringToHash( "AttackTrigger" );
 
     }
 
     private void FixedUpdate()
     {
 
-        if( Mathf.Abs( rb.velocity.x ) > 0.1f )
-            animator.SetBool( animIsRunning , true);
-        else
-            animator.SetBool( animIsRunning , false );
-
-
-        if( movementScript.IsJumping )
-            animator.SetBool( animIsJumping , true );
-        else
-            animator.SetBool( animIsJumping , false );
+        animator.SetBool( animIsRunning , Mathf.Abs( rb.velocity.x ) > 0.1f );
+        animator.SetBool( animIsJumping , movementScript.IsJumping );
 
 
         animator.SetFloat( animVelocity , Mathf.Abs( rb.velocity.x / movementScript.maxSpeed ));
+    }
+
+    public void AttackPlay()
+    {
+        animator.SetTrigger( animAttackTrigger );
+
     }
 
 }

@@ -36,10 +36,15 @@ public class PlayerAnimationBehaviour : MonoBehaviour
         animator.SetFloat( animVelocity , Mathf.Abs( rb.velocity.x / movementScript.maxSpeed ));
     }
 
-    public void AttackPlay()
+    public IEnumerator AttackPlay()
     {
+        animator.SetLayerWeight(animator.GetLayerIndex("Attacking"), 1f );
         animator.SetTrigger( animAttackTrigger );
 
+        //i know , i know...
+        yield return new WaitForSecondsRealtime( 0.9f );
+
+        animator.SetLayerWeight( animator.GetLayerIndex( "Attacking" ) , 0f);
     }
 
 }

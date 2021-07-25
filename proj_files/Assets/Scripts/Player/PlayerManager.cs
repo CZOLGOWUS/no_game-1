@@ -34,7 +34,7 @@ public class PlayerManager : Singleton<PlayerManager>
 
     private void OnPlayerAttack( InputAction.CallbackContext value )
     {
-        playerAnimationSc.AttackPlay();
+        StartCoroutine( playerAnimationSc.AttackPlay());
         playerCombatSystemSc.Attack();
             
     }

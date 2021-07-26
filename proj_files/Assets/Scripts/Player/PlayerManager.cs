@@ -34,8 +34,16 @@ public class PlayerManager : Singleton<PlayerManager>
 
     private void OnPlayerAttack( InputAction.CallbackContext value )
     {
+        if( !playerCombatSystemSc.isAbleToAttack )
+            return;
+
         StartCoroutine( playerAnimationSc.AttackPlay());
         playerCombatSystemSc.Attack();
             
+    }
+
+    public void PlayerHit(GameObject enemy)
+    {
+
     }
 }

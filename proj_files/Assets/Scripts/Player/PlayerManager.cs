@@ -8,8 +8,10 @@ public class PlayerManager : Singleton<PlayerManager>
 {
     private PlayerInput playerAction;
 
+    private PlayerManager playerManagerSc;
     private PlayerCombatSystem playerCombatSystemSc;
     private PlayerAnimationBehaviour playerAnimationSc;
+
 
     private void Awake()
     {
@@ -17,6 +19,7 @@ public class PlayerManager : Singleton<PlayerManager>
 
         playerCombatSystemSc = GetComponent<PlayerCombatSystem>();
         playerAnimationSc = GetComponent<PlayerAnimationBehaviour>();
+        playerManagerSc = GetComponent<PlayerManager>();
 
 
     }
@@ -42,8 +45,13 @@ public class PlayerManager : Singleton<PlayerManager>
             
     }
 
-    public void PlayerHit(GameObject enemy)
+    public void TakeHit(GameObject enemy)
     {
+
+        if(playerCombatSystemSc.timeSinceLastHit > playerCombatSystemSc.timeBeetwenHits)
+        {
+
+        }
 
     }
 }

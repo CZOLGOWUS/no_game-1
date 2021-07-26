@@ -7,6 +7,7 @@ using UnityEngine.InputSystem;
 public class PlayerCombatSystem : MonoBehaviour
 {
     private EnemyCombatBehaviour enemy;
+
     private Vector2 attackPointWorldPos;
 
     public LayerMask enemiesLayer;
@@ -17,6 +18,10 @@ public class PlayerCombatSystem : MonoBehaviour
     private float timeSinceLastAttack; //in seconds
     [SerializeField]
     public bool isAbleToAttack { get; private set; }
+
+    public bool wasHit;
+    public float timeBeetwenHits;
+    internal float timeSinceLastHit;
 
     private void Start()
     {

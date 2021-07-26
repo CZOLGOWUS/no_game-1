@@ -8,6 +8,9 @@ public class EnemyController : MonoBehaviour
     public List<Transform> waypoints;
     private Rigidbody2D rb;
 
+    private Transform playerTransform;
+    private PlayerManager playerSC;
+
     internal int nextWaypointIndex;
     internal float timerOnWaypoint;
     internal int numberOfWaypoints;
@@ -18,21 +21,33 @@ public class EnemyController : MonoBehaviour
     public float radiusOfSlowingDown;
     public float timeToWaitOnWaypoint;
 
+    [Header( "guarding options" )]
+    public Light viewRangeLight;
+    public float viewDistance;
+    private float viewAngle;
+
+
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-
+        playerSC = GameObject.FindGameObjectWithTag( "Player" ).GetComponent<PlayerManager>();
+        playerTransform = GameObject.FindGameObjectWithTag( "Player" ).transform;
     }
+
 
     private void OnEnable()
     {
+        viewAngle = viewRangeLight.spotAngle;
+
         StartCoroutine( FollowPath() );
     }
 
+
     private void Update()
     {
-        
+        bool isPlayerDetected = IsPlayerVisible();
     }
+
 
     private IEnumerator FollowPath()
     {
@@ -61,18 +76,41 @@ public class EnemyController : MonoBehaviour
 
     private void TurnTo(Transform target)
     {
-        if( target.position.x - transform.position.x > 0f )
-            transform.eulerAngles = new Vector3( transform.eulerAngles.x , 0f , transform.eulerAngles.z );
-        else
-            transform.eulerAngles = new Vector3( transform.eulerAngles.x , -180f , transform.eulerAngles.z );
-
+        float angleTOTurn = Mathf.Atan2( (target.position.x - transform.position.x) , (target.position.y - transform.position.y) ) * Mathf.Rad2Deg - 90;
+        transform.localRotation = Quaternion.AngleAxis(angleTOTurn,Vector3.up);
     }
 
-    private void OnTriggerEnter2D( Collider2D collision )
+
+    private bool IsPlayerVisible()
+    {
+        RaycastHit2D lineToPlayer = Physics2D.Linecast( transform.position , playerTransform.position );
+
+        if( lineToPlayer.distance < 0)
+        {
+            Vector3 directionToPlayer = (playerTransform.position - transform.position).normalized;
+            float angleBetweenGuardAndPlayer = Vector3.Angle( transform.right , directionToPlayer );
+
+            if(angleBetweenGuardAndPlayer < viewAngle/2f)
+            {
+
+                if(lineToPlayer.collider != null )
+                {
+                    print( "player detected" );
+                    return true;
+                }
+            }
+
+        }
+
+        return false;
+    }
+
+    private void OnCollisionEnter2D( Collision2D collision )
     {
         if( collision.gameObject.CompareTag( "Player" ) )
         {
-            collision.transform.GetComponent<Rigidbody2D>().AddForce( (collision.transform.position - transform.position).normalized * 10000 , ForceMode2D.Impulse );
+            //collision.transform.GetComponent<Rigidbody2D>().AddForce( (collision.transform.position - transform.position).normalized * 10000 , ForceMode2D.Impulse );
+            playerSC.TakeHit(this.gameObject);
         }
     }
 }

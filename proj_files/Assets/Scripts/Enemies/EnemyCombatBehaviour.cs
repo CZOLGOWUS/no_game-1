@@ -7,6 +7,7 @@ public class EnemyCombatBehaviour : MonoBehaviour
     [SerializeField]
     private float health;
     public float maxHealth;
+    public float attackDamage;
 
     public void TakeHit(float damage)
     {

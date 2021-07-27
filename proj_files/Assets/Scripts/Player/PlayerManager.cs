@@ -8,18 +8,20 @@ public class PlayerManager : Singleton<PlayerManager>
 {
     private PlayerInput playerAction;
 
-    private PlayerManager playerManagerSc;
     private PlayerCombatSystem playerCombatSystemSc;
     private PlayerAnimationBehaviour playerAnimationSc;
+
+    private Rigidbody2D playersRB;
 
 
     private void Awake()
     {
+        playersRB = GetComponent<Rigidbody2D>();
         playerAction = GetComponent<PlayerInput>();
 
         playerCombatSystemSc = GetComponent<PlayerCombatSystem>();
         playerAnimationSc = GetComponent<PlayerAnimationBehaviour>();
-        playerManagerSc = GetComponent<PlayerManager>();
+
 
 
     }
@@ -35,6 +37,11 @@ public class PlayerManager : Singleton<PlayerManager>
         playerAction.actions["Attack"].performed += OnPlayerAttack;
     }
 
+    public Rigidbody2D GetPlayersRigidBody()
+    {
+        return playersRB;
+    }
+
     private void OnPlayerAttack( InputAction.CallbackContext value )
     {
         if( !playerCombatSystemSc.isAbleToAttack )
@@ -47,11 +54,12 @@ public class PlayerManager : Singleton<PlayerManager>
 
     public void TakeHit(GameObject enemy)
     {
-
-        if(playerCombatSystemSc.timeSinceLastHit > playerCombatSystemSc.timeBeetwenHits)
-        {
-
-        }
-
+        playerCombatSystemSc.TakeHit(enemy);
     }
+
+    public bool IsPlayerInvincible()
+    {
+        return playerCombatSystemSc.isInvincible;
+    }
+
 }

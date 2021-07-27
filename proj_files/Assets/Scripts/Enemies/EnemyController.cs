@@ -9,7 +9,7 @@ public class EnemyController : MonoBehaviour
     private Rigidbody2D rb;
 
     private Transform playerTransform;
-    private PlayerManager playerSC;
+    private PlayerManager playerMenagerSC;
 
     internal int nextWaypointIndex;
     internal float timerOnWaypoint;
@@ -30,7 +30,7 @@ public class EnemyController : MonoBehaviour
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        playerSC = GameObject.FindGameObjectWithTag( "Player" ).GetComponent<PlayerManager>();
+        playerMenagerSC = GameObject.FindGameObjectWithTag( "Player" ).GetComponent<PlayerManager>();
         playerTransform = GameObject.FindGameObjectWithTag( "Player" ).transform;
     }
 
@@ -107,10 +107,10 @@ public class EnemyController : MonoBehaviour
 
     private void OnCollisionEnter2D( Collision2D collision )
     {
-        if( collision.gameObject.CompareTag( "Player" ) )
+        if( collision.gameObject.CompareTag( "Player" ) && !playerMenagerSC.IsPlayerInvincible() )
         {
             //collision.transform.GetComponent<Rigidbody2D>().AddForce( (collision.transform.position - transform.position).normalized * 10000 , ForceMode2D.Impulse );
-            playerSC.TakeHit(this.gameObject);
+            playerMenagerSC.TakeHit(this.gameObject);
         }
     }
 }

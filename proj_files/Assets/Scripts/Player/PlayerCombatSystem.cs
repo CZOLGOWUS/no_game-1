@@ -7,6 +7,7 @@ using UnityEngine.InputSystem;
 public class PlayerCombatSystem : MonoBehaviour
 {
     private EnemyCombatBehaviour enemy;
+    private PlayerManager playerMenagerSc;
 
     private Vector2 attackPointWorldPos;
 
@@ -16,15 +17,18 @@ public class PlayerCombatSystem : MonoBehaviour
     public float attackRadius;
     public float attackRate; // attacks per second
     private float timeSinceLastAttack; //in seconds
-    [SerializeField]
-    public bool isAbleToAttack { get; private set; }
+    [SerializeField]  public bool isAbleToAttack { get; private set; }
 
     public bool wasHit;
     public float timeBeetwenHits;
+    public bool isInvincible = false;
     internal float timeSinceLastHit;
+
+    public int hitPoints;
 
     private void Start()
     {
+        playerMenagerSc = GetComponent<PlayerManager>();
         isAbleToAttack = true;
     }
 
@@ -71,6 +75,25 @@ public class PlayerCombatSystem : MonoBehaviour
             isAbleToAttack = true;
 
         }
+    }
+
+    public void TakeHit( GameObject enemy )
+    {
+        isInvincible = true;
+        EnemyCombatBehaviour enemyCombatSC =  enemy.GetComponent<EnemyCombatBehaviour>();
+
+        playerMenagerSc.transform.Translate( (enemy.transform.position - transform.position).normalized * enemyCombatSC.attackDamage );
+        StartCoroutine( InvincibleAfterHitToggle(timeBeetwenHits) );
+        
+    }
+
+
+    private IEnumerator InvincibleAfterHitToggle( float timeToWait )
+    {
+        yield return new WaitForSeconds( timeToWait );
+
+        isInvincible = !isInvincible;
+
     }
 
     private void OnDrawGizmos()

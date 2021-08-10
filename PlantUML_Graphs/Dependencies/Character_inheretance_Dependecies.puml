@@ -1,0 +1,43 @@
+@startuml
+'https://plantuml.com/sequence-diagra
+
+interface IDamageable
+{
+    public void TakeHit(Weapon weaponType)
+}
+
+interface IDoDamage
+{
+    public void ApplyDamage()
+}
+
+abstract class Weapon
+{
+    public int damage
+    public float force
+}
+
+
+class CharacterController
+{
+
+}
+
+class PlayerController
+{
+
+}
+
+class Fighter implements IDamageable,IDoDamage
+{
+
+}
+
+class EnemieController
+{
+
+}
+
+CharacterController --> PlayerInputComponent
+
+@enduml

@@ -3,45 +3,48 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PauseMenuManager : Singleton<PauseMenuManager>
+namespace noGame.UIControl
 {
-
-    public GameObject pauseMenuPanel;
-    public GameObject optionsMenuPanel;
-
-    [HideInInspector]
-    public static bool isGamePaused = false;
-
-
-    public void Pause()
+    public class PauseMenuManager : Singleton<PauseMenuManager>
     {
-        isGamePaused = true;
 
-        pauseMenuPanel.SetActive( true );
+        public GameObject pauseMenuPanel;
+        public GameObject optionsMenuPanel;
 
-        Time.timeScale = 0f;
-    }
+        [HideInInspector]
+        public static bool isGamePaused = false;
 
-    public void Resume()
-    {
-        isGamePaused = false;
 
-        optionsMenuPanel.SetActive( false );
-        pauseMenuPanel.SetActive( false );
+        public void Pause()
+        {
+            isGamePaused = true;
 
-        Time.timeScale = 1f;
-    }
+            pauseMenuPanel.SetActive( true );
 
-    public void MenuToggle(InputAction.CallbackContext value)
-    {
-        if(value.performed)
-            if( isGamePaused )
-            {
-                Resume();
-            }
-            else
-            {
-                Pause();
-            }
+            Time.timeScale = 0f;
+        }
+
+        public void Resume()
+        {
+            isGamePaused = false;
+
+            optionsMenuPanel.SetActive( false );
+            pauseMenuPanel.SetActive( false );
+
+            Time.timeScale = 1f;
+        }
+
+        public void MenuToggle( InputAction.CallbackContext value )
+        {
+            if( value.performed )
+                if( isGamePaused )
+                {
+                    Resume();
+                }
+                else
+                {
+                    Pause();
+                }
+        }
     }
 }

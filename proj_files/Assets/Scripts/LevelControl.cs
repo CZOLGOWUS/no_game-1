@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using  UnityEngine.SceneManagement;
 
-public class LevelControl : Singleton<LevelControl>
+namespace noGame.UIControl
 {
-
-    public void LoadTestLvL(int levelIndex)
+    public class LevelControl : Singleton<LevelControl>
     {
-        SceneManager.LoadScene(levelIndex);
+
+        public void LoadTestLvL( int levelIndex )
+        {
+            SceneManager.LoadScene( levelIndex );
+        }
+
     }
-    
 }

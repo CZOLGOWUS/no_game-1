@@ -25,7 +25,7 @@ class Weapon extends ScriptableObject
 class CharacterController
 {
     Interaction
-    MovementAdaptedToCharacter
+    BasicTemplateMovementFunctions
 }
 
 class Movement
@@ -33,35 +33,20 @@ class Movement
     MovementFunctions
 }
 
-class PlayerController
+class PlayerCharacterController
 {
     CoordinatingPlayers:
     - movement
     - Combat
 }
 
-/'
-class CombatBehaviour implements IDamageable,IDoDamage
-{
+Movement -> CharacterController
 
-}
+CombatBehaviour -> Weapon
 
-class EnemieController
-{
+PlayerCharacterController --> PlayerInputComponent
+PlayerCharacterController --> CharacterController
+PlayerCharacterController --> CombatBehaviour
 
-}
-'/
-
-CharacterController --> Movement
-
-CombatBehaviour --> Weapon
-
-PlayerController --> PlayerInputComponent
-PlayerController --> CharacterController
-PlayerController --> CombatBehaviour
-/'
-EnemieController --> CharacterController
-EnemieController --> CombatBehaviour
-'/
 
 @enduml

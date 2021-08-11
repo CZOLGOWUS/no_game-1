@@ -1,0 +1,56 @@
+@startuml
+'https://plantuml.com/mindmap-diagram
+
+interface IDamageable
+{
+    public void TakeHit(Weapon weaponType)
+}
+
+interface IDoDamage
+{
+    public void ApplyDamage()
+}
+
+abstract class ScriptableObject
+{
+
+}
+
+class Weapon extends ScriptableObject
+{
+    public int damage
+    public float force
+}
+
+class CharacterController
+{
+    Interaction
+    MovementAdaptedToCharacter
+}
+
+class Movement
+{
+    MovementFunctions
+}
+
+
+class CombatBehaviour implements IDamageable,IDoDamage
+{
+
+}
+
+class EnemieController
+{
+
+}
+
+
+CharacterController --> Movement
+
+CombatBehaviour --> Weapon
+
+EnemieController --> CharacterController
+EnemieController --> CombatBehaviour
+
+
+@enduml

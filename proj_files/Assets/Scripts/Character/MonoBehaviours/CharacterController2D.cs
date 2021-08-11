@@ -1,20 +1,19 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
+
+using noGame.Movement;
 
 namespace noGame.Character.MonoBehaviours
 {
-    [RequireComponent( typeof( Rigidbody2D ) )]
-    [RequireComponent( typeof( Collider2D ) )]
+
+    [RequireComponent( typeof( PlayerInput ) )]
+    [RequireComponent( typeof( Movement ) )]
     public class CharacterController2D : MonoBehaviour
     {
-        private Rigidbody2D thisRigidBody;
-        private Collider2D thisCollider;
 
-        private void Start()
-        {
-            thisRigidBody = GetComponent<Rigidbody2D>();
-            thisCollider = GetComponent<Collider2D>();
-        }
+
+
     }
 }

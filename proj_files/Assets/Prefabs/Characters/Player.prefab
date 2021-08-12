@@ -11,11 +11,10 @@ GameObject:
   - component: {fileID: 3522361025129137828}
   - component: {fileID: 3522361025129137819}
   - component: {fileID: 3522361025129137818}
-  - component: {fileID: 3522361025129137831}
-  - component: {fileID: 3522361025129137830}
+  - component: {fileID: 5150222037190820131}
   - component: {fileID: 2267829080781312220}
-  - component: {fileID: 3522361025129137829}
   - component: {fileID: 2118324270423770967}
+  - component: {fileID: 1512543317927530212}
   m_Layer: 7
   m_Name: Player
   m_TagString: Player
@@ -86,53 +85,24 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!61 &3522361025129137831
-BoxCollider2D:
+--- !u!143 &5150222037190820131
+CharacterController:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3522361025129137817}
-  m_Enabled: 1
-  m_Density: 1
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0, y: -0.10136342}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0, y: 0}
-    oldSize: {x: 0, y: 0}
-    newSize: {x: 0, y: 0}
-    adaptiveTilingThreshold: 0
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
+  m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 1.7939496}
-  m_EdgeRadius: 0
---- !u!50 &3522361025129137830
-Rigidbody2D:
-  serializedVersion: 4
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3522361025129137817}
-  m_BodyType: 0
-  m_Simulated: 1
-  m_UseFullKinematicContacts: 0
-  m_UseAutoMass: 0
-  m_Mass: 1
-  m_LinearDrag: 0
-  m_AngularDrag: 0.05
-  m_GravityScale: 1
-  m_Material: {fileID: 6200000, guid: 82a12470e9d88e542837fb57ff62c8dd, type: 2}
-  m_Interpolate: 0
-  m_SleepingMode: 1
-  m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Height: 2
+  m_Radius: 0.5
+  m_SlopeLimit: 45
+  m_StepOffset: 0.3
+  m_SkinWidth: 0.08
+  m_MinMoveDistance: 0.001
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &2267829080781312220
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -161,7 +131,8 @@ MonoBehaviour:
   - m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 2118324270423770967}
-        m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
+        m_TargetAssemblyTypeName: noGame.Character.MonoBehaviours.PlayerCharacterController,
+          Assembly-CSharp
         m_MethodName: OnWalk
         m_Mode: 0
         m_Arguments:
@@ -177,7 +148,8 @@ MonoBehaviour:
   - m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 2118324270423770967}
-        m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
+        m_TargetAssemblyTypeName: noGame.Character.MonoBehaviours.PlayerCharacterController,
+          Assembly-CSharp
         m_MethodName: OnJump
         m_Mode: 0
         m_Arguments:
@@ -207,18 +179,6 @@ MonoBehaviour:
   m_DefaultActionMap: PlayerControls
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
---- !u!114 &3522361025129137829
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3522361025129137817}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b047dd75c919cb14085eb32bc21f75b2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &2118324270423770967
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -231,3 +191,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14b6e66b736950c4e816cc78e89ff178, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1512543317927530212
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3522361025129137817}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d591496eeee99224795a6552149719e4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxSpeed: 1

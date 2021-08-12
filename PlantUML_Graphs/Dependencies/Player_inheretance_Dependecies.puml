@@ -24,9 +24,9 @@ class Weapon extends ScriptableObject
 
 class CharacterController
 {
-    Interaction
-    BasicTemplateMovementFunctions
+    Unity's CharacterController
 }
+
 
 class Movement
 {
@@ -40,13 +40,10 @@ class PlayerCharacterController
     - Combat
 }
 
-Movement -> CharacterController
-
-CombatBehaviour -> Weapon
+'CombatBehaviour -> Weapon
 
 PlayerCharacterController --> PlayerInputComponent
-PlayerCharacterController --> CharacterController
 PlayerCharacterController --> CombatBehaviour
-
+PlayerCharacterController --> Movement
 
 @enduml

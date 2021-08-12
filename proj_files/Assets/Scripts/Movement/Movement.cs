@@ -6,36 +6,61 @@ using noGame.Character.MonoBehaviours;
 
 namespace noGame.MovementBehaviour
 {
-    [RequireComponent( typeof( CharacterController2D ) )]
+    [RequireComponent(typeof(CharacterController))]
     public class Movement : MonoBehaviour
     {
 
-        private CharacterController2D thisCharacterController;
-        private Rigidbody2D thisRigidbody;
-        private Collider2D thisCollider;
+        //dependecies
+        private CharacterController thisCharacterController;
 
-        public float acceleration;
+        private Vector2 currentPosition;
+        private Vector2 nextPosition;
+
+        //move-settings
         public float maxSpeed;
-        [SerializeField] private float currentSpeed;
+
+        private float currentSpeed;
+        private bool isMoving = false;
+        private bool isJumping = false;
 
 
         public float CurrentSpeed { get => currentSpeed; }
-
+        public Vector2 PrevPosition { get => currentPosition; }
+        public Vector2 NextPosition { get => nextPosition; }
+        public bool IsMoving { get => isMoving; set => isMoving = value; }
+        public bool IsJumping { get => isJumping; set => isJumping = value; }
 
         private void Start()
         {
-            thisRigidbody = thisCharacterController.ThisRigidBody;
-            thisCollider = thisCharacterController.ThisCollider;
+            thisCharacterController = GetComponent<CharacterController>();
+        }
+
+        private void Update()
+        {
+            
+        }
+
+        private void FixedUpdate()
+        {
+            thisCharacterController.Move( nextPosition );
+            currentPosition = nextPosition;
         }
 
         public void Move(float direction) // (left, right)
         {
-            thisRigidbody.MovePosition( Vector2.right * direction * acceleration);
+            if(direction != 0)
+            {
+                nextPosition += Vector2.right * direction * maxSpeed * Time.deltaTime; 
+            }
+            else
+            {
+                nextPosition.x -= currentPosition.x;
+            }
         }
 
-        public void Jump(Vector2 direction, float height)
+        public void Jump( float height)
         {
-
+            
         }
 
 

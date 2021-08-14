@@ -13,8 +13,8 @@ namespace noGame.MovementBehaviour
         //dependecies
         private CharacterController thisCharacterController;
 
-        private Vector2 currentPosition;
-        private Vector2 nextPosition;
+        private Vector2 currentPositionOffset;
+        private Vector2 nextPositionOffset;
 
         //move-settings
         public float maxSpeed;
@@ -25,8 +25,8 @@ namespace noGame.MovementBehaviour
 
 
         public float CurrentSpeed { get => currentSpeed; }
-        public Vector2 PrevPosition { get => currentPosition; }
-        public Vector2 NextPosition { get => nextPosition; }
+        public Vector2 PrevPosition { get => currentPositionOffset; }
+        public Vector2 NextPosition { get => nextPositionOffset; }
         public bool IsMoving { get => isMoving; set => isMoving = value; }
         public bool IsJumping { get => isJumping; set => isJumping = value; }
 
@@ -42,19 +42,20 @@ namespace noGame.MovementBehaviour
 
         private void FixedUpdate()
         {
-            thisCharacterController.Move( nextPosition );
-            currentPosition = nextPosition;
+            print( thisCharacterController.velocity.x );
+            thisCharacterController.Move( nextPositionOffset );
+            currentPositionOffset = nextPositionOffset;
         }
 
-        public void Move(float direction) // (left, right)
+        public void MoveInDirection(float direction) // (left, right)
         {
-            if(direction != 0)
+            if(direction != 0 && Mathf.Abs(thisCharacterController.velocity.x) <= maxSpeed)
             {
-                nextPosition += Vector2.right * direction * maxSpeed * Time.deltaTime; 
+                nextPositionOffset += Vector2.right * direction * maxSpeed * Time.deltaTime; 
             }
             else
             {
-                nextPosition.x -= currentPosition.x;
+                nextPositionOffset.x -= currentPositionOffset.x * 0.1f;
             }
         }
 

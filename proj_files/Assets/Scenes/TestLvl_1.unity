@@ -464,6 +464,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1512543317927530212, guid: fad84ad08584e2946814af9f41895098, type: 3}
+      propertyPath: maxSpeed
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 3522361025129137817, guid: fad84ad08584e2946814af9f41895098, type: 3}
       propertyPath: m_Name
       value: Player

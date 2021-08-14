@@ -27,7 +27,6 @@ class CharacterController
     Unity's CharacterController
 }
 
-
 class Movement
 {
     MovementFunctions

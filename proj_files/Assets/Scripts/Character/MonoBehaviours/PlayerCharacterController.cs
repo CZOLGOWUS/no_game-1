@@ -34,7 +34,7 @@ namespace noGame.Character.MonoBehaviours
 
         private void FixedUpdate()
         {
-            movement.Move(WalkInput);
+            movement.MoveInDirection(WalkInput);
         }
 
         public void OnWalk( InputAction.CallbackContext ctx )

@@ -59,6 +59,7 @@ namespace noGame.Character.MonoBehaviours
             {
                 hasPressedJump = true;
                 isJumpingPressed = true;
+                movement.Jump();
             }
 
             if(ctx.canceled)

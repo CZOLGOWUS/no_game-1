@@ -393,7 +393,7 @@ GameObject:
   - component: {fileID: 1112380620}
   - component: {fileID: 1112380623}
   - component: {fileID: 1112380619}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -700,6 +700,36 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2048486404}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &2080794082
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2080794083}
+  m_Layer: 7
+  m_Name: Ground Detection
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2080794083
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2080794082}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: -1, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 342793188}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &3522361024808259268
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -708,12 +738,32 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 1512543317927530212, guid: fad84ad08584e2946814af9f41895098, type: 3}
+      propertyPath: gravity
+      value: 9.81
+      objectReference: {fileID: 0}
+    - target: {fileID: 1512543317927530212, guid: fad84ad08584e2946814af9f41895098, type: 3}
       propertyPath: maxSpeed
       value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 1512543317927530212, guid: fad84ad08584e2946814af9f41895098, type: 3}
+      propertyPath: rayLength
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1512543317927530212, guid: fad84ad08584e2946814af9f41895098, type: 3}
+      propertyPath: jumpHeight
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1512543317927530212, guid: fad84ad08584e2946814af9f41895098, type: 3}
+      propertyPath: groundDetector
+      value: 
+      objectReference: {fileID: 2080794083}
+    - target: {fileID: 1512543317927530212, guid: fad84ad08584e2946814af9f41895098, type: 3}
       propertyPath: stoppingTimeScale
       value: 0.533
+      objectReference: {fileID: 0}
+    - target: {fileID: 2118324270423770967, guid: fad84ad08584e2946814af9f41895098, type: 3}
+      propertyPath: m_Enabled
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2267829080781312220, guid: fad84ad08584e2946814af9f41895098, type: 3}
       propertyPath: m_ActionEvents.Array.data[0].m_PersistentCalls.m_Calls.Array.data[0].m_Target

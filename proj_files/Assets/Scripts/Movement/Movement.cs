@@ -12,24 +12,39 @@ namespace noGame.MovementBehaviour
 
         //dependecies
         private CharacterController thisCharacterController;
+        
 
         private Vector2 currentPositionOffset;
         private Vector2 nextPositionOffset;
 
-        //move-settings
+        [Header ("Movement Settings")]
+        [Tooltip ("Maximal speed at which the character can move sideways")]
         public float maxSpeed;
+        [Tooltip("Height of jump")]
+        public float jumpHeight;
+        [Tooltip("Rate at which the character stop siedeways movement")]
         [Range(0f,1f)]public float stoppingTimeScale;
+        [Tooltip("Force of gravity")]
+        public float gravity;
 
         private float currentSpeed;
         private bool isMoving = false;
         private bool isJumping = false;
-
-
+        private bool isGrounded = false;
         public float CurrentSpeed { get => currentSpeed; }
         public Vector2 PrevPosition { get => currentPositionOffset; }
         public Vector2 NextPosition { get => nextPositionOffset; }
         public bool IsMoving { get => isMoving; set => isMoving = value; }
         public bool IsJumping { get => isJumping; set => isJumping = value; }
+
+        [Header("Ground Detection")]
+        [Tooltip("Transform of the base of the character")]
+        [SerializeField] private Transform groundDetector;
+        [Tooltip("Length of the ray detecting ground")]
+        public float rayLength;
+
+        private int groundMask = 1 << 3; //this will make raycast collide only with terrain (which is layer number 3)
+        
 
         private void Start()
         {
@@ -39,11 +54,19 @@ namespace noGame.MovementBehaviour
 
         private void Update()
         {
+            nextPositionOffset.y -= gravity * Time.deltaTime;
+            
+
 
             thisCharacterController.Move( nextPositionOffset * Time.deltaTime );
             //transform.position += new Vector3(nextPositionOffset.x,0f,nextPositionOffset.y) * maxSpeed * Time.deltaTime;
             currentPositionOffset = nextPositionOffset;
-
+            if (!isGrounded && Physics.Raycast(groundDetector.position, Vector3.down, rayLength, groundMask))
+            {
+                Debug.Log("RAYCAST HIT");
+                if (nextPositionOffset.y < 0) nextPositionOffset.y = 0.0f;
+                isGrounded = true;
+            }
         }
 
         public void MoveInDirection(float direction) // (left, right)
@@ -51,7 +74,8 @@ namespace noGame.MovementBehaviour
             if( direction != 0 )
             {
                 isMoving = true;
-                nextPositionOffset = Vector2.right * direction * maxSpeed; 
+                //nextPositionOffset = Vector2.right * direction * maxSpeed; // resetuje prêdkoœc spadania
+                nextPositionOffset.x = direction * maxSpeed;
             }
             else
             {
@@ -69,13 +93,16 @@ namespace noGame.MovementBehaviour
 
             }
         }
-        public void Jump( float height)
+
+        public void Jump(/*float height*/)
         {
-             
+            if(isGrounded)
+            {
+                //nextPositionOffset.y += height;
+                float jumpInitialVelocity = Mathf.Sqrt(2 * gravity * jumpHeight);
+                nextPositionOffset.y = jumpInitialVelocity;
+                isGrounded = false;
+            }
         }
-            
-
-
-
     }
 }

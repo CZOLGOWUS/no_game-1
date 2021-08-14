@@ -18,6 +18,7 @@ namespace noGame.MovementBehaviour
 
         //move-settings
         public float maxSpeed;
+        [Range(0f,1f)]public float stoppingTimeScale;
 
         private float currentSpeed;
         private bool isMoving = false;
@@ -33,36 +34,46 @@ namespace noGame.MovementBehaviour
         private void Start()
         {
             thisCharacterController = GetComponent<CharacterController>();
+            //thisCharacterController.Move( new Vector3(1f,0,0) );
         }
 
         private void Update()
         {
-            
-        }
 
-        private void FixedUpdate()
-        {
-            print( thisCharacterController.velocity.x );
-            thisCharacterController.Move( nextPositionOffset );
+            thisCharacterController.Move( nextPositionOffset * Time.deltaTime );
+            //transform.position += new Vector3(nextPositionOffset.x,0f,nextPositionOffset.y) * maxSpeed * Time.deltaTime;
             currentPositionOffset = nextPositionOffset;
+
         }
 
         public void MoveInDirection(float direction) // (left, right)
         {
-            if(direction != 0 && Mathf.Abs(thisCharacterController.velocity.x) <= maxSpeed)
+            if( direction != 0 )
             {
-                nextPositionOffset += Vector2.right * direction * maxSpeed * Time.deltaTime; 
+                isMoving = true;
+                nextPositionOffset = Vector2.right * direction * maxSpeed; 
             }
             else
             {
-                nextPositionOffset.x -= currentPositionOffset.x * 0.1f;
+                isMoving = false;
+                nextPositionOffset.x -= currentPositionOffset.x * (1f - stoppingTimeScale);
             }
         }
 
+        public void HandleRotation(float direction)
+        {
+            if( isMoving )
+            {
+
+                transform.LookAt( transform.forward * direction );
+
+            }
+        }
         public void Jump( float height)
         {
-            
+             
         }
+            
 
 
 

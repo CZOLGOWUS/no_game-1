@@ -188,24 +188,40 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 1194243105687477255, guid: fad84ad08584e2946814af9f41895098, type: 3}
-      propertyPath: m_Simulated
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1194243105687477255, guid: fad84ad08584e2946814af9f41895098, type: 3}
-      propertyPath: m_Constraints
-      value: 4
+      propertyPath: m_BodyType
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1194243105687477255, guid: fad84ad08584e2946814af9f41895098, type: 3}
       propertyPath: m_UseFullKinematicContacts
-      value: 0
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1512543317927530212, guid: fad84ad08584e2946814af9f41895098, type: 3}
+      propertyPath: maxSpeed
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 1512543317927530212, guid: fad84ad08584e2946814af9f41895098, type: 3}
       propertyPath: gravity.y
       value: -9.81
       objectReference: {fileID: 0}
     - target: {fileID: 1512543317927530212, guid: fad84ad08584e2946814af9f41895098, type: 3}
-      propertyPath: stoppingTimeScale
-      value: 0.522
+      propertyPath: groundCheckPointSize
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1512543317927530212, guid: fad84ad08584e2946814af9f41895098, type: 3}
+      propertyPath: terrainLayerMask.m_Bits
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 1512543317927530212, guid: fad84ad08584e2946814af9f41895098, type: 3}
+      propertyPath: groundCheckPointCircle.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1512543317927530212, guid: fad84ad08584e2946814af9f41895098, type: 3}
+      propertyPath: groundCheckPointCircle.y
+      value: -0.82
+      objectReference: {fileID: 0}
+    - target: {fileID: 1512543317927530212, guid: fad84ad08584e2946814af9f41895098, type: 3}
+      propertyPath: originOfCircleCastMover.y
+      value: -0.79
       objectReference: {fileID: 0}
     - target: {fileID: 3522361025129137817, guid: fad84ad08584e2946814af9f41895098, type: 3}
       propertyPath: m_Name
@@ -217,11 +233,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3522361025129137828, guid: fad84ad08584e2946814af9f41895098, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -4.74474
+      value: -7.4
       objectReference: {fileID: 0}
     - target: {fileID: 3522361025129137828, guid: fad84ad08584e2946814af9f41895098, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -3.73
+      value: 0.28
       objectReference: {fileID: 0}
     - target: {fileID: 3522361025129137828, guid: fad84ad08584e2946814af9f41895098, type: 3}
       propertyPath: m_LocalPosition.z
@@ -316,17 +332,33 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 3144256570232277596, guid: 7ce4ff6ebbd7aa14988ce33322968169, type: 3}
+      propertyPath: m_ScreenY
+      value: 0.4460002
+      objectReference: {fileID: 0}
+    - target: {fileID: 3144256570232277596, guid: 7ce4ff6ebbd7aa14988ce33322968169, type: 3}
+      propertyPath: m_DeadZoneWidth
+      value: 0.02149661
+      objectReference: {fileID: 0}
+    - target: {fileID: 3144256570232277596, guid: 7ce4ff6ebbd7aa14988ce33322968169, type: 3}
+      propertyPath: m_DeadZoneHeight
+      value: 0.01682352
+      objectReference: {fileID: 0}
+    - target: {fileID: 3144256570232277596, guid: 7ce4ff6ebbd7aa14988ce33322968169, type: 3}
+      propertyPath: m_SoftZoneHeight
+      value: 0.9244711
+      objectReference: {fileID: 0}
     - target: {fileID: 3144256570988933269, guid: 7ce4ff6ebbd7aa14988ce33322968169, type: 3}
       propertyPath: m_RootOrder
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3144256570988933269, guid: 7ce4ff6ebbd7aa14988ce33322968169, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -3.7999995
+      value: -7.4000006
       objectReference: {fileID: 0}
     - target: {fileID: 3144256570988933269, guid: 7ce4ff6ebbd7aa14988ce33322968169, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -3.514046
+      value: -0.2599981
       objectReference: {fileID: 0}
     - target: {fileID: 3144256570988933269, guid: 7ce4ff6ebbd7aa14988ce33322968169, type: 3}
       propertyPath: m_LocalPosition.z
@@ -364,6 +396,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: MainCamera
       objectReference: {fileID: 0}
+    - target: {fileID: 3144256571413168018, guid: 7ce4ff6ebbd7aa14988ce33322968169, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3144256571413168018, guid: 7ce4ff6ebbd7aa14988ce33322968169, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3144256571413168029, guid: 7ce4ff6ebbd7aa14988ce33322968169, type: 3}
+      propertyPath: m_Follow
+      value: 
+      objectReference: {fileID: 1898675022}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7ce4ff6ebbd7aa14988ce33322968169, type: 3}
 --- !u!1 &553067040
@@ -698,3 +742,8 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 898074d8569b2344c82ee35a84f1587e, type: 3}
+--- !u!4 &1898675022 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 3522361025129137828, guid: fad84ad08584e2946814af9f41895098, type: 3}
+  m_PrefabInstance: {fileID: 135897956}
+  m_PrefabAsset: {fileID: 0}

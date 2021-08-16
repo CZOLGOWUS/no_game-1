@@ -7,13 +7,13 @@ using noGame.MovementBehaviour;
 
 namespace noGame.Character.MonoBehaviours
 {
-    [RequireComponent( typeof( Rigidbody2D ) )]
-    [RequireComponent( typeof( Collider2D ) )]
+    //[RequireComponent( typeof( Rigidbody2D ) )]
+    //[RequireComponent( typeof( Collider2D ) )]
     [RequireComponent( typeof( Movement ) )]
     [RequireComponent( typeof( PlayerInput ) )]
     public class PlayerCharacterController : MonoBehaviour
     {
-        private Rigidbody2D thisRigidBody;
+        //private Rigidbody2D thisRigidBody;
         private Collider2D thisCollider;
         private Movement movement;
 
@@ -30,8 +30,8 @@ namespace noGame.Character.MonoBehaviours
 
         private void Start()
         {
-            thisRigidBody = GetComponent<Rigidbody2D>();
-            thisCollider = GetComponent<Collider2D>();
+            //thisRigidBody = GetComponent<Rigidbody2D>();
+            //thisCollider = GetComponent<Collider2D>();
             movement = GetComponent<Movement>();
         }
 

@@ -20,6 +20,9 @@ namespace noGame.MovementBehaviour
         private Vector2 nextPosition;
         private Vector2 velocity;
 
+        [Header("Character Settings")]
+        [SerializeField] private float heightOfPlayer = 2f;
+
         [Header ("Movement Settings")]
         [Tooltip ("Maximal speed at which the character can move sideways")]
         [SerializeField] private float maxSpeed;
@@ -31,22 +34,30 @@ namespace noGame.MovementBehaviour
 
         [Tooltip("Force of gravity")]
         [SerializeField] private Vector2 gravity;
-        private Vector2 currentGravity;
 
         [Header( "Ground Detection" )]
         [SerializeField] private float distanceOfCircleCast;
         [SerializeField] private float groundCheckCircleSize;
         [SerializeField] private Vector2 originOfCircleCastMover;
 
+        [Space]
+
         [SerializeField] private Vector2 groundCheckPointCircle;
         [SerializeField] private float groundCheckPointSize;
 
+        [Space]
+
+        [SerializeField] private bool smoothGroundedTransition;
+        [SerializeField] private float smoothGroundedTransitionTime;
+
         [SerializeField] private LayerMask terrainLayerMask;
 
-        private RaycastHit2D groundHit;
+
 
 
         //unorginized
+        private RaycastHit2D groundHit;
+        private Vector2 currentGravity;
         private float currentSpeed;
         private bool isMoving = false;
         private bool isJumping = false;
@@ -97,7 +108,7 @@ namespace noGame.MovementBehaviour
 
         private void FixedUpdate()
         {
-            isGrounded = IsGrounded();
+            IsGrounded();
         }
 
         private void Move()
@@ -133,7 +144,7 @@ namespace noGame.MovementBehaviour
         }
 
 
-        public bool IsGrounded()    
+        public void IsGrounded()    
         {
             Vector2 circleCastOrigin = new Vector2( 
                 transform.position.x + originOfCircleCastMover.x ,
@@ -147,17 +158,17 @@ namespace noGame.MovementBehaviour
                 distanceOfCircleCast , 
                 terrainLayerMask);
 
+
             if( groundHit )
             {
                 print( "rayCast hit" );
 
                 GroundedConfirm( groundHit );
 
-                return true;
             }
             else
             {
-                return false;
+                isGrounded = false;
             }
 
 
@@ -187,6 +198,31 @@ namespace noGame.MovementBehaviour
                 {
                     groundHit = hit;
                     isGrounded = true;
+
+                    if(smoothGroundedTransition)
+                    {
+                        transform.position = new Vector3(
+                            transform.position.x ,
+                            groundHit.point.y + heightOfPlayer / 2f ,
+                            transform.position.z
+                            );
+                    }
+                    else
+                    {
+                        transform.position = Vector2.Lerp(
+                            transform.position,
+
+                            new Vector2(
+                                transform.position.x ,
+                                groundHit.point.y + heightOfPlayer / 2f
+                                ),
+
+                            smoothGroundedTransitionTime
+                            );
+                    }
+
+                    break;
+
                 }
             }
 

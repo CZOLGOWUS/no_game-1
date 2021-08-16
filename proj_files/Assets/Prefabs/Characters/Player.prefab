@@ -184,18 +184,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d591496eeee99224795a6552149719e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  heightOfPlayer: 0
-  maxSpeed: 1
+  heightOfPlayer: 2
+  maxSpeed: 10
   jumpHeight: 10
   stoppingTimeScale: 0.522
   gravity: {x: 0, y: -9.81}
-  distanceOfCircleCast: 2
+  distanceOfCircleCast: 20
   groundCheckCircleSize: 0.5
-  originOfCircleCastMover: {x: 0, y: -0.34}
-  groundCheckPointCircle: {x: 0, y: 0}
-  groundCheckPointSize: 0
-  smoothGroundedTransition: 0
-  smoothGroundedTransitionTime: 0
+  originOfCircleCastMover: {x: 0, y: 1.35}
+  groundCheckPointCircle: {x: 0, y: -0.82}
+  groundCheckPointSize: 0.5
+  smoothGroundedTransition: 1
+  smoothGroundedTransitionTime: 1
   terrainLayerMask:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 8

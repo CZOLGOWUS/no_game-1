@@ -14,25 +14,25 @@ namespace noGame.MovementBehaviour
         //dependecies
         private Rigidbody2D thisRigidBody;
         private Collider2D thisCollider;
-        
+
 
         private Vector2 currentPosition;
         private Vector2 nextPosition;
         private Vector2 velocity;
 
-        [Header("Character Settings")]
+        [Header( "Character Settings" )]
         [SerializeField] private float heightOfPlayer = 2f;
 
-        [Header ("Movement Settings")]
-        [Tooltip ("Maximal speed at which the character can move sideways")]
+        [Header( "Movement Settings" )]
+        [Tooltip( "Maximal speed at which the character can move sideways" )]
         [SerializeField] private float maxSpeed;
 
         [SerializeField] private float jumpHeight;
 
-        [Tooltip("Rate at which the character stop siedeways movement")]
-        [Range(0f,1f)] public float stoppingTimeScale;
+        [Tooltip( "Rate at which the character stop siedeways movement" )]
+        [Range( 0f , 1f )] public float stoppingTimeScale;
 
-        [Tooltip("Force of gravity")]
+        [Tooltip( "Force of gravity" )]
         [SerializeField] private Vector2 gravity;
 
         [Header( "Ground Detection" )]
@@ -69,7 +69,7 @@ namespace noGame.MovementBehaviour
         public Vector2 NextPosition { get => nextPosition; }
         public bool IsMoving { get => isMoving; }
         public bool IsJumping { get => isJumping; }
-        
+
 
         private void Start()
         {
@@ -82,21 +82,25 @@ namespace noGame.MovementBehaviour
 
         private void Update()
         {
+            IsGrounded();
+
             HandleGravity();
+
 
             Move();
 
-            
+
         }
 
         private void LateUpdate()
         {
+
             //currentPosition = nextPosition;
         }
 
         private void HandleGravity()
         {
-            if(!isGrounded)
+            if( !isGrounded )
             {
                 currentGravity = gravity;
             }
@@ -108,7 +112,7 @@ namespace noGame.MovementBehaviour
 
         private void FixedUpdate()
         {
-            IsGrounded();
+            print( isGrounded );
         }
 
         private void Move()
@@ -122,7 +126,7 @@ namespace noGame.MovementBehaviour
             velocity = Vector2.zero;
         }
 
-        public void MoveInDirection(float direction) // (left, right)
+        public void MoveInDirection( float direction ) // (left, right)
         {
             if( direction != 0 )
             {
@@ -135,7 +139,7 @@ namespace noGame.MovementBehaviour
             }
         }
 
-        public void HandleRotation(float direction)
+        public void HandleRotation( float direction )
         {
             if( isMoving )
             {
@@ -144,19 +148,19 @@ namespace noGame.MovementBehaviour
         }
 
 
-        public void IsGrounded()    
+        public void IsGrounded()
         {
-            Vector2 circleCastOrigin = new Vector2( 
+            Vector2 circleCastOrigin = new Vector2(
                 transform.position.x + originOfCircleCastMover.x ,
-                transform.position.y + originOfCircleCastMover.y 
+                transform.position.y + originOfCircleCastMover.y
                 );
 
-            groundHit = Physics2D.CircleCast( 
-                circleCastOrigin , 
-                groundCheckCircleSize , 
-                Vector2.down , 
-                distanceOfCircleCast , 
-                terrainLayerMask);
+            groundHit = Physics2D.CircleCast(
+                circleCastOrigin ,
+                groundCheckCircleSize ,
+                Vector2.down ,
+                distanceOfCircleCast ,
+                terrainLayerMask );
 
 
             if( groundHit )
@@ -177,52 +181,69 @@ namespace noGame.MovementBehaviour
         //confirm if the cast and overlapingGroundCheck are the same (for slopes)
         private void GroundedConfirm( RaycastHit2D hit )
         {
-            Vector2 groundCheckPosition = new Vector2( 
+            Vector2 groundCheckPosition = new Vector2(
                 transform.position.x + groundCheckPointCircle.x ,
-                transform.position.y + groundCheckPointCircle.y 
+                transform.position.y + groundCheckPointCircle.y
                 );
 
             Collider2D[] colls = new Collider2D[3];
             int numberOfCollisions = Physics2D.OverlapCircleNonAlloc(
-                groundCheckPosition,
-                groundCheckPointSize,
-                colls,
+                groundCheckPosition ,
+                groundCheckPointSize ,
+                colls ,
                 terrainLayerMask
                 );
 
             isGrounded = false;
 
-            for(int i = 0 ; i < numberOfCollisions ; i++ )
+            for( int i = 0 ; i < numberOfCollisions ; i++ )
             {
-                if(colls[i].transform == hit.transform)
+                if( colls[i].transform == hit.transform )
                 {
                     groundHit = hit;
                     isGrounded = true;
 
-                    if(smoothGroundedTransition)
+                    if( smoothGroundedTransition )
                     {
-                        transform.position = new Vector3(
+                        transform.position = Vector2.Lerp(
+                        transform.position ,
+                        new Vector2(
                             transform.position.x ,
-                            groundHit.point.y + heightOfPlayer / 2f ,
-                            transform.position.z
-                            );
+                            groundHit.point.y + heightOfPlayer / 2f
+                        ) ,
+                        smoothGroundedTransitionTime
+                        );
                     }
                     else
                     {
-                        transform.position = Vector2.Lerp(
-                            transform.position,
 
-                            new Vector2(
-                                transform.position.x ,
-                                groundHit.point.y + heightOfPlayer / 2f
-                                ),
+                        transform.position = new Vector2(
+                        transform.position.x ,
+                        groundHit.point.y + heightOfPlayer / 2f 
+                        );
 
-                            smoothGroundedTransitionTime
-                            );
                     }
 
                     break;
 
+                }
+            }
+
+            if( numberOfCollisions <= 1 && hit.distance <= 0.2f )
+            {
+                if( colls[0] != null )
+                {
+                    RaycastHit2D slopeHit = Physics2D.Raycast(
+                        transform.TransformDirection( originOfCircleCastMover ) ,
+                        Vector2.down ,
+                        terrainLayerMask
+                        );
+
+                    if( slopeHit.transform != colls[0].transform )
+                    {
+                        isGrounded = false;
+                        return;
+                    }
                 }
             }
 
@@ -242,28 +263,28 @@ namespace noGame.MovementBehaviour
 
         private void OnDrawGizmos()
         {
-            Vector2 circleCastOrigin = new Vector2( transform.position.x + originOfCircleCastMover.x , 
-                transform.position.y  + originOfCircleCastMover.y 
+            Vector2 circleCastOrigin = new Vector2( transform.position.x + originOfCircleCastMover.x ,
+                transform.position.y + originOfCircleCastMover.y
                 );
 
-            Vector2 groundCheckPosition = new Vector2( 
-                transform.position.x + groundCheckPointCircle.x , 
-                transform.position.y + groundCheckPointCircle.y 
+            Vector2 groundCheckPosition = new Vector2(
+                transform.position.x + groundCheckPointCircle.x ,
+                transform.position.y + groundCheckPointCircle.y
                 );
 
             Gizmos.color = Color.blue;
 
             Gizmos.DrawSphere( circleCastOrigin , 0.1f );
 
-            RaycastHit2D rayHit = Physics2D.CircleCast( 
-                circleCastOrigin , 
-                groundCheckCircleSize , 
-                Vector2.down , 
-                distanceOfCircleCast , 
+            RaycastHit2D rayHit = Physics2D.CircleCast(
+                circleCastOrigin ,
+                groundCheckCircleSize ,
+                Vector2.down ,
+                distanceOfCircleCast ,
                 terrainLayerMask );
 
 
-            if(rayHit)
+            if( rayHit )
             {
                 Gizmos.DrawWireSphere( rayHit.point , groundCheckCircleSize );
             }
@@ -274,7 +295,7 @@ namespace noGame.MovementBehaviour
 
             Gizmos.color = Color.red;
 
-            Gizmos.DrawWireSphere( groundCheckPosition , groundCheckPointSize);
+            Gizmos.DrawWireSphere( groundCheckPosition , groundCheckPointSize );
 
         }
 

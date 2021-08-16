@@ -3,70 +3,82 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using noGame.Character.MonoBehaviours;
+using System;
 
 namespace noGame.MovementBehaviour
 {
-    [RequireComponent(typeof(CharacterController))]
+    [RequireComponent(typeof(Rigidbody2D))]
+    [RequireComponent(typeof(Collider2D))]
     public class Movement : MonoBehaviour
     {
 
         //dependecies
-        private CharacterController thisCharacterController;
+        private Rigidbody2D thisRigidBody;
+        private Collider2D thisCollider;
         
 
-        private Vector2 currentPositionOffset;
-        private Vector2 nextPositionOffset;
+        private Vector2 currentPosition;
+        private Vector2 nextPosition;
+        private Vector2 velocity = Vector2.zero;
 
         [Header ("Movement Settings")]
         [Tooltip ("Maximal speed at which the character can move sideways")]
         public float maxSpeed;
+
         [Tooltip("Height of jump")]
         public float jumpHeight;
+
         [Tooltip("Rate at which the character stop siedeways movement")]
-        [Range(0f,1f)]public float stoppingTimeScale;
+        [Range(0f,1f)] public float stoppingTimeScale;
+
         [Tooltip("Force of gravity")]
-        public float gravity;
+        public Vector2 gravity;
+
+        [Header( "Ground Detection" )]
+        public Vector2 sizeOfRayBox;
+        public Vector2 distanceOfBoxCast;
+        public LayerMask TerrainLayerMask;
 
         private float currentSpeed;
         private bool isMoving = false;
         private bool isJumping = false;
         private bool isGrounded = false;
+        
         public float CurrentSpeed { get => currentSpeed; }
-        public Vector2 PrevPosition { get => currentPositionOffset; }
-        public Vector2 NextPosition { get => nextPositionOffset; }
+        public Vector2 PrevPosition { get => currentPosition; }
+        public Vector2 NextPosition { get => nextPosition; }
         public bool IsMoving { get => isMoving; set => isMoving = value; }
         public bool IsJumping { get => isJumping; set => isJumping = value; }
-
-        [Header("Ground Detection")]
-        [Tooltip("Transform of the base of the character")]
-        [SerializeField] private Transform groundDetector;
-        [Tooltip("Length of the ray detecting ground")]
-        public float rayLength;
-
-        private int groundMask = 1 << 3; //this will make raycast collide only with terrain (which is layer number 3)
         
 
         private void Start()
         {
-            thisCharacterController = GetComponent<CharacterController>();
-            //thisCharacterController.Move( new Vector3(1f,0,0) );
+            thisRigidBody = GetComponent<Rigidbody2D>();
+            thisCollider = GetComponent<Collider2D>();
+
+            currentPosition = transform.position;
+            nextPosition = currentPosition;
         }
 
         private void Update()
         {
-            nextPositionOffset.y -= gravity * Time.deltaTime;
-            
 
+            nextPosition += 0.5f * gravity * Time.deltaTime;
 
-            thisCharacterController.Move( nextPositionOffset * Time.deltaTime );
-            //transform.position += new Vector3(nextPositionOffset.x,0f,nextPositionOffset.y) * maxSpeed * Time.deltaTime;
-            currentPositionOffset = nextPositionOffset;
-            if (!isGrounded && Physics.Raycast(groundDetector.position, Vector3.down, rayLength, groundMask))
-            {
-                Debug.Log("RAYCAST HIT");
-                if (nextPositionOffset.y < 0) nextPositionOffset.y = 0.0f;
-                isGrounded = true;
-            }
+            Move();
+
+            velocity = nextPosition - currentPosition;
+            currentPosition = nextPosition;
+        }
+
+        private void FixedUpdate()
+        {
+            isGrounded = IsGrounded();
+        }
+
+        private void Move()
+        {
+            thisRigidBody.position = ( nextPosition );
         }
 
         public void MoveInDirection(float direction) // (left, right)
@@ -74,13 +86,12 @@ namespace noGame.MovementBehaviour
             if( direction != 0 )
             {
                 isMoving = true;
-                //nextPositionOffset = Vector2.right * direction * maxSpeed; // resetuje prêdkoœc spadania
-                nextPositionOffset.x = direction * maxSpeed;
+                nextPosition.x += direction * maxSpeed;
             }
             else
             {
                 isMoving = false;
-                nextPositionOffset.x -= currentPositionOffset.x * (1f - stoppingTimeScale);
+                //nextPosition.x -= currentPosition.x; //* (1f - stoppingTimeScale);
             }
         }
 
@@ -94,15 +105,29 @@ namespace noGame.MovementBehaviour
             }
         }
 
-        public void Jump(/*float height*/)
+        public bool IsGrounded()    
         {
-            if(isGrounded)
-            {
-                //nextPositionOffset.y += height;
-                float jumpInitialVelocity = Mathf.Sqrt(2 * gravity * jumpHeight);
-                nextPositionOffset.y = jumpInitialVelocity;
-                isGrounded = false;
-            }
+            Vector2 boxCenter = (Vector2)transform.position - distanceOfBoxCast;
+
+            return Physics2D.OverlapBox(boxCenter,sizeOfRayBox,0f,TerrainLayerMask);
+
+
         }
+
+        public void Jump()
+        {
+            //if(isGrounded)
+            //{
+            //    nextPositionOffset.y += height;
+            //    float jumpInitialVelocity = Mathf.Sqrt(2 * gravity.y * jumpHeight);
+            //    nextPosition.y = jumpInitialVelocity;
+            //}
+        }
+
+        private void OnDrawGizmos()
+        {
+            Gizmos.DrawWireCube( new Vector2(transform.position.x,transform.position.y) - distanceOfBoxCast , sizeOfRayBox );
+        }
+
     }
 }

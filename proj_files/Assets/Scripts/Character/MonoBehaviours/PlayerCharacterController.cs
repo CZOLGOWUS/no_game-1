@@ -7,32 +7,35 @@ using noGame.MovementBehaviour;
 
 namespace noGame.Character.MonoBehaviours
 {
-    [RequireComponent( typeof( CharacterController ) )]
+    [RequireComponent( typeof( Rigidbody2D ) )]
+    [RequireComponent( typeof( Collider2D ) )]
     [RequireComponent( typeof( Movement ) )]
     [RequireComponent( typeof( PlayerInput ) )]
     public class PlayerCharacterController : MonoBehaviour
     {
-        private CharacterController characterController;
+        private Rigidbody2D thisRigidBody;
+        private Collider2D thisCollider;
         private Movement movement;
 
         //movement variables
         private float walkInput; // <-1;1>
         private bool hasPressedJump;
-        private bool isJumpingPressed = false;
+        private bool isJumpPressed = false;
         private bool isMovementPressed = false;
 
-        public CharacterController CharacterController { get => characterController; }
+
         public float WalkInput { get => walkInput; }
         public bool HasPressedJump { get => hasPressedJump; }
         public Movement Movement { get => movement; set => movement = value; }
 
         private void Start()
         {
-            characterController = GetComponent<CharacterController>();
+            thisRigidBody = GetComponent<Rigidbody2D>();
+            thisCollider = GetComponent<Collider2D>();
             movement = GetComponent<Movement>();
         }
 
-        private void FixedUpdate()
+        private void Update()
         {
             movement.MoveInDirection(WalkInput);
         }
@@ -58,13 +61,13 @@ namespace noGame.Character.MonoBehaviours
             if( ctx.performed )
             {
                 hasPressedJump = true;
-                isJumpingPressed = true;
+                isJumpPressed = true;
                 movement.Jump();
             }
 
             if(ctx.canceled)
             {
-                isJumpingPressed = false;
+                isJumpPressed = false;
             }
         }
 

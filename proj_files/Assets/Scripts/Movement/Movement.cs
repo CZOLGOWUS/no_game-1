@@ -129,9 +129,7 @@ namespace noGame.MovementBehaviour
 
         private void Move()
         {
-            Vector3 temp = Vector3.zero;
-            temp.x = velocity.x + currentGravity.x;
-            temp.y = velocity.y + currentGravity.y;
+            Vector3 temp = velocity + currentGravity;
 
             transform.position += transform.TransformDirection( temp ) * Time.deltaTime;
 

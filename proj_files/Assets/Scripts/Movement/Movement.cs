@@ -37,22 +37,23 @@ namespace noGame.MovementBehaviour
 
         [Header( "Ground Detection" )]
         //ray
+        [Tooltip( "Ray for better ground detection and slope handaling" )]
         [SerializeField] private Vector2 originOfGroundRayCast;
         [SerializeField] private float distanceOfRayCast;
 
         [Space]
         //circle sphere overlap
+        [Tooltip("The actual GroundCheck at the bottom of player")]
         [SerializeField] private Vector2 groundCheckPointCircle;
         [SerializeField] private float groundCheckPointSize;
 
         [Space]
 
+        [Tooltip("the smootihing of the Ground snapping")]
         [SerializeField] private bool smoothGroundedTransition;
         [SerializeField] private float smoothGroundedTransitionTime;
 
         [SerializeField] private LayerMask terrainLayerMask;
-
-
 
 
         //unorginized

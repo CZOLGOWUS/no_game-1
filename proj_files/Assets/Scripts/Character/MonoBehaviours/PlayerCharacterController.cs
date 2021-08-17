@@ -42,7 +42,6 @@ namespace noGame.Character.MonoBehaviours
 
         public void OnWalk( InputAction.CallbackContext ctx )
         {
-            print( ctx.ReadValue<float>() );
             walkInput = ctx.ReadValue<float>();
 
             if(ctx.started)

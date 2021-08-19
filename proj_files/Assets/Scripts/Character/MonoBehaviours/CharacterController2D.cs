@@ -36,6 +36,8 @@ namespace noGame.Character.MonoBehaviours
         [Tooltip( "Ray for better ground detection and slope handaling" )]
         [SerializeField] private Vector2 originOfGroundRayCast;
         [SerializeField] private float distanceOfRayCast;
+        [Tooltip( "distance of GroundHitRay, that is used for making sure that we will not levitate above ground if position is not precise" )]
+        [SerializeField] private float groundHitRaySafeDistance = 3.1f;
 
         [Space]
         //circle sphere overlap
@@ -95,7 +97,6 @@ namespace noGame.Character.MonoBehaviours
             Move();
             IsGrounded();
             HandleCollision();
-            HandleCollision();
         }
 
         private void LateUpdate()
@@ -108,7 +109,7 @@ namespace noGame.Character.MonoBehaviours
         {
             if( !isGrounded )
             {
-                currentGravity = gravity;
+                currentGravity += gravity * Time.deltaTime;
             }
             else
             {
@@ -118,7 +119,7 @@ namespace noGame.Character.MonoBehaviours
 
         private void FixedUpdate()
         {
-            print( isGrounded );
+            //print( isGrounded );
         }
 
         private void Move()
@@ -234,7 +235,7 @@ namespace noGame.Character.MonoBehaviours
                 }
             }
 
-            if( numberOfCollisions <= 1 && groundHit.distance <= 0.2f )
+            if( numberOfCollisions <= 1 && groundHit.distance <= groundHitRaySafeDistance )
             {
                 if( colls[0] != null )
                 {
@@ -258,15 +259,23 @@ namespace noGame.Character.MonoBehaviours
         {
 
             Collider2D[] overlapColliders = new Collider2D[4];
-            int numberOfOverlaps = Physics2D.OverlapBoxNonAlloc( (Vector2)transform.position + thisBoxCollider.offset , thisBoxCollider.size / 2f , transform.rotation.eulerAngles.z , overlapColliders , terrainLayerMask );
+
+            int numberOfOverlaps = Physics2D.OverlapBoxNonAlloc( 
+                (Vector2)transform.position + thisBoxCollider.offset ,
+                thisBoxCollider.size / 2f ,
+                transform.rotation.eulerAngles.z ,
+                overlapColliders ,
+                terrainLayerMask 
+                );
+
             for( int i = 0 ; i < numberOfOverlaps ; i++ )
             {
                 Transform tempCollisionTransforms = overlapColliders[i].transform;
                 ColliderDistance2D colliderOverlapInfo = Physics2D.Distance( thisBoxCollider , overlapColliders[i] );
 
-                if( colliderOverlapInfo.isValid )
+                if( thisBoxCollider.IsTouching(overlapColliders[i]) )
                 {
-
+                    print(colliderOverlapInfo.distance);
                 }
             }
 
@@ -274,7 +283,7 @@ namespace noGame.Character.MonoBehaviours
 
         public void Jump()
         {
-            //if(isGrounded)
+            //if(_isGrounded)
             //{
             //    nextPositionOffset.y += height;
             //    float jumpInitialVelocity = Mathf.Sqrt(2 * gravity.y * jumpHeight);

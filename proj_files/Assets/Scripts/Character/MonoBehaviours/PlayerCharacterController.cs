@@ -3,19 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-using noGame.MovementBehaviour;
-
 namespace noGame.Character.MonoBehaviours
 {
-    //[RequireComponent( typeof( Rigidbody2D ) )]
-    //[RequireComponent( typeof( Collider2D ) )]
-    [RequireComponent( typeof( Movement ) )]
+
+    [RequireComponent( typeof( CharacterController2D ) )]
     [RequireComponent( typeof( PlayerInput ) )]
     public class PlayerCharacterController : MonoBehaviour
     {
-        //private Rigidbody2D thisRigidBody;
-        private Collider2D thisCollider;
-        private Movement movement;
+        private CharacterController2D characterController;
 
         //movement variables
         private float walkInput; // <-1;1>
@@ -26,18 +21,18 @@ namespace noGame.Character.MonoBehaviours
 
         public float WalkInput { get => walkInput; }
         public bool HasPressedJump { get => hasPressedJump; }
-        public Movement Movement { get => movement; set => movement = value; }
+        public CharacterController2D Movement { get => characterController; set => characterController = value; }
 
         private void Start()
         {
             //thisRigidBody = GetComponent<Rigidbody2D>();
             //thisCollider = GetComponent<Collider2D>();
-            movement = GetComponent<Movement>();
+            characterController = GetComponent<CharacterController2D>();
         }
 
         private void Update()
         {
-            movement.MoveInDirection(WalkInput);
+            characterController.MoveInDirection(WalkInput);
         }
 
         public void OnWalk( InputAction.CallbackContext ctx )
@@ -61,7 +56,7 @@ namespace noGame.Character.MonoBehaviours
             {
                 hasPressedJump = true;
                 isJumpPressed = true;
-                movement.Jump();
+                characterController.Jump();
             }
 
             if(ctx.canceled)

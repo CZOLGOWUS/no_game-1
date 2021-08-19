@@ -1,6 +1,6 @@
 @startuml
 'https://plantuml.com/sequence-diagra
-
+/'
 interface IDamageable
 {
     public void TakeHit(Weapon weaponType)
@@ -21,28 +21,26 @@ class Weapon extends ScriptableObject
     public int damage
     public float force
 }
+'/
 
-class CharacterController
+class CharacterController2D
 {
-    Unity's CharacterController
-}
-
-class Movement
-{
-    MovementFunctions
+    Movement Functionality
+    Ground Checking
+    Gravity
 }
 
 class PlayerCharacterController
 {
-    CoordinatingPlayers:
-    - movement
-    - Combat
+    CoordinatingPlayer's scripts
+        - Input to Combat/Movement
+        - etc.
 }
 
 'CombatBehaviour -> Weapon
 
 PlayerCharacterController --> PlayerInputComponent
 PlayerCharacterController --> CombatBehaviour
-PlayerCharacterController --> Movement
+PlayerCharacterController --> CharacterController2D
 
 @enduml

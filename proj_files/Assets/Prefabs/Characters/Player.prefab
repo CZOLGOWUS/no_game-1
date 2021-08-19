@@ -189,13 +189,12 @@ MonoBehaviour:
   jumpHeight: 10
   stoppingTimeScale: 0.522
   gravity: {x: 0, y: -9.81}
-  distanceOfCircleCast: 20
-  groundCheckCircleSize: 0.5
-  originOfCircleCastMover: {x: 0, y: 1.35}
-  groundCheckPointCircle: {x: 0, y: -0.82}
-  groundCheckPointSize: 0.5
-  smoothGroundedTransition: 1
-  smoothGroundedTransitionTime: 1
+  originOfGroundRayCast: {x: 0, y: 1.18}
+  distanceOfRayCast: 10
+  groundCheckPointCircle: {x: 0, y: -0.48}
+  groundCheckPointSize: 0.6
+  smoothGroundedTransition: 0
+  smoothGroundedTransitionTime: 0.01
   terrainLayerMask:
     serializedVersion: 2
     m_Bits: 8

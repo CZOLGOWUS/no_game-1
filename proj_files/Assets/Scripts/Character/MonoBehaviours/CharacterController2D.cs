@@ -5,15 +5,11 @@ using UnityEngine;
 using noGame.Character.MonoBehaviours;
 using System;
 
-namespace noGame.MovementBehaviour
+namespace noGame.Character.MonoBehaviours
 {
-    //[RequireComponent(typeof(Rigidbody2D))]
-    public class Movement : MonoBehaviour
-    {
 
-        //dependecies
-        private Rigidbody2D thisRigidBody;
-        private Collider2D thisCollider;
+    public class CharacterController2D : MonoBehaviour
+    {
 
 
         private Vector2 currentPosition;
@@ -48,10 +44,6 @@ namespace noGame.MovementBehaviour
         [SerializeField] private float groundCheckPointSize;
 
         [Space]
-        [Header("Collision Detection")]
-        [SerializeField] private BoxCollider2D collider;
-
-        [Space]
 
         [Tooltip("the smootihing of the Ground snapping")]
         [SerializeField] private bool smoothGroundedTransition;
@@ -59,6 +51,9 @@ namespace noGame.MovementBehaviour
 
         [SerializeField] private LayerMask terrainLayerMask;
 
+        [Space]
+        //Collisions
+        private BoxCollider2D thisBoxCollider;
 
         //unorginized
         private RaycastHit2D groundHit;
@@ -78,8 +73,7 @@ namespace noGame.MovementBehaviour
 
         private void Start()
         {
-            //thisRigidBody = GetComponent<Rigidbody2D>();
-            //thisCollider = GetComponent<Collider2D>();
+            thisBoxCollider = GetComponent<BoxCollider2D>();
 
 
             print( nextPosition );
@@ -100,6 +94,7 @@ namespace noGame.MovementBehaviour
             HandleGravity();
             Move();
             IsGrounded();
+            HandleCollision();
             HandleCollision();
         }
 
@@ -261,16 +256,19 @@ namespace noGame.MovementBehaviour
 
         private void HandleCollision()
         {
-            
-            //Collider2D[] overlaps = new Collider2D[4];
-            //int numberOfOverlaps = Physics2D.OverlapBoxNonAlloc((Vector2)transform.position + collider.offset, collider.size, transform.rotation.eulerAngles.z, overlaps, terrainLayerMask);
-            //for(int i = 0; i<numberOfOverlaps; i++)
-            //{
-            //    Transform tempTransform = overlaps[i].transform;
-            //    Vector2 direction;
-            //    float distance;
-            //    if(Physics.ComputePenetration)
-            //}
+
+            Collider2D[] overlapColliders = new Collider2D[4];
+            int numberOfOverlaps = Physics2D.OverlapBoxNonAlloc( (Vector2)transform.position + thisBoxCollider.offset , thisBoxCollider.size / 2f , transform.rotation.eulerAngles.z , overlapColliders , terrainLayerMask );
+            for( int i = 0 ; i < numberOfOverlaps ; i++ )
+            {
+                Transform tempCollisionTransforms = overlapColliders[i].transform;
+                ColliderDistance2D colliderOverlapInfo = Physics2D.Distance( thisBoxCollider , overlapColliders[i] );
+
+                if( colliderOverlapInfo.isValid )
+                {
+
+                }
+            }
 
         }
 

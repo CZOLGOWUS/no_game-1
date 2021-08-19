@@ -48,6 +48,10 @@ namespace noGame.MovementBehaviour
         [SerializeField] private float groundCheckPointSize;
 
         [Space]
+        [Header("Collision Detection")]
+        [SerializeField] private BoxCollider2D collider;
+
+        [Space]
 
         [Tooltip("the smootihing of the Ground snapping")]
         [SerializeField] private bool smoothGroundedTransition;
@@ -94,14 +98,9 @@ namespace noGame.MovementBehaviour
         private void Update()
         {
             HandleGravity();
-
-
             Move();
-
-
             IsGrounded();
-
-
+            HandleCollision();
         }
 
         private void LateUpdate()
@@ -257,6 +256,21 @@ namespace noGame.MovementBehaviour
                     }
                 }
             }
+
+        }
+
+        private void HandleCollision()
+        {
+            
+            //Collider2D[] overlaps = new Collider2D[4];
+            //int numberOfOverlaps = Physics2D.OverlapBoxNonAlloc((Vector2)transform.position + collider.offset, collider.size, transform.rotation.eulerAngles.z, overlaps, terrainLayerMask);
+            //for(int i = 0; i<numberOfOverlaps; i++)
+            //{
+            //    Transform tempTransform = overlaps[i].transform;
+            //    Vector2 direction;
+            //    float distance;
+            //    if(Physics.ComputePenetration)
+            //}
 
         }
 

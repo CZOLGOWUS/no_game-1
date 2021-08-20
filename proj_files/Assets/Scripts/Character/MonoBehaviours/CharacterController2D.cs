@@ -109,7 +109,8 @@ namespace noGame.Character.MonoBehaviours
         {
             if( !isGrounded )
             {
-                currentGravity += gravity * Time.deltaTime;
+                if(currentGravity.magnitude <= 100f)
+                    currentGravity += gravity * Time.deltaTime;
             }
             else
             {
@@ -119,7 +120,7 @@ namespace noGame.Character.MonoBehaviours
 
         private void FixedUpdate()
         {
-            //print( isGrounded );
+            //print( currentGravity );
         }
 
         private void Move()
@@ -171,7 +172,7 @@ namespace noGame.Character.MonoBehaviours
 
             if( groundHit )
             {
-
+                
                 GroundedConfirm( groundHit );
 
             }
@@ -247,6 +248,7 @@ namespace noGame.Character.MonoBehaviours
 
                     if( slopeHit.transform != colls[0].transform )
                     {
+                        print( "here" );
                         isGrounded = false;
                         return;
                     }
@@ -275,8 +277,8 @@ namespace noGame.Character.MonoBehaviours
 
                 if( colliderOverlapInfo.isValid )
                 {
-                    print(colliderOverlapInfo.distance);
-                    print( colliderOverlapInfo.normal );
+                    //print(colliderOverlapInfo.distance);
+                    //print( colliderOverlapInfo.normal );
                 }
             }
 
@@ -320,6 +322,11 @@ namespace noGame.Character.MonoBehaviours
             Gizmos.color = Color.red;
 
             Gizmos.DrawWireSphere( groundCheckPosition , groundCheckPointSize );
+
+
+            Gizmos.color = Color.green;
+
+            Gizmos.DrawLine( transform.TransformDirection( originOfGroundRayCast ) , Vector2.down*100f );
 
         }
 

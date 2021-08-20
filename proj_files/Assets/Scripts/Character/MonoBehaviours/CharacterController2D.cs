@@ -57,6 +57,9 @@ namespace noGame.Character.MonoBehaviours
         //Collisions
         private BoxCollider2D thisBoxCollider;
 
+
+        private Vector2 nextVelocityVector;
+
         //unorginized
         private RaycastHit2D groundHit;
         private Vector2 currentGravity;
@@ -91,9 +94,13 @@ namespace noGame.Character.MonoBehaviours
         private void Update()
         {
             HandleGravity();
+
             Move();
+
             IsGrounded();
             HandleCollision();
+
+
         }
 
         private void LateUpdate()
@@ -123,7 +130,9 @@ namespace noGame.Character.MonoBehaviours
         private void Move()
         {
             Vector3 temp = velocity + currentGravity;
+
             Debug.Log("Velocity " + temp + "   Grounded: "+isGrounded);
+
             transform.position += transform.TransformDirection( temp ) * Time.deltaTime;
 
             velocity = Vector2.zero;
@@ -245,7 +254,7 @@ namespace noGame.Character.MonoBehaviours
                         terrainLayerMask
                         );
 
-                    Debug.Log((Vector3)originOfGroundRayCast + " --> " + transform.TransformPoint((Vector3)originOfGroundRayCast));
+                    //Debug.Log((Vector3)originOfGroundRayCast + " --> " + transform.TransformPoint((Vector3)originOfGroundRayCast));
 
                     if( slopeHit.transform != colls[0].transform )
                     {
@@ -263,22 +272,24 @@ namespace noGame.Character.MonoBehaviours
             Collider2D[] overlapColliders = new Collider2D[4];
 
             int numberOfOverlaps = Physics2D.OverlapBoxNonAlloc( 
-                (Vector2)transform.position + thisBoxCollider.offset ,
+                new Vector2(transform.position.x,transform.position.y) + thisBoxCollider.offset ,
                 thisBoxCollider.size ,
-                transform.rotation.eulerAngles.z ,
+                0f ,
                 overlapColliders ,
                 terrainLayerMask 
                 );
 
             for( int i = 0 ; i < numberOfOverlaps ; i++ )
             {
-                Transform tempCollisionTransforms = overlapColliders[i].transform;
-                ColliderDistance2D colliderOverlapInfo = thisBoxCollider.Distance( overlapColliders[i] );//Physics2D.Distance( thisBoxCollider , overlapColliders[i] );
+                ColliderDistance2D colliderOverlapInfo = Physics2D.Distance(thisBoxCollider, overlapColliders[i] );
 
-                if( colliderOverlapInfo.isValid )
+                if( colliderOverlapInfo.isOverlapped )
                 {
-                    //print(colliderOverlapInfo.distance);
-                    //print( colliderOverlapInfo.normal );
+                    Vector2 pushVector = colliderOverlapInfo.normal * colliderOverlapInfo.distance;
+                    Debug.Log( pushVector );
+
+                    transform.position += new Vector3(pushVector.x,pushVector.y,0f);
+                    break;
                 }
             }
 
@@ -309,23 +320,18 @@ namespace noGame.Character.MonoBehaviours
             RaycastHit2D rayHit = Physics2D.Raycast( rayCastOrigin , Vector2.down );
 
             Gizmos.color = Color.blue;
-
             Gizmos.DrawSphere( rayCastOrigin , 0.1f );
-
             if ( rayHit )
-            {
                 Gizmos.DrawLine( rayCastOrigin, rayHit.point );
-            }
 
             //Ground checker confirm
             Gizmos.color = Color.red;
-
             Gizmos.DrawWireSphere( groundCheckPosition , groundCheckPointSize );
 
 
             Gizmos.color = Color.green;
-
             Gizmos.DrawLine( transform.TransformPoint( originOfGroundRayCast ), transform.TransformPoint(originOfGroundRayCast)+Vector3.down*5f );
+
 
         }
 

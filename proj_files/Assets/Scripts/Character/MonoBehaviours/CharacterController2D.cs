@@ -262,7 +262,7 @@ namespace noGame.Character.MonoBehaviours
 
             int numberOfOverlaps = Physics2D.OverlapBoxNonAlloc( 
                 (Vector2)transform.position + thisBoxCollider.offset ,
-                thisBoxCollider.size / 2f ,
+                thisBoxCollider.size ,
                 transform.rotation.eulerAngles.z ,
                 overlapColliders ,
                 terrainLayerMask 
@@ -271,11 +271,12 @@ namespace noGame.Character.MonoBehaviours
             for( int i = 0 ; i < numberOfOverlaps ; i++ )
             {
                 Transform tempCollisionTransforms = overlapColliders[i].transform;
-                ColliderDistance2D colliderOverlapInfo = Physics2D.Distance( thisBoxCollider , overlapColliders[i] );
+                ColliderDistance2D colliderOverlapInfo = thisBoxCollider.Distance( overlapColliders[i] );//Physics2D.Distance( thisBoxCollider , overlapColliders[i] );
 
-                if( thisBoxCollider.IsTouching(overlapColliders[i]) )
+                if( colliderOverlapInfo.isValid )
                 {
                     print(colliderOverlapInfo.distance);
+                    print( colliderOverlapInfo.normal );
                 }
             }
 

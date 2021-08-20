@@ -245,6 +245,8 @@ namespace noGame.Character.MonoBehaviours
                         terrainLayerMask
                         );
 
+                    Debug.Log((Vector3)originOfGroundRayCast + " --> " + transform.TransformPoint((Vector3)originOfGroundRayCast));
+
                     if( slopeHit.transform != colls[0].transform )
                     {
                         isGrounded = false;
@@ -309,7 +311,6 @@ namespace noGame.Character.MonoBehaviours
             Gizmos.color = Color.blue;
 
             Gizmos.DrawSphere( rayCastOrigin , 0.1f );
-            Gizmos.DrawSphere(transform.TransformDirection(originOfGroundRayCast), 0.2f);
 
             if ( rayHit )
             {
@@ -324,7 +325,7 @@ namespace noGame.Character.MonoBehaviours
 
             Gizmos.color = Color.green;
 
-            Gizmos.DrawLine( transform.TransformDirection( originOfGroundRayCast ), transform.TransformDirection(originOfGroundRayCast)+Vector3.down*10f );
+            Gizmos.DrawLine( transform.TransformPoint( originOfGroundRayCast ), transform.TransformPoint(originOfGroundRayCast)+Vector3.down*5f );
 
         }
 

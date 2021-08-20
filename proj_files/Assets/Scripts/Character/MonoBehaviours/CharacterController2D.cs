@@ -76,9 +76,6 @@ namespace noGame.Character.MonoBehaviours
         private void Start()
         {
             thisBoxCollider = GetComponent<BoxCollider2D>();
-
-
-            print( nextPosition );
         }
 
         //order of function calls is important!
@@ -126,7 +123,7 @@ namespace noGame.Character.MonoBehaviours
         private void Move()
         {
             Vector3 temp = velocity + currentGravity;
-
+            Debug.Log("Velocity " + temp + "   Grounded: "+isGrounded);
             transform.position += transform.TransformDirection( temp ) * Time.deltaTime;
 
             velocity = Vector2.zero;
@@ -187,6 +184,7 @@ namespace noGame.Character.MonoBehaviours
         //confirm if the cast and overlapingGroundCheck are the same (for slopes)
         private void GroundedConfirm( RaycastHit2D hit )
         {
+            
             Vector2 groundCheckPosition = new Vector2(
                 transform.position.x + groundCheckPointCircle.x ,
                 transform.position.y + groundCheckPointCircle.y
@@ -235,20 +233,20 @@ namespace noGame.Character.MonoBehaviours
 
                 }
             }
-
+            
             if( numberOfCollisions <= 1 && groundHit.distance <= groundHitRaySafeDistance )
             {
                 if( colls[0] != null )
                 {
                     RaycastHit2D slopeHit = Physics2D.Raycast(
-                        transform.TransformDirection( originOfGroundRayCast ) ,
-                        Vector2.down ,
+                        transform.TransformPoint( (Vector3)originOfGroundRayCast ) ,
+                        Vector2.down,
+                        groundHitRaySafeDistance,
                         terrainLayerMask
                         );
 
                     if( slopeHit.transform != colls[0].transform )
                     {
-                        print( "here" );
                         isGrounded = false;
                         return;
                     }
@@ -311,9 +309,9 @@ namespace noGame.Character.MonoBehaviours
             Gizmos.color = Color.blue;
 
             Gizmos.DrawSphere( rayCastOrigin , 0.1f );
+            Gizmos.DrawSphere(transform.TransformDirection(originOfGroundRayCast), 0.2f);
 
-
-            if( rayHit )
+            if ( rayHit )
             {
                 Gizmos.DrawLine( rayCastOrigin, rayHit.point );
             }
@@ -326,7 +324,7 @@ namespace noGame.Character.MonoBehaviours
 
             Gizmos.color = Color.green;
 
-            Gizmos.DrawLine( transform.TransformDirection( originOfGroundRayCast ) , Vector2.down*100f );
+            Gizmos.DrawLine( transform.TransformDirection( originOfGroundRayCast ), transform.TransformDirection(originOfGroundRayCast)+Vector3.down*10f );
 
         }
 

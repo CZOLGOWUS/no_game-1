@@ -11,10 +11,12 @@ namespace noGame.Character.MonoBehaviours
     public class CharacterController2D : MonoBehaviour
     {
 
+        private Rigidbody2D thisRigidBody;
 
         private Vector2 currentPosition;
         private Vector2 nextPosition;
         private Vector2 velocity;
+        private Vector2 vel = Vector2.zero;
 
         [Header( "Character Settings" )]
         [SerializeField] private float heightOfPlayer = 2f;
@@ -55,7 +57,7 @@ namespace noGame.Character.MonoBehaviours
 
         [Space]
         //Collisions
-        private BoxCollider2D thisBoxCollider;
+        private CapsuleCollider2D thisCapsuleCollider;
 
 
         private Vector2 nextVelocityVector;
@@ -68,17 +70,24 @@ namespace noGame.Character.MonoBehaviours
         private bool isJumping = false;
         private bool isGrounded = false;
 
+        //helping vars
+        Vector2 penetrationVector = new Vector2();
+        Vector2 collisionPos = new Vector2();
+
+        Vector2 testA = new Vector2();
+        Vector2 testB = new Vector2();
 
         public float CurrentSpeed { get => currentSpeed; }
         public Vector2 PrevPosition { get => currentPosition; }
         public Vector2 NextPosition { get => nextPosition; }
         public bool IsMoving { get => isMoving; }
         public bool IsJumping { get => isJumping; }
-
+        public float TestX;
 
         private void Start()
         {
-            thisBoxCollider = GetComponent<BoxCollider2D>();
+            thisCapsuleCollider = GetComponent<CapsuleCollider2D>();
+            thisRigidBody = GetComponent<Rigidbody2D>();
         }
 
         //order of function calls is important!
@@ -97,10 +106,8 @@ namespace noGame.Character.MonoBehaviours
 
             Move();
 
-            IsGrounded();
             HandleCollision();
-
-
+            IsGrounded();
         }
 
         private void LateUpdate()
@@ -129,11 +136,13 @@ namespace noGame.Character.MonoBehaviours
 
         private void Move()
         {
-            Vector3 temp = velocity + currentGravity;
+            Vector2 temp = velocity + currentGravity;
 
-            Debug.Log("Velocity " + temp + "   Grounded: "+isGrounded);
+            //Debug.Log("Velocity " + temp + "   Grounded: "+isGrounded);
 
-            transform.position += transform.TransformDirection( temp ) * Time.deltaTime;
+            //transform.position += transform.TransformDirection( temp  ) * Time.deltaTime;
+
+            thisRigidBody.position += temp * Time.deltaTime;
 
             velocity = Vector2.zero;
         }
@@ -219,10 +228,10 @@ namespace noGame.Character.MonoBehaviours
 
                     if( smoothGroundedTransition )
                     {
-                        transform.position = Vector2.Lerp(
-                        transform.position ,
+                        thisRigidBody.position = Vector2.Lerp(
+                        thisRigidBody.position ,
                         new Vector2(
-                            transform.position.x ,
+                            thisRigidBody.position.x ,
                             groundHit.point.y + heightOfPlayer / 2f
                         ) ,
                         smoothGroundedTransitionTime
@@ -231,10 +240,7 @@ namespace noGame.Character.MonoBehaviours
                     else
                     {
 
-                        transform.position = new Vector2(
-                        transform.position.x ,
-                        groundHit.point.y + heightOfPlayer / 2f 
-                        );
+                        thisRigidBody.position = ( new Vector2( thisRigidBody.position.x , groundHit.point.y + heightOfPlayer * 0.5f ));
 
                     }
 
@@ -248,7 +254,7 @@ namespace noGame.Character.MonoBehaviours
                 if( colls[0] != null )
                 {
                     RaycastHit2D slopeHit = Physics2D.Raycast(
-                        transform.TransformPoint( (Vector3)originOfGroundRayCast ) ,
+                        thisRigidBody.position + originOfGroundRayCast ,
                         Vector2.down,
                         groundHitRaySafeDistance,
                         terrainLayerMask
@@ -272,28 +278,37 @@ namespace noGame.Character.MonoBehaviours
             Collider2D[] overlapColliders = new Collider2D[4];
 
             int numberOfOverlaps = Physics2D.OverlapBoxNonAlloc( 
-                new Vector2(transform.position.x,transform.position.y) + thisBoxCollider.offset ,
-                thisBoxCollider.size ,
-                0f ,
+                new Vector2( thisRigidBody.position.x, thisRigidBody.position.y) + thisCapsuleCollider.offset ,
+                thisCapsuleCollider.size ,
+                transform.rotation.z ,
                 overlapColliders ,
                 terrainLayerMask 
                 );
 
             for( int i = 0 ; i < numberOfOverlaps ; i++ )
             {
-                ColliderDistance2D colliderOverlapInfo = Physics2D.Distance(thisBoxCollider, overlapColliders[i] );
-
-                if( colliderOverlapInfo.isOverlapped )
+                if( overlapColliders[i] != thisCapsuleCollider )
                 {
-                    Vector2 pushVector = colliderOverlapInfo.normal * colliderOverlapInfo.distance;
-                    Debug.Log( pushVector );
+                    print( i );
 
-                    transform.position += new Vector3(pushVector.x,pushVector.y,0f);
-                    break;
+
+                    ColliderDistance2D colliderOverlapInfo = Physics2D.Distance( thisCapsuleCollider , overlapColliders[i] );
+
+                    //Debug.Log( "distance in distance" + colliderOverlapInfo.distance );
+                    //Debug.Log("distance in B-A"+ (colliderOverlapInfo.pointB.x - colliderOverlapInfo.pointA.x) );
+
+                    testA = colliderOverlapInfo.pointA;
+                    testB = colliderOverlapInfo.pointB;
+
+
+                    thisRigidBody.position +=  colliderOverlapInfo.normal * colliderOverlapInfo.distance;
                 }
+                
             }
 
         }
+
+
 
         public void Jump()
         {
@@ -304,6 +319,9 @@ namespace noGame.Character.MonoBehaviours
             //    nextPosition.y = jumpInitialVelocity;
             //}
         }
+
+
+
 
         private void OnDrawGizmos()
         {
@@ -333,6 +351,20 @@ namespace noGame.Character.MonoBehaviours
             Gizmos.DrawLine( transform.TransformPoint( originOfGroundRayCast ), transform.TransformPoint(originOfGroundRayCast)+Vector3.down*5f );
 
 
+            //hits on colliders
+            Gizmos.color = Color.magenta;
+            Gizmos.DrawSphere( testA, 0.03f );
+
+
+            //hits on colliders
+            Gizmos.color = Color.green;
+            Gizmos.DrawSphere( testB, 0.03f );
+
+
+            //where player is being "teleported"
+            Gizmos.DrawSphere( collisionPos + penetrationVector , 0.1f );
+
+            Gizmos.DrawLine( collisionPos + penetrationVector , collisionPos );
         }
 
     }

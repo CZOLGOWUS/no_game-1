@@ -129,11 +129,11 @@ namespace noGame.Character.MonoBehaviours
 
         private void Move()
         {
-            Vector3 temp = velocity + currentGravity;
+            Vector3 temp = velocity;
 
-            Debug.Log("Velocity " + temp + "   Grounded: "+isGrounded);
+            Debug.Log("Velocity " + temp + "   Grounded: " + isGrounded);
 
-            transform.position += transform.TransformDirection( temp ) * Time.deltaTime;
+            transform.position += temp * Time.deltaTime + (Vector3)currentGravity;
 
             velocity = Vector2.zero;
         }
@@ -248,7 +248,7 @@ namespace noGame.Character.MonoBehaviours
                 if( colls[0] != null )
                 {
                     RaycastHit2D slopeHit = Physics2D.Raycast(
-                        transform.TransformPoint( (Vector3)originOfGroundRayCast ) ,
+                        (Vector2)transform.position + originOfGroundRayCast ,
                         Vector2.down,
                         groundHitRaySafeDistance,
                         terrainLayerMask
@@ -272,7 +272,7 @@ namespace noGame.Character.MonoBehaviours
             Collider2D[] overlapColliders = new Collider2D[4];
 
             int numberOfOverlaps = Physics2D.OverlapBoxNonAlloc( 
-                new Vector2(transform.position.x,transform.position.y) + thisBoxCollider.offset ,
+                new Vector2(transform.position.x,transform.position.y),
                 thisBoxCollider.size ,
                 0f ,
                 overlapColliders ,
@@ -281,15 +281,13 @@ namespace noGame.Character.MonoBehaviours
 
             for( int i = 0 ; i < numberOfOverlaps ; i++ )
             {
-                ColliderDistance2D colliderOverlapInfo = Physics2D.Distance(thisBoxCollider, overlapColliders[i] );
+                
 
-                if( colliderOverlapInfo.isOverlapped )
+                if(overlapColliders[i] != thisBoxCollider )
                 {
-                    Vector2 pushVector = colliderOverlapInfo.normal * colliderOverlapInfo.distance;
-                    Debug.Log( pushVector );
+                    ColliderDistance2D colliderOverlapInfo = Physics2D.Distance( thisBoxCollider , overlapColliders[i] );
+                    transform.position += (Vector3)(colliderOverlapInfo.distance * colliderOverlapInfo.normal);
 
-                    transform.position += new Vector3(pushVector.x,pushVector.y,0f);
-                    break;
                 }
             }
 

@@ -108,16 +108,15 @@ namespace noGame.Character.MonoBehaviours
 
             print("true velocotiy = " + transform.InverseTransformPoint( nextPosition ) );
 
-
             transform.position += transform.InverseTransformPoint( nextPosition );
 
         }
 
-        private void LateUpdate()
+        private void FixedUpdate()
         {
-
-            //currentPosition = nextPosition;
+            //transform.position += transform.InverseTransformPoint( nextPosition );
         }
+        
 
         private void HandleGravity()
         {
@@ -132,10 +131,6 @@ namespace noGame.Character.MonoBehaviours
             }
         }
 
-        private void FixedUpdate()
-        {
-            //print( currentGravity );
-        }
 
         private void Move()
         {

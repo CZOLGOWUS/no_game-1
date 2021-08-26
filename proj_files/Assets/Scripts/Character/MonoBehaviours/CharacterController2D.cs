@@ -1,342 +1,155 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-using noGame.Character.MonoBehaviours;
-using System;
-
-namespace noGame.Character.MonoBehaviours
+[RequireComponent( typeof( BoxCollider2D ) )]
+public class CharacterController2D : MonoBehaviour
 {
+    struct RaycastOrigins
+    {
+        public Vector2 topLeft, topRight;
+        public Vector2 bottomLeft, bottomRight;
+    }
 
-    public class CharacterController2D : MonoBehaviour
+    public struct CollisionsInfo
+    {
+        public bool top, bottom, left, right;
+
+        public void Reset()
+        {
+            top = bottom = left = right = false;
+        }
+    }
+
+    BoxCollider2D thisCollider;
+    RaycastOrigins raycastOrigins;
+
+    public LayerMask terrainMask;
+
+    public int horizontalRayCount = 4;
+    public int verticalRayCount = 4;
+
+
+    public CollisionsInfo collisions;
+
+    private float horizontalRaySpacing;
+    private float verticalRaySpacing;
+
+    private const float skinWidth = 0.015f;
+
+
+    private void Start()
+    {
+        thisCollider = GetComponent<BoxCollider2D>();
+
+        CalculateRaySpacing();
+    }
+
+
+    internal void Move( Vector3 velocity )
+    {
+        UpdateRaycastOrigins();
+
+        collisions.Reset();
+
+        if( velocity.x != 0 )
+            HorizontalCollisions( ref velocity );
+
+        if( velocity.y != 0 )
+            VerticalCollisions( ref velocity );
+
+        transform.Translate( velocity );
+    }
+
+
+    void HorizontalCollisions( ref Vector3 velocity )
     {
 
-
-        private Vector2 currentPosition;
-        private Vector2 nextPosition;
-        private Vector2 velocity;
-
-        [Header( "Character Settings" )]
-        [SerializeField] private float heightOfPlayer = 2f;
-
-        [Header( "Movement Settings" )]
-        [Tooltip( "Maximal speed at which the character can move sideways" )]
-        [SerializeField] private float maxSpeed;
-
-        [SerializeField] private float jumpHeight;
-
-        [Tooltip( "Rate at which the character stop siedeways movement" )]
-        [Range( 0f , 1f )] public float stoppingTimeScale;
-
-        [Tooltip( "Force of gravity" )]
-        [SerializeField] private Vector2 gravity;
-
-        [Header( "Ground Detection" )]
-        //ray
-        [Tooltip( "Ray for better ground detection and slope handaling" )]
-        [SerializeField] private Vector2 originOfGroundRayCast;
-        [SerializeField] private float distanceOfRayCast;
-        [Tooltip( "distance of GroundHitRay, that is used for making sure that we will not levitate above ground if position is not precise" )]
-        [SerializeField] private float groundHitRaySafeDistance = 3.1f;
-
-        [Space]
-        //circle sphere overlap
-        [Tooltip("The actual GroundCheck at the bottom of player")]
-        [SerializeField] private Vector2 groundCheckPointCircle;
-        [SerializeField] private float groundCheckPointSize;
-
-        [Space]
-
-        [Tooltip("the smootihing of the Ground snapping")]
-        [SerializeField] private bool smoothGroundedTransition;
-        [SerializeField] private float smoothGroundedTransitionTime;
-
-        [SerializeField] private LayerMask terrainLayerMask;
-
-        [Space]
-        //Collisions
-        private BoxCollider2D thisBoxCollider;
+        float directionX = Mathf.Sign( velocity.x );
+        float raycastLength = Mathf.Abs( velocity.x ) + skinWidth;
 
 
-        private Vector2 nextVelocityVector;
-
-        //unorginized
-        private RaycastHit2D groundHit;
-        private Vector2 currentGravity;
-        private float currentSpeed;
-        private bool isMoving = false;
-        private bool isJumping = false;
-        private bool isGrounded = false;
-
-
-        public float CurrentSpeed { get => currentSpeed; }
-        public Vector2 PrevPosition { get => currentPosition; }
-        public Vector2 NextPosition { get => nextPosition; }
-        public bool IsMoving { get => isMoving; }
-        public bool IsJumping { get => isJumping; }
-
-
-        private void Start()
+        for( int i = 0 ; i < horizontalRayCount ; i++ )
         {
-            thisBoxCollider = GetComponent<BoxCollider2D>();
+            Vector2 rayOrigin = (directionX == -1) ? raycastOrigins.bottomLeft : raycastOrigins.bottomRight;
+            rayOrigin += Vector2.up * (horizontalRaySpacing * i);
 
-            nextPosition = transform.position;
-        }
+            RaycastHit2D hit = Physics2D.Raycast( rayOrigin , Vector2.right * directionX , raycastLength , terrainMask );
 
-        //order of function calls is important!
-        /// <summary>
-        /// 1. apply forces taht are always aplied
-        /// 2. apply players movement
-        /// 3. invoke functions that are meant to keep the player where he is suposed to be
-        ///     like:
-        ///         - snapping to the ground
-        ///         - collisons 
-        ///         - etc.
-        /// </summary>
-        private void Update()
-        {
-            HandleGravity();
+            Debug.DrawRay( rayOrigin , Vector2.right * directionX * raycastLength , Color.red );
 
-            print( velocity );
-
-            Move();
-
-
-
-            IsGrounded();
-            HandleCollision();
-
-            print("true velocotiy = " + transform.InverseTransformPoint( nextPosition ) );
-
-            transform.position += transform.InverseTransformPoint( nextPosition );
-
-        }
-
-        private void FixedUpdate()
-        {
-            //transform.position += transform.InverseTransformPoint( nextPosition );
-        }
-        
-
-        private void HandleGravity()
-        {
-            if( !isGrounded )
+            if( hit )
             {
-                if(currentGravity.magnitude <= 100f)
-                    currentGravity += gravity * Time.deltaTime;
-            }
-            else
-            {
-                currentGravity = Vector2.zero;
-            }
-        }
+                velocity.x = (hit.distance - skinWidth) * directionX;
+                raycastLength = hit.distance;
 
-
-        private void Move()
-        {
-            Vector3 temp = velocity;
-
-            //Debug.Log("Velocity " + temp + "   Grounded: " + isGrounded);
-
-            nextPosition += (Vector2)temp * Time.deltaTime + currentGravity;
-
-            velocity = Vector2.zero;
-        }
-
-        public void MoveInDirection( float direction ) // (left, right)
-        {
-            if( direction != 0 )
-            {
-                isMoving = true;
-                velocity.x += direction * maxSpeed;
-            }
-            else
-            {
-                isMoving = false;
-            }
-        }
-
-        public void HandleRotation( float direction )
-        {
-            if( isMoving )
-            {
-                transform.LookAt( transform.forward * direction );
-            }
-        }
-
-
-        public void IsGrounded()
-        {
-            Vector2 RayCastOrigin = new Vector2(
-                nextPosition.x + originOfGroundRayCast.x ,
-                nextPosition.y + originOfGroundRayCast.y
-                );
-
-
-            groundHit = Physics2D.Raycast(
-                RayCastOrigin ,
-                Vector2.down ,
-                distanceOfRayCast ,
-                terrainLayerMask
-                );
-
-
-            if( groundHit )
-            {
-                
-                GroundedConfirm( groundHit );
+                collisions.right = directionX == 1;
+                collisions.left = directionX == -1;
 
             }
-            else
-            {
-                isGrounded = false;
-            }
-
-
-        }
-
-        //confirm if the cast and overlapingGroundCheck are the same (for slopes)
-        private void GroundedConfirm( RaycastHit2D hit )
-        {
-            
-            Vector2 groundCheckPosition = new Vector2(
-                nextPosition.x + groundCheckPointCircle.x ,
-                nextPosition.y + groundCheckPointCircle.y
-                );
-
-            Collider2D[] colls = new Collider2D[3];
-
-            int numberOfCollisions = Physics2D.OverlapCircleNonAlloc(
-                groundCheckPosition ,
-                groundCheckPointSize ,
-                colls ,
-                terrainLayerMask
-                );
-
-            isGrounded = false;
-
-            for( int i = 0 ; i < numberOfCollisions ; i++ )
-            {
-                if( colls[i].transform == hit.transform )
-                {
-                    groundHit = hit;
-                    isGrounded = true;
-
-                    if( smoothGroundedTransition )
-                    {
-                        nextPosition = Vector2.Lerp(
-                        nextPosition ,
-                        new Vector2(
-                            nextPosition.x ,
-                            groundHit.point.y + heightOfPlayer / 2f
-                        ) ,
-                        smoothGroundedTransitionTime
-                        );
-                    }
-                    else
-                    {
-
-                        nextPosition = new Vector2(
-                        nextPosition.x ,
-                        groundHit.point.y + heightOfPlayer / 2f 
-                        );
-
-                    }
-
-                    break;
-
-                }
-            }
-            
-            if( numberOfCollisions <= 1 && groundHit.distance <= groundHitRaySafeDistance )
-            {
-                if( colls[0] != null )
-                {
-                    RaycastHit2D slopeHit = Physics2D.Raycast(
-                        (Vector2)nextPosition + originOfGroundRayCast ,
-                        Vector2.down,
-                        groundHitRaySafeDistance,
-                        terrainLayerMask
-                        );
-
-                    //Debug.Log((Vector3)originOfGroundRayCast + " --> " + transform.TransformPoint((Vector3)originOfGroundRayCast));
-
-                    if( slopeHit.transform != colls[0].transform )
-                    {
-                        isGrounded = false;
-                        return;
-                    }
-                }
-            }
-
-        }
-
-        private void HandleCollision()
-        {
-
-            Collider2D[] overlapColliders = new Collider2D[4];
-
-            int numberOfOverlaps = Physics2D.OverlapBoxNonAlloc( 
-                new Vector2( nextPosition.x, nextPosition.y) + thisBoxCollider.offset ,
-                thisBoxCollider.size ,
-                transform.rotation.z ,
-                overlapColliders ,
-                terrainLayerMask 
-                );
-
-            for( int i = 0 ; i < numberOfOverlaps ; i++ )
-            {
-                
-
-                if(overlapColliders[i] != thisBoxCollider )
-                {
-                    ColliderDistance2D colliderOverlapInfo = Physics2D.Distance( thisBoxCollider , overlapColliders[i] );
-                    nextPosition += (colliderOverlapInfo.distance * colliderOverlapInfo.normal);
-
-                }
-            }
-
-        }
-
-        public void Jump()
-        {
-            //if(_isGrounded)
-            //{
-            //    nextPositionOffset.y += height;
-            //    float jumpInitialVelocity = Mathf.Sqrt(2 * gravity.y * jumpHeight);
-            //    nextPosition.y = jumpInitialVelocity;
-            //}
-        }
-
-        private void OnDrawGizmos()
-        {
-            Vector2 rayCastOrigin = new Vector2( 
-                nextPosition.x + originOfGroundRayCast.x ,
-                nextPosition.y + originOfGroundRayCast.y
-                );
-
-            Vector2 groundCheckPosition = new Vector2(
-                nextPosition.x + groundCheckPointCircle.x ,
-                nextPosition.y + groundCheckPointCircle.y
-                );
-
-            RaycastHit2D rayHit = Physics2D.Raycast( rayCastOrigin , Vector2.down );
-
-            Gizmos.color = Color.blue;
-            Gizmos.DrawSphere( rayCastOrigin , 0.1f );
-            if ( rayHit )
-                Gizmos.DrawLine( rayCastOrigin, rayHit.point );
-
-            //Ground checker confirm
-            Gizmos.color = Color.red;
-            Gizmos.DrawWireSphere( groundCheckPosition , groundCheckPointSize );
-
-
-            Gizmos.color = Color.green;
-            Gizmos.DrawLine( transform.TransformPoint( originOfGroundRayCast ), transform.TransformPoint(originOfGroundRayCast)+Vector3.down*5f );
-
 
         }
 
     }
+
+
+    void VerticalCollisions( ref Vector3 velocity )
+    {
+
+        float directionY = Mathf.Sign( velocity.y );
+        float raycastLength = Mathf.Abs( velocity.y ) + skinWidth;
+
+
+        for( int i = 0 ; i < verticalRayCount ; i++ )
+        {
+            Vector2 rayOrigin = (directionY == -1) ? raycastOrigins.bottomLeft : raycastOrigins.topLeft;
+            rayOrigin += Vector2.right * (verticalRaySpacing * i + velocity.x);
+
+            RaycastHit2D hit = Physics2D.Raycast( rayOrigin , Vector2.up * directionY , raycastLength , terrainMask );
+
+            Debug.DrawRay( rayOrigin , Vector2.up * directionY * raycastLength , Color.red );
+
+            if( hit )
+            {
+                velocity.y = (hit.distance - skinWidth) * directionY;
+                raycastLength = hit.distance;
+
+                collisions.bottom = directionY == -1;
+                collisions.top = directionY == 1;
+
+            }
+
+        }
+
+    }
+
+
+
+
+    private void UpdateRaycastOrigins()
+    {
+        Bounds bounds = thisCollider.bounds;
+        bounds.Expand( skinWidth * -2f );
+
+        raycastOrigins.bottomLeft = new Vector2( bounds.min.x , bounds.min.y );
+        raycastOrigins.bottomRight = new Vector2( bounds.max.x , bounds.min.y );
+        raycastOrigins.topLeft = new Vector2( bounds.min.x , bounds.max.y );
+        raycastOrigins.topRight = new Vector2( bounds.max.x , bounds.max.y );
+    }
+
+
+    private void CalculateRaySpacing()
+    {
+        Bounds bounds = thisCollider.bounds;
+        bounds.Expand( skinWidth * -2f );
+
+        horizontalRayCount = Mathf.Clamp( horizontalRayCount , 2 , int.MaxValue );
+        verticalRayCount = Mathf.Clamp( verticalRayCount , 2 , int.MaxValue );
+
+        horizontalRaySpacing = bounds.size.y / (horizontalRayCount - 1);
+        verticalRaySpacing = bounds.size.x / (verticalRayCount - 1);
+
+    }
+
 }

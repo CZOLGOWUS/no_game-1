@@ -11,9 +11,9 @@ GameObject:
   - component: {fileID: 3522361025129137828}
   - component: {fileID: 3522361025129137819}
   - component: {fileID: 3522361025129137818}
+  - component: {fileID: 8329171120981333470}
+  - component: {fileID: 9092965227570520634}
   - component: {fileID: 2267829080781312220}
-  - component: {fileID: 2118324270423770967}
-  - component: {fileID: 1512543317927530212}
   - component: {fileID: 5243989787523136602}
   m_Layer: 7
   m_Name: Player
@@ -85,6 +85,41 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &8329171120981333470
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3522361025129137817}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d591496eeee99224795a6552149719e4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  terrainMask:
+    serializedVersion: 2
+    m_Bits: 8
+  horizontalRayCount: 4
+  verticalRayCount: 4
+--- !u!114 &9092965227570520634
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3522361025129137817}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c117c789548eac40a29181cefed7fb1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gravity: -10
+  jumpHeight: 4
+  timeToJumpApex: 0.3
+  moveSpeed: 10
+  accelerationTimeAirborn: 0.2
+  accelerationTimeGrounded: 0.2
 --- !u!114 &2267829080781312220
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -112,10 +147,9 @@ MonoBehaviour:
   m_ActionEvents:
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2118324270423770967}
-        m_TargetAssemblyTypeName: noGame.Character.MonoBehaviours.PlayerCharacterController,
-          Assembly-CSharp
-        m_MethodName: OnWalk
+      - m_Target: {fileID: 9092965227570520634}
+        m_TargetAssemblyTypeName: PlayerCharacterController2D, Assembly-CSharp
+        m_MethodName: OnMovement
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -129,9 +163,8 @@ MonoBehaviour:
     m_ActionName: PlayerControls/walk[/Keyboard/a,/Keyboard/d,/XInputControllerWindows/leftStick/left,/XInputControllerWindows/leftStick/right]
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2118324270423770967}
-        m_TargetAssemblyTypeName: noGame.Character.MonoBehaviours.PlayerCharacterController,
-          Assembly-CSharp
+      - m_Target: {fileID: 9092965227570520634}
+        m_TargetAssemblyTypeName: PlayerCharacterController2D, Assembly-CSharp
         m_MethodName: OnJump
         m_Mode: 0
         m_Arguments:
@@ -161,45 +194,6 @@ MonoBehaviour:
   m_DefaultActionMap: PlayerControls
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
---- !u!114 &2118324270423770967
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3522361025129137817}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 14b6e66b736950c4e816cc78e89ff178, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &1512543317927530212
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3522361025129137817}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d591496eeee99224795a6552149719e4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  heightOfPlayer: 2
-  maxSpeed: 10
-  jumpHeight: 10
-  stoppingTimeScale: 0.522
-  gravity: {x: 0, y: -9.81}
-  originOfGroundRayCast: {x: 0, y: 1.18}
-  distanceOfRayCast: 10
-  groundHitRaySafeDistance: 3.1
-  groundCheckPointCircle: {x: 0, y: -0.48}
-  groundCheckPointSize: 0.6
-  smoothGroundedTransition: 0
-  smoothGroundedTransitionTime: 0.01
-  terrainLayerMask:
-    serializedVersion: 2
-    m_Bits: 8
 --- !u!61 &5243989787523136602
 BoxCollider2D:
   m_ObjectHideFlags: 0

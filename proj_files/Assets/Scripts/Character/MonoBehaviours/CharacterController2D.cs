@@ -125,8 +125,6 @@ public class CharacterController2D : MonoBehaviour
     }
 
 
-
-
     private void UpdateRaycastOrigins()
     {
         Bounds bounds = thisCollider.bounds;

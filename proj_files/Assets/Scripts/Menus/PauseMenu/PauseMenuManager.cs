@@ -26,6 +26,8 @@ namespace noGame.UIControl
 
         public void Resume()
         {
+            print( "click" );
+
             isGamePaused = false;
 
             optionsMenuPanel.SetActive( false );
@@ -34,9 +36,9 @@ namespace noGame.UIControl
             Time.timeScale = 1f;
         }
 
-        public void MenuToggle( InputAction.CallbackContext value )
+        public void MenuToggle( InputAction.CallbackContext ctx )
         {
-            if( value.performed )
+            if( ctx.performed )
                 if( isGamePaused )
                 {
                     Resume();

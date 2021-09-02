@@ -29,10 +29,11 @@ public class PlayerCharacterController2D : MonoBehaviour
     private bool isJumping = false;
 
     private float movementInput;
-    private bool jumpInput = false; //button
+    private bool isJumpPressed = false; //button
 
     private Vector3 nextVelocity;
     private bool isFalling;
+    private float maxCharacterPositionOffset = 100f;
 
     //for jump to work as intended for now
     private float tempVar = 1.52f;
@@ -63,6 +64,7 @@ public class PlayerCharacterController2D : MonoBehaviour
     }
 
 
+
     private void FixedUpdate()
     {
 
@@ -87,7 +89,14 @@ public class PlayerCharacterController2D : MonoBehaviour
         float targetVelocityX = movementInput * moveSpeed;
         float accelerationTime = (thisCharacterController.collisions.bottom) ? accelerationTimeGrounded : accelerationTimeAirborn;
 
-        nextVelocity.x = Mathf.SmoothDamp( nextVelocity.x , targetVelocityX , ref velocityXSmooth , accelerationTime );
+        if(!(thisCharacterController.collisions.right || thisCharacterController.collisions.left))
+        {
+            nextVelocity.x = Mathf.SmoothDamp( nextVelocity.x , targetVelocityX , ref velocityXSmooth , accelerationTime ); 
+        }
+        else
+        {
+            nextVelocity.x = Mathf.SmoothDamp( 0f , targetVelocityX , ref velocityXSmooth , accelerationTime ); 
+        }
     }
 
 
@@ -95,17 +104,17 @@ public class PlayerCharacterController2D : MonoBehaviour
     {
         isFalling = nextVelocity.y <= 0f;
 
-        if( !isFalling )
+        if( !isFalling && isJumpPressed )
         {
             float prevYVelocity = nextVelocity.y;
-            float newYVelocity = nextVelocity.y + (gravity * Time.deltaTime);
-            float nextYVelocity = (prevYVelocity + newYVelocity) * 0.5f;
+            float newYVelocity = nextVelocity.y + (gravity * Time.fixedDeltaTime);
+            float nextYVelocity = Mathf.Clamp((prevYVelocity + newYVelocity) * 0.5f, maxCharacterPositionOffset , maxCharacterPositionOffset );
             nextVelocity.y = nextYVelocity;
         }
         else
         {
             float prevYVelocity = nextVelocity.y;
-            float newYVelocity = nextVelocity.y + (gravity * fallGravityMultiplier * Time.deltaTime);
+            float newYVelocity = nextVelocity.y + (gravity * fallGravityMultiplier * Time.fixedDeltaTime);
             float nextYVelocity = (prevYVelocity + newYVelocity) * 0.5f;
             nextVelocity.y = nextYVelocity;
         }
@@ -115,7 +124,7 @@ public class PlayerCharacterController2D : MonoBehaviour
 
     private void HandleJumping()
     {
-        if(!isJumping && jumpInput && thisCharacterController.collisions.bottom )
+        if(!isJumping && isJumpPressed && thisCharacterController.collisions.bottom )
         {
             isJumping = true;
 
@@ -124,7 +133,7 @@ public class PlayerCharacterController2D : MonoBehaviour
             nextVelocity.y = (prevYVelocity + newYVelocity) * 0.5f;
 
         } 
-        else if(isJumping && !jumpInput && thisCharacterController.collisions.bottom)
+        else if(isJumping && !isJumpPressed && thisCharacterController.collisions.bottom)
         {
             isJumping = false;
         }
@@ -141,13 +150,13 @@ public class PlayerCharacterController2D : MonoBehaviour
     {
         if( ctx.performed || ctx.started )
         {
-            jumpInput = true;
+            isJumpPressed = true;
         }
         else if( ctx.canceled )
         {
-            jumpInput = false;
+            isJumpPressed = false;
         }
-        print( jumpInput );
+        print( isJumpPressed );
     }
 
 }

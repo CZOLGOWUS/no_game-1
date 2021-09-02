@@ -297,11 +297,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9092965227570520634, guid: fad84ad08584e2946814af9f41895098, type: 3}
       propertyPath: accelerationTimeAirborn
-      value: 0.35
+      value: 0.04
       objectReference: {fileID: 0}
     - target: {fileID: 9092965227570520634, guid: fad84ad08584e2946814af9f41895098, type: 3}
       propertyPath: accelerationTimeGrounded
-      value: 0.1
+      value: 0.04
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fad84ad08584e2946814af9f41895098, type: 3}

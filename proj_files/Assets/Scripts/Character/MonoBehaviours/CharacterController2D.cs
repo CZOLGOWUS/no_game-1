@@ -31,11 +31,11 @@ public class CharacterController2D : MonoBehaviour
     public int verticalRayCount = 4;
 
 
+    [HideInInspector] public bool isGrounded;
     public CollisionsInfo collisions;
 
     private float horizontalRaySpacing;
     private float verticalRaySpacing;
-
     private const float skinWidth = 0.015f;
 
 
@@ -116,6 +116,8 @@ public class CharacterController2D : MonoBehaviour
                 raycastLength = hit.distance;
 
                 collisions.bottom = directionY == -1;
+                isGrounded = directionY == -1;
+
                 collisions.top = directionY == 1;
 
             }

@@ -241,7 +241,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3522361025129137828, guid: fad84ad08584e2946814af9f41895098, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -23.19
+      value: -19.926
       objectReference: {fileID: 0}
     - target: {fileID: 3522361025129137828, guid: fad84ad08584e2946814af9f41895098, type: 3}
       propertyPath: m_LocalPosition.y
@@ -281,11 +281,35 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5243989787523136602, guid: fad84ad08584e2946814af9f41895098, type: 3}
       propertyPath: m_Size.y
-      value: 1.9951808
+      value: 1.995181
       objectReference: {fileID: 0}
     - target: {fileID: 5243989787523136602, guid: fad84ad08584e2946814af9f41895098, type: 3}
       propertyPath: m_Offset.y
-      value: 0.0024095476
+      value: 0.0024095178
+      objectReference: {fileID: 0}
+    - target: {fileID: 8329171120981333470, guid: fad84ad08584e2946814af9f41895098, type: 3}
+      propertyPath: distanceOfRayCast
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8329171120981333470, guid: fad84ad08584e2946814af9f41895098, type: 3}
+      propertyPath: groundCheckPointSize
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8329171120981333470, guid: fad84ad08584e2946814af9f41895098, type: 3}
+      propertyPath: originOfGroundRayCast.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8329171120981333470, guid: fad84ad08584e2946814af9f41895098, type: 3}
+      propertyPath: originOfGroundRayCast.y
+      value: -0.94
+      objectReference: {fileID: 0}
+    - target: {fileID: 8329171120981333470, guid: fad84ad08584e2946814af9f41895098, type: 3}
+      propertyPath: terrainLayerMask.m_Bits
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 8329171120981333470, guid: fad84ad08584e2946814af9f41895098, type: 3}
+      propertyPath: groundCheckPointCircle.y
+      value: -0.49
       objectReference: {fileID: 0}
     - target: {fileID: 9092965227570520634, guid: fad84ad08584e2946814af9f41895098, type: 3}
       propertyPath: tempVar
@@ -293,7 +317,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9092965227570520634, guid: fad84ad08584e2946814af9f41895098, type: 3}
       propertyPath: jumpHeight
-      value: 0.5
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 9092965227570520634, guid: fad84ad08584e2946814af9f41895098, type: 3}
       propertyPath: accelerationTimeAirborn
@@ -698,7 +722,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3144256570988933269, guid: 7ce4ff6ebbd7aa14988ce33322968169, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -23.19
+      value: -19.926
       objectReference: {fileID: 0}
     - target: {fileID: 3144256570988933269, guid: 7ce4ff6ebbd7aa14988ce33322968169, type: 3}
       propertyPath: m_LocalPosition.y

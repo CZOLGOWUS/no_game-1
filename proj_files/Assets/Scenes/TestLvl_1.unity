@@ -293,7 +293,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9092965227570520634, guid: fad84ad08584e2946814af9f41895098, type: 3}
       propertyPath: jumpHeight
-      value: 4
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 9092965227570520634, guid: fad84ad08584e2946814af9f41895098, type: 3}
       propertyPath: accelerationTimeAirborn

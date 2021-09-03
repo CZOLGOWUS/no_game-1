@@ -108,7 +108,7 @@ public class PlayerCharacterController2D : MonoBehaviour
         {
             float prevYVelocity = nextVelocity.y;
             float newYVelocity = nextVelocity.y + (gravity * Time.fixedDeltaTime);
-            float nextYVelocity = Mathf.Clamp((prevYVelocity + newYVelocity) * 0.5f, maxCharacterPositionOffset , maxCharacterPositionOffset );
+            float nextYVelocity = Mathf.Clamp((prevYVelocity + newYVelocity) * 0.5f, -maxCharacterPositionOffset , maxCharacterPositionOffset );
             nextVelocity.y = nextYVelocity;
         }
         else

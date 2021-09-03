@@ -148,9 +148,25 @@ public class CharacterController2D : MonoBehaviour
                 isGrounded = directionY == -1;
 
                 collisions.top = directionY == 1;
-
             }
+        }
 
+        //checking for new slope
+        if (collisions.climbingSlope)
+        {
+            float directionX = Mathf.Sign(velocity.x);
+            raycastLength = Mathf.Abs(velocity.x) + skinWidth;
+            Vector2 rayOrigin = ((directionX == -1) ? raycastOrigins.bottomLeft : raycastOrigins.bottomRight) + Vector2.up * velocity.y;
+            RaycastHit2D hit = Physics2D.Raycast(rayOrigin, Vector2.right * directionX, raycastLength, terrainMask);
+            if(hit)
+            {
+                float slopeAngle = Vector2.Angle(hit.normal, Vector2.up);
+                if(slopeAngle!=collisions.slopeAngle)
+                {
+                    velocity.x = (hit.distance - skinWidth) * directionX;
+                    collisions.slopeAngle = slopeAngle;
+                }
+            }
         }
 
     }

@@ -31,18 +31,19 @@ public class CharacterController2D : MonoBehaviour
 
     public LayerMask terrainMask;
 
-    public int horizontalRayCount = 4;
-    public int verticalRayCount = 4;
+    [SerializeField] private int horizontalRayCount = 4;
+    [SerializeField] private int verticalRayCount = 4;
 
+    [SerializeField] private float maxClimbAngle = 70.0f;
 
     [HideInInspector] public bool isGrounded;
     public CollisionsInfo collisions;
 
     private float horizontalRaySpacing;
     private float verticalRaySpacing;
-    private float maxClimbAngle = 70.0f;
     private const float skinWidth = 0.015f;
 
+    public float MaxClimbAngle { get => maxClimbAngle; }
 
     private void Start()
     {

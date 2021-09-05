@@ -89,7 +89,8 @@ public class PlayerCharacterController2D : MonoBehaviour
         float targetVelocityX = movementInput * moveSpeed;
         float accelerationTime = (thisCharacterController.collisions.bottom) ? accelerationTimeGrounded : accelerationTimeAirborn;
 
-        if(!(thisCharacterController.collisions.right || thisCharacterController.collisions.left))
+        //if collides with a wall (aka head on collision) then kill momentum
+        if( thisCharacterController.collisions.slopeAngle <= thisCharacterController.MaxClimbAngle ) 
         {
             nextVelocity.x = Mathf.SmoothDamp( nextVelocity.x , targetVelocityX , ref velocityXSmooth , accelerationTime ); 
         }

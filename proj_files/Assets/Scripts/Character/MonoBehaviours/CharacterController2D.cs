@@ -16,11 +16,12 @@ public class CharacterController2D : MonoBehaviour
     {
         public bool top, bottom, left, right;
         public bool climbingSlope;
+        public bool descendingSlope;
         public float slopeAngle, previousSlopeAngle;
 
         public void Reset()
         {
-            top = bottom = left = right = climbingSlope = false;
+            top = bottom = left = right = climbingSlope = descendingSlope = false;
             previousSlopeAngle = slopeAngle;
             slopeAngle = 0;
         }
@@ -31,13 +32,20 @@ public class CharacterController2D : MonoBehaviour
 
     public LayerMask terrainMask;
 
+    [Space] [Header("Ray Options")]
     [SerializeField] private int horizontalRayCount = 4;
     [SerializeField] private int verticalRayCount = 4;
 
+    [Space] [Header("Slope Options")]
     [SerializeField] private float maxClimbAngle = 70.0f;
+    [SerializeField] private float maxDescendAngle = 70.0f;
 
     [HideInInspector] public bool isGrounded;
     public CollisionsInfo collisions;
+
+
+    private Vector3 oldVelocity;
+
 
     private float horizontalRaySpacing;
     private float verticalRaySpacing;
@@ -59,17 +67,22 @@ public class CharacterController2D : MonoBehaviour
 
         collisions.Reset();
 
-        if( velocity.x != 0 )
+        oldVelocity = velocity;
+
+        if(velocity.y < 0f)
+            DescendSlope( ref velocity );
+
+        if( velocity.x != 0f )
             HorizontalCollisions( ref velocity );
 
-        if( velocity.y != 0 )
+        if( velocity.y != 0f )
             VerticalCollisions( ref velocity );
 
         transform.Translate( velocity );
     }
 
 
-    void HorizontalCollisions( ref Vector3 velocity )
+    private void HorizontalCollisions( ref Vector3 velocity )
     {
         float directionX = Mathf.Sign( velocity.x );
         float raycastLength = Mathf.Abs( velocity.x ) + skinWidth;
@@ -89,6 +102,14 @@ public class CharacterController2D : MonoBehaviour
                 float slopeAngle = Vector2.Angle(hit.normal, Vector2.up);
                 if (i == 0 && slopeAngle <= maxClimbAngle)
                 {
+
+                    //if descending almost vertical slope character slows down at the transition moment , this if fixes it
+                    if(collisions.descendingSlope)
+                    {
+                        collisions.descendingSlope = false;
+                        velocity = oldVelocity;
+                    }
+
                     float distanceToSlope = 0;
                     if(slopeAngle != collisions.previousSlopeAngle)
                     {
@@ -119,7 +140,7 @@ public class CharacterController2D : MonoBehaviour
     }
 
 
-    void VerticalCollisions( ref Vector3 velocity )
+    private void VerticalCollisions( ref Vector3 velocity )
     {
 
         float directionY = Mathf.Sign( velocity.y );
@@ -150,6 +171,27 @@ public class CharacterController2D : MonoBehaviour
 
                 collisions.top = directionY == 1;
             }
+
+            //check if changing from slope to slope for smooth transition (might be  a good place to fix those 2 bugs - dont know yet)
+            if(collisions.climbingSlope)
+            {
+                float directionX = Mathf.Sign( velocity.x );
+                raycastLength = Mathf.Abs( velocity.x ) + skinWidth;
+                Vector2 newRayOrigin = ((directionX == -1) ? raycastOrigins.bottomLeft : raycastOrigins.bottomRight) + Vector2.up * velocity.y;
+                RaycastHit2D slopeHit = Physics2D.Raycast( newRayOrigin , Vector2.right * directionX , raycastLength , terrainMask );
+
+                if( slopeHit )
+                {
+                    float slopeAngle = Vector2.Angle( slopeHit.normal , Vector2.up );
+                    if( slopeAngle  != collisions.slopeAngle)
+                    {
+                        velocity.x = (slopeHit.distance - skinWidth) * directionX;
+                        collisions.slopeAngle = slopeAngle;
+                    }
+                }
+
+            }
+
         }
 
         //checking for new slope
@@ -172,7 +214,7 @@ public class CharacterController2D : MonoBehaviour
 
     }
 
-    void ClimbSlope(ref Vector3 velocity, float slopeAngle)
+    private void ClimbSlope(ref Vector3 velocity, float slopeAngle)
     {
         float moveDistance = Mathf.Abs(velocity.x);
         float climbVelocityY = Mathf.Sin(slopeAngle * Mathf.Deg2Rad) * moveDistance;
@@ -186,6 +228,38 @@ public class CharacterController2D : MonoBehaviour
         }
         
     }
+
+
+    private void DescendSlope(ref Vector3 velocity)
+    {
+        float directionX = Mathf.Sign( velocity.x );
+        Vector2 rayOrigin = (directionX == -1) ? raycastOrigins.bottomRight : raycastOrigins.bottomLeft;
+        RaycastHit2D hit = Physics2D.Raycast(rayOrigin, Vector2.down, Mathf.Infinity,terrainMask);
+
+        if(hit)
+        {
+            float slopeAngle = Vector2.Angle( hit.normal , Vector2.up );
+            if(slopeAngle != 0f && slopeAngle <= maxDescendAngle)
+            {
+                if(Mathf.Sign(hit.normal.x) == directionX)
+                {
+                    if( hit.distance - skinWidth <= Mathf.Tan( slopeAngle * Mathf.Deg2Rad ) * Mathf.Abs( velocity.x ))
+                    {
+                        float moveDistance = Mathf.Abs( velocity.x );
+                        float descendVelocityY = Mathf.Sin( slopeAngle * Mathf.Deg2Rad ) * moveDistance;
+                        velocity.x = Mathf.Cos( slopeAngle * Mathf.Deg2Rad ) * moveDistance * Mathf.Sign( velocity.x );
+                        velocity.y -= descendVelocityY;
+
+                        collisions.slopeAngle = slopeAngle;
+                        collisions.descendingSlope = true;
+                        collisions.bottom = true;
+                    }
+                }
+            }
+        }
+
+    }
+
 
     private void UpdateRaycastOrigins()
     {

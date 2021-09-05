@@ -157,7 +157,6 @@ public class PlayerCharacterController2D : MonoBehaviour
         {
             isJumpPressed = false;
         }
-        print( isJumpPressed );
     }
 
 }

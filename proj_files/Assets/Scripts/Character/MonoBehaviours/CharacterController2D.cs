@@ -120,7 +120,7 @@ public class CharacterController2D : MonoBehaviour
                     velocity.x += distanceToSlope * directionX;
                 }
 
-                if(!collisions.climbingSlope || collisions.slopeAngle > maxClimbAngle)
+                if(!collisions.climbingSlope || slopeAngle > maxClimbAngle)
                 {
                     velocity.x = (hit.distance - skinWidth) * directionX;
                     raycastLength = hit.distance;

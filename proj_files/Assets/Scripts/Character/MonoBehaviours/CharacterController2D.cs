@@ -22,7 +22,7 @@ public class CharacterController2D : RaycastController
         base.Start();
     }
 
-    internal void Move( Vector3 velocity )
+    internal void Move( Vector3 velocity , bool isOnPlatform = false)
     {
         UpdateRaycastOrigins();
 
@@ -40,6 +40,12 @@ public class CharacterController2D : RaycastController
             VerticalCollisions( ref velocity );
 
         transform.Translate( velocity );
+
+        if(isOnPlatform)
+        {
+            collisions.bottom = true;
+            isGrounded = true;
+        }
     }
 
 
@@ -60,6 +66,12 @@ public class CharacterController2D : RaycastController
 
             if( hit )
             {
+                //i think the bug with going inside the platform is because of this
+                if(hit.distance == 0f)
+                {
+                    continue;
+                }
+
                 float slopeAngle = Vector2.Angle(hit.normal, Vector2.up);
                 if (i == 0 && slopeAngle <= maxClimbAngle)
                 {

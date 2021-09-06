@@ -4,6 +4,27 @@ using UnityEngine;
 
 public class PlatformController : RaycastController
 {
+    private struct PassengerMovement
+    {
+        public Transform transform;
+        public Vector3 velocity;
+        public bool isOnPlatform;
+        public bool moveBeforePlatform;
+
+        public PassengerMovement( Transform transform , Vector3 velocity , bool isOnPlatform , bool moveBeforePlatform)
+        {
+            this.transform = transform;
+            this.velocity = velocity;
+            this.isOnPlatform = isOnPlatform;
+            this.moveBeforePlatform = moveBeforePlatform;
+        }
+
+    }
+
+    private List<PassengerMovement> passengerMovements = new List<PassengerMovement>();
+
+    private Dictionary<Transform , CharacterController2D> passangerDictionary = new Dictionary<Transform , CharacterController2D>();
+
     public Vector3 move;
 
 
@@ -29,18 +50,43 @@ public class PlatformController : RaycastController
 
         velocity = move * Time.deltaTime;
 
-        MovePassengers( velocity );
+        CalculatePassangersDisplacment( velocity );
+        MovePassengers( true );
+
         transform.Translate( velocity );
         
+        MovePassengers( false );
+
+        passengerMovements.Clear();
+
     }
 
-    private void MovePassengers(Vector3 velocity)
+
+    private void MovePassengers(bool beforeMovePlatform)
+    {
+        foreach(PassengerMovement passenger in passengerMovements)
+        {
+            if(!passangerDictionary.ContainsKey(passenger.transform))
+            {
+                passangerDictionary.Add( passenger.transform , passenger.transform.GetComponent<CharacterController2D>() );
+            }
+
+            if(passenger.moveBeforePlatform == beforeMovePlatform)
+            {
+                passangerDictionary[passenger.transform].Move( passenger.velocity ,passenger.isOnPlatform);
+            }
+        }
+    }
+
+
+    private void CalculatePassangersDisplacment(Vector3 velocity)
     {
 
 
         float directionX = Mathf.Sign( velocity.x );
         float directionY = Mathf.Sign( velocity.y );
-
+        
+        //vertical moving handling
         if( velocity.y != 0 )
         {
             float raycastLength = Mathf.Abs( velocity.y ) + skinWidth;
@@ -65,7 +111,12 @@ public class PlatformController : RaycastController
                         float pushX = (directionY == 1) ? velocity.x : 0f;
                         float pushY = velocity.y - (hit.distance - skinWidth) * directionY;
 
-                        hit.transform.Translate( new Vector3( pushX , pushY ) ); 
+                        passengerMovements.Add( new PassengerMovement(
+                                                    hit.transform,
+                                                    new Vector3(pushX,pushY),
+                                                    directionY == 1,
+                                                    true
+                                                 ));
                     }
 
                 }
@@ -74,7 +125,7 @@ public class PlatformController : RaycastController
             movedPassangers.Clear();
         }
 
-
+        //horizontal moving handling
         if(velocity.x != 0)
         {
 
@@ -97,9 +148,14 @@ public class PlatformController : RaycastController
                         movedPassangers.Add( hit.transform );
 
                         float pushX = velocity.x - (hit.distance - skinWidth) * directionX;
-                        float pushY = 0f;
+                        float pushY = -skinWidth;
 
-                        hit.transform.Translate( new Vector3( pushX , pushY ) );
+                        passengerMovements.Add( new PassengerMovement(
+                                                    hit.transform ,
+                                                    new Vector3( pushX , pushY ) ,
+                                                    false ,
+                                                    true
+                                                 ));
                     }
 
                 }
@@ -134,7 +190,12 @@ public class PlatformController : RaycastController
                         float pushX = velocity.x;
                         float pushY = velocity.y;
 
-                        hit.transform.Translate( new Vector3( pushX , pushY ) );
+                        passengerMovements.Add( new PassengerMovement(
+                                                    hit.transform ,
+                                                    new Vector3( pushX , pushY ) ,
+                                                    true ,
+                                                    false
+                                                 ));
                     }
 
                 }
@@ -142,6 +203,7 @@ public class PlatformController : RaycastController
             }
             movedPassangers.Clear();
         }
+
 
     }
 

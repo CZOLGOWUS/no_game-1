@@ -3380,7 +3380,14 @@ MonoBehaviour:
   terrainMask:
     serializedVersion: 2
     m_Bits: 0
-  move: {x: 0, y: 0, z: 0}
+  isCyclic: 1
+  easeSpeed: 0.361
+  waitTime: 0.1
+  speed: 2
+  localWaypoints:
+  - {x: -0.71, y: 0, z: 0}
+  - {x: -0.76, y: 2.67, z: 0}
+  - {x: 1.5, y: 6.29, z: 0}
   passengerMask:
     serializedVersion: 2
     m_Bits: 128

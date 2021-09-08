@@ -107,10 +107,6 @@ public class PlayerCharacterController2D : MonoBehaviour
 
         #endregion
 
-        if( thisCharacterController.collisions.top || thisCharacterController.collisions.bottom )
-        {
-            velocity.y = 0f;
-        }
 
 
         HandleGravity();
@@ -118,6 +114,10 @@ public class PlayerCharacterController2D : MonoBehaviour
 
         thisCharacterController.Move( velocity * Time.fixedDeltaTime );
 
+        if( thisCharacterController.collisions.top || thisCharacterController.collisions.bottom )
+        {
+            velocity.y = 0f;
+        }
 
     }
 

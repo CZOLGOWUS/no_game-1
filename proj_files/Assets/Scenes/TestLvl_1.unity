@@ -1481,7 +1481,7 @@ GameObject:
   - component: {fileID: 484533266}
   m_Layer: 3
   m_Name: Cube (23)
-  m_TagString: Untagged
+  m_TagString: PhaseUpward
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

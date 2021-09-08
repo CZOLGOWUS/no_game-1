@@ -17,6 +17,8 @@ public class CharacterController2D : RaycastController
     public float MaxClimbAngle { get => maxClimbAngle; }
 
 
+    [SerializeField] private bool isWallslidingWithNoXMovment = true;
+
     public override void Start()
     {
         base.Start();
@@ -30,10 +32,16 @@ public class CharacterController2D : RaycastController
 
         oldVelocity = velocity;
 
+        if(velocity.x != 0f)
+        {
+            collisions.faceDir = Math.Sign( velocity.x );
+        }
+
         if(velocity.y < 0f)
             DescendSlope( ref velocity );
 
-        if( velocity.x != 0f )
+        // for wall sliding if near wall
+        if( velocity.x != 0f || isWallslidingWithNoXMovment )
             HorizontalCollisions( ref velocity );
 
         if( velocity.y != 0f )
@@ -51,9 +59,13 @@ public class CharacterController2D : RaycastController
 
     private void HorizontalCollisions( ref Vector3 velocity )
     {
-        float directionX = Mathf.Sign( velocity.x );
+        float directionX = collisions.faceDir;
         float raycastLength = Mathf.Abs( velocity.x ) + skinWidth;
 
+        if(Mathf.Abs(velocity.x) < skinWidth)
+        {
+            raycastLength = 2f * skinWidth;
+        }
 
         for( int i = 0 ; i < horizontalRayCount ; i++ )
         {

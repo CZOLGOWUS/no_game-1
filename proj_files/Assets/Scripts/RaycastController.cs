@@ -17,6 +17,7 @@ public class RaycastController : MonoBehaviour
         public bool climbingSlope;
         public bool descendingSlope;
         public float slopeAngle, previousSlopeAngle;
+        public int faceDir;
 
         public void Reset()
         {
@@ -53,6 +54,8 @@ public class RaycastController : MonoBehaviour
         thisCollider = GetComponent<BoxCollider2D>();
 
         CalculateRaySpacing();
+
+        collisions.faceDir = 1;
     }
 
 

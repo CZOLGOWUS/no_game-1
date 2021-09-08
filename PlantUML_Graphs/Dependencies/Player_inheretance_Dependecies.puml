@@ -23,6 +23,13 @@ class Weapon extends ScriptableObject
 }
 '/
 
+class RaycastController
+{
+    //controls recasting for collision implementation
+    raycastOrigins
+    raycastSpread
+}
+
 class CharacterController2D
 {
     Movement Functionality
@@ -42,5 +49,7 @@ class PlayerCharacterController
 PlayerCharacterController --> PlayerInputComponent
 PlayerCharacterController --> CombatBehaviour
 PlayerCharacterController --> CharacterController2D
+
+RaycastController ..>CharacterController2D
 
 @enduml

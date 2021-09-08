@@ -21,6 +21,15 @@ public class PlayerCharacterController2D : MonoBehaviour
     [SerializeField] private float timeToJumpApex = 0.3f;
     [SerializeField] private float fallGravityMultiplier = 2.0f;
 
+    [Header( "wallJumping" )]
+    [SerializeField] private float wallSlideSpeedMax = 3f;
+    [SerializeField] private float wallStickTime = .2f;
+    [SerializeField] private Vector2 wallJumpClimb;
+    [SerializeField] private Vector2 wallJumpOff;
+    [SerializeField] private Vector2 wallJumpAway;
+    
+    private float timeToWallUnstick;
+
 
     private float velocityXSmooth;
 
@@ -31,7 +40,7 @@ public class PlayerCharacterController2D : MonoBehaviour
     private float movementInput;
     private bool isJumpPressed = false; //button
 
-    private Vector3 nextVelocity;
+    private Vector3 velocity;
     private bool isFalling;
     private float maxCharacterPositionOffset = 100f;
 
@@ -57,28 +66,57 @@ public class PlayerCharacterController2D : MonoBehaviour
     }
 
 
-    private void Start()
-    {
-
-
-    }
-
-
-
     private void FixedUpdate()
     {
+        //this is here for walljumping to work, i know... dumb implementation
+        HandleInputSmoothing();
+
+        #region wallJumping
+
+        int wallDirX = (thisCharacterController.collisions.left) ? -1 : 1;
+        bool isWallSlliding = false;
+
+        if((thisCharacterController.collisions.left || thisCharacterController.collisions.right) && !thisCharacterController.collisions.bottom && velocity.y < 0f)
+        {
+            isWallSlliding = true;
+
+            if(velocity.y < -wallSlideSpeedMax)
+            {
+                velocity.y = -wallSlideSpeedMax;
+            }
+
+            if(timeToWallUnstick > 0f)
+            {
+                //this should not be happening here
+                velocityXSmooth = 0f;
+
+                velocity.x = 0f;
+
+                if( movementInput != wallDirX && movementInput != 0f )
+                    timeToWallUnstick -= Time.fixedDeltaTime;
+                else
+                    timeToWallUnstick = wallStickTime;
+            }
+            else
+            {
+                timeToWallUnstick = wallStickTime;
+            }
+
+
+        }
+
+        #endregion
 
         if( thisCharacterController.collisions.top || thisCharacterController.collisions.bottom )
         {
-            nextVelocity.y = 0f;
+            velocity.y = 0f;
         }
 
 
-        HandleInputSmoothing();
         HandleGravity();
-        HandleJumping();
+        HandleJumping( isWallSlliding, wallDirX );
 
-        thisCharacterController.Move( nextVelocity * Time.fixedDeltaTime );
+        thisCharacterController.Move( velocity * Time.fixedDeltaTime );
 
 
     }
@@ -92,49 +130,76 @@ public class PlayerCharacterController2D : MonoBehaviour
         //if collides with a wall (aka head on collision) then kill momentum
         if( thisCharacterController.collisions.slopeAngle <= thisCharacterController.MaxClimbAngle ) 
         {
-            nextVelocity.x = Mathf.SmoothDamp( nextVelocity.x , targetVelocityX , ref velocityXSmooth , accelerationTime ); 
+            velocity.x = Mathf.SmoothDamp( velocity.x , targetVelocityX , ref velocityXSmooth , accelerationTime ); 
         }
         else
         {
-            nextVelocity.x = Mathf.SmoothDamp( 0f , targetVelocityX , ref velocityXSmooth , accelerationTime ); 
+            velocity.x = Mathf.SmoothDamp( 0f , targetVelocityX , ref velocityXSmooth , accelerationTime ); 
         }
     }
 
 
     private void HandleGravity()
     {
-        isFalling = nextVelocity.y <= 0f;
+        isFalling = velocity.y <= 0f;
 
+        //this implementation causes wall jumping to be a bit undesirable
         if( !isFalling && isJumpPressed )
         {
-            float prevYVelocity = nextVelocity.y;
-            float newYVelocity = nextVelocity.y + (gravity * Time.fixedDeltaTime);
+            float prevYVelocity = velocity.y;
+            float newYVelocity = velocity.y + (gravity * Time.fixedDeltaTime);
             float nextYVelocity = Mathf.Clamp((prevYVelocity + newYVelocity) * 0.5f, -maxCharacterPositionOffset , maxCharacterPositionOffset );
-            nextVelocity.y = nextYVelocity;
+            velocity.y = nextYVelocity;
         }
         else
         {
-            float prevYVelocity = nextVelocity.y;
-            float newYVelocity = nextVelocity.y + (gravity * fallGravityMultiplier * Time.fixedDeltaTime);
+            float prevYVelocity = velocity.y;
+            float newYVelocity = velocity.y + (gravity * fallGravityMultiplier * Time.fixedDeltaTime);
             float nextYVelocity = (prevYVelocity + newYVelocity) * 0.5f;
-            nextVelocity.y = nextYVelocity;
+            velocity.y = nextYVelocity;
         }
 
     }
 
 
-    private void HandleJumping()
+    private void HandleJumping(bool isWallSliding, int wallDirX)
     {
-        if(!isJumping && isJumpPressed && thisCharacterController.collisions.bottom )
+        if(!isJumping && isJumpPressed ) //&& thisCharacterController.collisions.bottom )
         {
-            isJumping = true;
+            print( "here" );
+            if(isWallSliding)
+            {
+                isJumping = true;
+                Vector2 prevVelocity = velocity;
 
-            float prevYVelocity = nextVelocity.y;
-            float newYVelocity = nextVelocity.y + initialJumpVelocity;
-            nextVelocity.y = (prevYVelocity + newYVelocity) * 0.5f;
+                //TODO: implement Verlet velocity calculation
+                if( wallDirX == movementInput )
+                {
+                    velocity.x = -wallDirX * wallJumpClimb.x;
+                    velocity.y = wallJumpClimb.y;
+                }
+                else if(wallDirX == 0)
+                {
+                    velocity.x = -wallDirX * wallJumpOff.x;
+                    velocity.y = wallJumpOff.y;
+                }
+                else //if input is oposite of the wall (jump away)
+                {
+                    velocity.x = -wallDirX * wallJumpAway.x;
+                    velocity.y = wallJumpAway.y;
+                }
+
+            }
+            else if(thisCharacterController.collisions.bottom)
+            {
+                isJumping = true;
+                float prevYVelocity = velocity.y;
+                float newYVelocity = velocity.y + initialJumpVelocity;
+                velocity.y = (prevYVelocity + newYVelocity) * 0.5f; 
+            }
 
         } 
-        else if(isJumping && !isJumpPressed && thisCharacterController.collisions.bottom)
+        else if( (isJumping && !isJumpPressed && thisCharacterController.collisions.bottom ) || isWallSliding)
         {
             isJumping = false;
         }

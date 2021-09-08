@@ -6,6 +6,7 @@ TagManager:
   tags:
   - PauseMenu
   - Enemy
+  - PhaseUpward
   layers:
   - Default
   - TransparentFX

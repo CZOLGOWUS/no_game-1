@@ -166,7 +166,8 @@ public class PlayerCharacterController2D : MonoBehaviour
     {
         if(!isJumping && isJumpPressed ) //&& thisCharacterController.collisions.bottom )
         {
-            print( "here" );
+
+
             if(isWallSliding)
             {
                 isJumping = true;

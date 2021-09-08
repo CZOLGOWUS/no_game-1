@@ -78,7 +78,7 @@ public class CharacterController2D : RaycastController
 
             if( hit )
             {
-                //i think the bug with going inside the platform is because of this
+
                 if(hit.distance == 0f)
                 {
                     continue;
@@ -143,6 +143,12 @@ public class CharacterController2D : RaycastController
 
             if( hit )
             {
+
+                if((hit.collider.CompareTag("PhaseUpward") && directionY == 1) || hit.distance <= 0f)
+                {
+                    continue;
+                }
+
                 velocity.y = (hit.distance - skinWidth) * directionY;
                 raycastLength = hit.distance;
 

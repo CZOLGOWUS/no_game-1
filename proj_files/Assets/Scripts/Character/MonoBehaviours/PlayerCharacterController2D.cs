@@ -21,12 +21,15 @@ public class PlayerCharacterController2D : MonoBehaviour
     [SerializeField] private float timeToJumpApex = 0.3f;
     [SerializeField] private float fallGravityMultiplier = 2.0f;
 
-    [Header( "wallJumping" )]
+    [Header( "WallJumping" )]
     [SerializeField] private float wallSlideSpeedMax = 3f;
     [SerializeField] private float wallStickTime = .2f;
     [SerializeField] private Vector2 wallJumpClimb;
     [SerializeField] private Vector2 wallJumpOff;
     [SerializeField] private Vector2 wallJumpAway;
+
+    [Header( "SLopes" )]
+    [SerializeField] private Vector2 slidingJump;
     
     private float timeToWallUnstick;
 
@@ -83,7 +86,10 @@ public class PlayerCharacterController2D : MonoBehaviour
 
         if( thisCharacterController.collisions.top || thisCharacterController.collisions.bottom )
         {
-            velocity.y = 0f;
+            if( thisCharacterController.collisions.slidingDownSlope )
+                velocity.y += thisCharacterController.collisions.slopeNormal.y * -gravity * Time.fixedDeltaTime;
+            else
+                velocity.y = 0f;
         }
 
     }
@@ -192,12 +198,25 @@ public class PlayerCharacterController2D : MonoBehaviour
                 }
 
             }
-            else if(thisCharacterController.collisions.bottom)
+
+            if(thisCharacterController.collisions.bottom)
             {
-                isJumping = true;
-                float prevYVelocity = velocity.y;
-                float newYVelocity = velocity.y + initialJumpVelocity;
-                velocity.y = (prevYVelocity + newYVelocity) * 0.5f; 
+                if(thisCharacterController.collisions.slidingDownSlope)
+                {
+                    if( Mathf.Sign(movementInput) == Mathf.Sign(thisCharacterController.collisions.slopeNormal.x)) //not jumping agains max slope
+                    {
+                        //not using Verlet
+                        velocity.y = slidingJump.y * thisCharacterController.collisions.slopeNormal.y;
+                        velocity.x = slidingJump.x * thisCharacterController.collisions.slopeNormal.y;
+                    }
+                }
+                else
+                {
+                    isJumping = true;
+                    float prevYVelocity = velocity.y;
+                    float newYVelocity = velocity.y + initialJumpVelocity;
+                    velocity.y = (prevYVelocity + newYVelocity) * 0.5f;  
+                }
             }
 
         } 

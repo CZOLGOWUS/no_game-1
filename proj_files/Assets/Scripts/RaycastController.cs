@@ -11,23 +11,6 @@ public class RaycastController : MonoBehaviour
         public Vector2 bottomLeft, bottomRight;
     }
 
-    public struct CollisionsInfo
-    {
-        public bool top, bottom, left, right;
-        public bool climbingSlope;
-        public bool descendingSlope;
-        public float slopeAngle, previousSlopeAngle;
-        public int faceDir;
-
-        public void Reset()
-        {
-            top = bottom = left = right = climbingSlope = descendingSlope = false;
-            previousSlopeAngle = slopeAngle;
-            slopeAngle = 0;
-        }
-    }
-
-
     protected BoxCollider2D thisCollider;
     protected RaycastOrigins raycastOrigins;
 
@@ -39,11 +22,7 @@ public class RaycastController : MonoBehaviour
     [Header( "Ray Options" )]
     [SerializeField] private float distanceBetwenHorizontalRays = 0.25f;
     [SerializeField] private float distanceBetwenVerticalRays = 0.25f;
-    [SerializeField] protected LayerMask terrainMask;
-
-
-    public CollisionsInfo collisions;
-
+    [SerializeField] protected LayerMask collisionMask;
 
     protected Vector3 oldVelocity;
 
@@ -58,7 +37,6 @@ public class RaycastController : MonoBehaviour
 
         CalculateRaySpacing();
 
-        collisions.faceDir = 1;
     }
 
 

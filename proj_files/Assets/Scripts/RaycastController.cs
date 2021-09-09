@@ -31,11 +31,14 @@ public class RaycastController : MonoBehaviour
     protected BoxCollider2D thisCollider;
     protected RaycastOrigins raycastOrigins;
 
+    protected int horizontalRayCount = 4;
+    protected int verticalRayCount = 4;
+
 
     [Space]
     [Header( "Ray Options" )]
-    [SerializeField] protected int horizontalRayCount = 4;
-    [SerializeField] protected int verticalRayCount = 4;
+    [SerializeField] private float distanceBetwenHorizontalRays = 0.25f;
+    [SerializeField] private float distanceBetwenVerticalRays = 0.25f;
     [SerializeField] protected LayerMask terrainMask;
 
 
@@ -75,6 +78,13 @@ public class RaycastController : MonoBehaviour
     {
         Bounds bounds = thisCollider.bounds;
         bounds.Expand( skinWidth * -2f );
+
+        float boundsWidth = bounds.size.x;
+        float boundsHeight = bounds.size.y;
+
+        horizontalRayCount = Mathf.RoundToInt(boundsHeight / distanceBetwenVerticalRays);
+        horizontalRayCount = Mathf.RoundToInt( boundsWidth / distanceBetwenHorizontalRays);
+
 
         horizontalRayCount = Mathf.Clamp( horizontalRayCount , 2 , int.MaxValue );
         verticalRayCount = Mathf.Clamp( verticalRayCount , 2 , int.MaxValue );

@@ -30,6 +30,8 @@ public class PlayerCharacterController2D : MonoBehaviour
     
     private float timeToWallUnstick;
 
+    private int wallDirX;
+    private bool isWallSlliding;
 
     private float velocityXSmooth;
 
@@ -40,7 +42,7 @@ public class PlayerCharacterController2D : MonoBehaviour
     private float movementInput;
     private bool isJumpPressed = false; //button
 
-    private Vector3 velocity;
+    private Vector2 velocity;
     private bool isFalling;
     private float maxCharacterPositionOffset = 100f;
 
@@ -71,21 +73,36 @@ public class PlayerCharacterController2D : MonoBehaviour
         //this is here for walljumping to work, i know... dumb implementation
         HandleInputSmoothing();
 
-        #region wallJumping
+        HandleWallJumping();
 
-        int wallDirX = (thisCharacterController.collisions.left) ? -1 : 1;
-        bool isWallSlliding = false;
 
-        if((thisCharacterController.collisions.left || thisCharacterController.collisions.right) && !thisCharacterController.collisions.bottom && velocity.y < 0f)
+        HandleGravity();
+        HandleJumping( isWallSlliding , wallDirX );
+
+        thisCharacterController.Move( velocity * Time.fixedDeltaTime );
+
+        if( thisCharacterController.collisions.top || thisCharacterController.collisions.bottom )
+        {
+            velocity.y = 0f;
+        }
+
+    }
+
+    private void HandleWallJumping()
+    {
+        wallDirX = (thisCharacterController.collisions.left) ? -1 : 1;
+        isWallSlliding = false;
+
+        if( (thisCharacterController.collisions.left || thisCharacterController.collisions.right) && !thisCharacterController.collisions.bottom && velocity.y < 0f )
         {
             isWallSlliding = true;
 
-            if(velocity.y < -wallSlideSpeedMax)
+            if( velocity.y < -wallSlideSpeedMax )
             {
                 velocity.y = -wallSlideSpeedMax;
             }
 
-            if(timeToWallUnstick > 0f)
+            if( timeToWallUnstick > 0f )
             {
                 //this should not be happening here
                 velocityXSmooth = 0f;
@@ -104,23 +121,7 @@ public class PlayerCharacterController2D : MonoBehaviour
 
 
         }
-
-        #endregion
-
-
-
-        HandleGravity();
-        HandleJumping( isWallSlliding, wallDirX );
-
-        thisCharacterController.Move( velocity * Time.fixedDeltaTime );
-
-        if( thisCharacterController.collisions.top || thisCharacterController.collisions.bottom )
-        {
-            velocity.y = 0f;
-        }
-
     }
-
 
     private void HandleInputSmoothing( )
     {

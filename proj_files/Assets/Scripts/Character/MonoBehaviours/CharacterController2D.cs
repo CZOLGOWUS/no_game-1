@@ -24,7 +24,7 @@ public class CharacterController2D : RaycastController
         base.Start();
     }
 
-    internal void Move( Vector3 velocity , bool isOnPlatform = false)
+    internal void Move( Vector2 velocity , bool isOnPlatform = false)
     {
         UpdateRaycastOrigins();
 
@@ -57,7 +57,7 @@ public class CharacterController2D : RaycastController
     }
 
 
-    private void HorizontalCollisions( ref Vector3 velocity )
+    private void HorizontalCollisions( ref Vector2 velocity )
     {
         float directionX = collisions.faceDir;
         float raycastLength = Mathf.Abs( velocity.x ) + skinWidth;
@@ -74,7 +74,7 @@ public class CharacterController2D : RaycastController
 
             RaycastHit2D hit = Physics2D.Raycast( rayOrigin , Vector2.right * directionX , raycastLength , terrainMask );
 
-            Debug.DrawRay( rayOrigin , Vector2.right * directionX * raycastLength , Color.red );
+            Debug.DrawRay( rayOrigin , Vector2.right * directionX , Color.red );
 
             if( hit )
             {
@@ -125,7 +125,7 @@ public class CharacterController2D : RaycastController
     }
 
 
-    private void VerticalCollisions( ref Vector3 velocity )
+    private void VerticalCollisions( ref Vector2 velocity )
     {
 
         float directionY = Mathf.Sign( velocity.y );
@@ -139,7 +139,7 @@ public class CharacterController2D : RaycastController
 
             RaycastHit2D hit = Physics2D.Raycast( rayOrigin , Vector2.up * directionY , raycastLength , terrainMask );
 
-            Debug.DrawRay( rayOrigin , Vector2.up * directionY * raycastLength , Color.red );
+            Debug.DrawRay( rayOrigin , Vector2.up * directionY , Color.red );
 
             if( hit )
             {
@@ -205,7 +205,7 @@ public class CharacterController2D : RaycastController
 
     }
 
-    private void ClimbSlope(ref Vector3 velocity, float slopeAngle)
+    private void ClimbSlope(ref Vector2 velocity, float slopeAngle)
     {
         float moveDistance = Mathf.Abs(velocity.x);
         float climbVelocityY = Mathf.Sin(slopeAngle * Mathf.Deg2Rad) * moveDistance;
@@ -221,7 +221,7 @@ public class CharacterController2D : RaycastController
     }
 
 
-    private void DescendSlope(ref Vector3 velocity)
+    private void DescendSlope(ref Vector2 velocity)
     {
         float directionX = Mathf.Sign( velocity.x );
         Vector2 rayOrigin = (directionX == -1) ? raycastOrigins.bottomRight : raycastOrigins.bottomLeft;

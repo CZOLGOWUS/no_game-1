@@ -176,17 +176,34 @@ public class CharacterController2D : RaycastController
 
             Debug.DrawRay( rayOrigin , Vector2.up * directionY , Color.red );
 
-            if( hit )
+            if (collisions.bottom) //object stopped falling
             {
+                collisions.phasingDownPlatform = null;
+                Debug.Log("NO PLATFORM IGNORED");
+            }
+
+            if ( hit )
+            {
+               
                 if(hit.collider.CompareTag("PhaseUpward"))
                 {
                     if(directionY == 1 || hit.distance <= 0f)
                         continue;
-                    if(phaseDownKeyPressed)
+
+                    //debuging:
+                    if (collisions.phasingDownPlatform != null)
+                        Debug.Log("Ignoring platform: " + collisions.phasingDownPlatform.name);
+
+                    // This is half-mine (CKTA00) solution that i found in comments of the toutorial. REQUIRES FURTHER TESTING
+                    if (hit.collider == collisions.phasingDownPlatform) //if this is the same platform we already phasing through, continue
+                        continue;
+                    if (phaseDownKeyPressed)
                     {
+                        collisions.phasingDownPlatform = hit.collider; //setting platform to ignore
                         continue;
                     }
                 }
+                
 
                 velocity.y = (hit.distance - skinWidth) * directionY;
                 raycastLength = hit.distance;

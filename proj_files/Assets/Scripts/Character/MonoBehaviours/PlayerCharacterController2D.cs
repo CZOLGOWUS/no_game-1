@@ -173,9 +173,7 @@ public class PlayerCharacterController2D : MonoBehaviour
     {
         if(!isJumping && isJumpPressed ) //&& thisCharacterController.collisions.bottom )
         {
-
-
-            if(isWallSliding || isOnTooSteepSlope)
+            if(isWallSliding)
             {
                 isJumping = true;
                 Vector2 prevVelocity = velocity;
@@ -199,15 +197,21 @@ public class PlayerCharacterController2D : MonoBehaviour
 
             }
 
-            if(thisCharacterController.collisions.bottom)
+            if (isOnTooSteepSlope)
+            {
+                //Add jumping similar to wall jumping or regular jumping
+            }
+
+
+            if (thisCharacterController.collisions.bottom)
             {
                 if(thisCharacterController.collisions.slidingDownSlope)
                 {
-                    if( Mathf.Sign(movementInput) == Mathf.Sign(thisCharacterController.collisions.slopeNormal.x)) //not jumping agains max slope
+                    if( Mathf.Sign(movementInput) == Mathf.Sign(thisCharacterController.collisions.slopeNormal.x)) //not jumping againts max slope (or you should jump, since we have wall jumping?)
                     {
                         //not using Verlet
                         velocity.y = slidingJump.y * thisCharacterController.collisions.slopeNormal.y;
-                        velocity.x = slidingJump.x * thisCharacterController.collisions.slopeNormal.y;
+                        velocity.x = slidingJump.x * thisCharacterController.collisions.slopeNormal.x;
                     }
                 }
                 else

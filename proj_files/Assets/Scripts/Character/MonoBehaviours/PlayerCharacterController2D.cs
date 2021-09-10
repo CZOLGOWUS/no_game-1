@@ -44,6 +44,7 @@ public class PlayerCharacterController2D : MonoBehaviour
 
     private float movementInput;
     private bool isJumpPressed = false; //button
+    private bool isDownKeyPressed = false; //button
 
     private Vector2 velocity;
     private bool isFalling;
@@ -82,6 +83,7 @@ public class PlayerCharacterController2D : MonoBehaviour
         HandleGravity();
         HandleJumping( isWallSlliding, thisCharacterController.collisions.slidingDownSlope , wallDirX );
 
+        thisCharacterController.SetPhasingDown(isDownKeyPressed); //sending input to CharacterController without modifying Move function
         thisCharacterController.Move( velocity * Time.fixedDeltaTime );
 
         if( thisCharacterController.collisions.top || thisCharacterController.collisions.bottom )
@@ -246,6 +248,18 @@ public class PlayerCharacterController2D : MonoBehaviour
         else if( ctx.canceled )
         {
             isJumpPressed = false;
+        }
+    }
+
+    public void OnDownKey(InputAction.CallbackContext ctx)
+    {
+        if (ctx.performed || ctx.started)
+        {
+            isDownKeyPressed = true;
+        }
+        else if (ctx.canceled)
+        {
+            isDownKeyPressed = false;
         }
     }
 

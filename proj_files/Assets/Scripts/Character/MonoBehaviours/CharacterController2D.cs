@@ -12,6 +12,7 @@ public class CharacterController2D : RaycastController
         public bool climbingSlope;
         public bool descendingSlope;
         public bool slidingDownSlope;
+        public Collider2D phasingDownPlatform;
 
         public Vector2 slopeNormal;
 
@@ -34,6 +35,7 @@ public class CharacterController2D : RaycastController
     [SerializeField] private float maxSlopeAngle = 70.0f;
 
     [HideInInspector] public bool isGrounded;
+    bool phaseDownKeyPressed;
 
 
     public float MaxClimbAngle { get => maxSlopeAngle; }
@@ -44,6 +46,7 @@ public class CharacterController2D : RaycastController
     public override void Start()
     {
         base.Start();
+        phaseDownKeyPressed = false;
         collisions.faceDir = 1;
 
     }
@@ -79,6 +82,12 @@ public class CharacterController2D : RaycastController
             collisions.bottom = true;
             isGrounded = true;
         }
+    }
+
+    public void SetPhasingDown(bool phaseDownKeyPressed_)
+    {
+        phaseDownKeyPressed = phaseDownKeyPressed_;
+        Debug.Log("DOWN: "+phaseDownKeyPressed);
     }
 
 
@@ -152,7 +161,7 @@ public class CharacterController2D : RaycastController
     }
 
 
-    private void VerticalCollisions( ref Vector2 velocity )
+    private void VerticalCollisions( ref Vector2 velocity)
     {
 
         float directionY = Mathf.Sign( velocity.y );
@@ -170,7 +179,6 @@ public class CharacterController2D : RaycastController
 
             if( hit )
             {
-                
                 if((hit.collider.CompareTag("PhaseUpward") && directionY == 1) || hit.distance <= 0f )
                 {
                     continue;

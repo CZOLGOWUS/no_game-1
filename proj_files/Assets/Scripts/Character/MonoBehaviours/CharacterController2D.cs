@@ -87,7 +87,6 @@ public class CharacterController2D : RaycastController
     public void SetPhasingDown(bool phaseDownKeyPressed_)
     {
         phaseDownKeyPressed = phaseDownKeyPressed_;
-        Debug.Log("DOWN: "+phaseDownKeyPressed);
     }
 
 
@@ -179,9 +178,14 @@ public class CharacterController2D : RaycastController
 
             if( hit )
             {
-                if((hit.collider.CompareTag("PhaseUpward") && directionY == 1) || hit.distance <= 0f )
+                if(hit.collider.CompareTag("PhaseUpward"))
                 {
-                    continue;
+                    if(directionY == 1 || hit.distance <= 0f)
+                        continue;
+                    if(phaseDownKeyPressed)
+                    {
+                        continue;
+                    }
                 }
 
                 velocity.y = (hit.distance - skinWidth) * directionY;

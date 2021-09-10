@@ -80,7 +80,7 @@ public class PlayerCharacterController2D : MonoBehaviour
 
 
         HandleGravity();
-        HandleJumping( isWallSlliding , wallDirX );
+        HandleJumping( isWallSlliding, thisCharacterController.collisions.slidingDownSlope , wallDirX );
 
         thisCharacterController.Move( velocity * Time.fixedDeltaTime );
 
@@ -169,13 +169,13 @@ public class PlayerCharacterController2D : MonoBehaviour
     }
 
 
-    private void HandleJumping(bool isWallSliding, int wallDirX)
+    private void HandleJumping(bool isWallSliding, bool isOnTooSteepSlope, int wallDirX)
     {
         if(!isJumping && isJumpPressed ) //&& thisCharacterController.collisions.bottom )
         {
 
 
-            if(isWallSliding)
+            if(isWallSliding || isOnTooSteepSlope)
             {
                 isJumping = true;
                 Vector2 prevVelocity = velocity;

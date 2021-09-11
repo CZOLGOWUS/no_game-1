@@ -81,11 +81,19 @@ public class PlayerCharacterController2D : MonoBehaviour
 
 
         HandleGravity();
-        HandleJumping( isWallSlliding, thisCharacterController.collisions.slidingDownSlope , wallDirX );
+        HandleJumping( isWallSlliding , thisCharacterController.collisions.slidingDownSlope , wallDirX );
 
-        thisCharacterController.SetPhasingDown(isDownKeyPressed); //sending input to CharacterController without modifying Move function
+        //sending input to CharacterController without modifying Move function
+        thisCharacterController.PhaseDownKeyPressed = isDownKeyPressed;
+
         thisCharacterController.Move( velocity * Time.fixedDeltaTime );
 
+        HandleTopBottomCollisionsWhileAirborn();
+
+    }
+
+    private void HandleTopBottomCollisionsWhileAirborn()
+    {
         if( thisCharacterController.collisions.top || thisCharacterController.collisions.bottom )
         {
             if( thisCharacterController.collisions.slidingDownSlope )
@@ -93,7 +101,6 @@ public class PlayerCharacterController2D : MonoBehaviour
             else
                 velocity.y = 0f;
         }
-
     }
 
     private void HandleWallJumping()
@@ -213,7 +220,7 @@ public class PlayerCharacterController2D : MonoBehaviour
                     {
                         //not using Verlet
                         velocity.y = slidingJump.y * thisCharacterController.collisions.slopeNormal.y;
-                        velocity.x = slidingJump.x * thisCharacterController.collisions.slopeNormal.x;
+                        velocity.x = slidingJump.x * thisCharacterController.collisions.slopeNormal.y;
                     }
                 }
                 else

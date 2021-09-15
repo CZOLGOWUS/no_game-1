@@ -43,7 +43,7 @@ public class PlayerCharacterController2D : MonoBehaviour
     private bool isJumping = false;
 
     private float movementInput;
-    private bool isJumpPressed = false; //button
+    [SerializeField] private bool isJumpPressed = false; //button
     private bool isDownKeyPressed = false; //button
 
     private Vector2 velocity;
@@ -52,6 +52,7 @@ public class PlayerCharacterController2D : MonoBehaviour
 
     //for jump to work as intended for now
     private float tempVar = 1.52f;
+    [SerializeField] private Vector2 autoMove;
 
     private void Awake()
     {
@@ -62,18 +63,9 @@ public class PlayerCharacterController2D : MonoBehaviour
     }
 
 
-    private void SetupJumpVariales()
-    {
-        gravity = -(2 * jumpHeight) / Mathf.Pow(timeToJumpApex,2);
-        initialJumpVelocity = tempVar * (2 * jumpHeight) / (timeToJumpApex);
-        //initialJumpVelocity = Mathf.Abs( gravity * timeToJumpApex );
-
-        print( "Gravity: " + gravity + " jump vel: " + initialJumpVelocity );
-    }
-
-
     private void FixedUpdate()
     {
+
         //this is here for walljumping to work, i know... dumb implementation
         HandleInputSmoothing();
 
@@ -86,11 +78,21 @@ public class PlayerCharacterController2D : MonoBehaviour
         //sending input to CharacterController without modifying Move function
         thisCharacterController.PhaseDownKeyPressed = isDownKeyPressed;
 
-        thisCharacterController.Move( velocity * Time.fixedDeltaTime );
+        thisCharacterController.Move( (velocity + autoMove) * Time.fixedDeltaTime );
 
         HandleTopBottomCollisionsWhileAirborn();
 
     }
+
+    private void SetupJumpVariales()
+    {
+        gravity = -(2 * jumpHeight) / Mathf.Pow(timeToJumpApex,2);
+        initialJumpVelocity = tempVar * (2 * jumpHeight) / (timeToJumpApex);
+        //initialJumpVelocity = Mathf.Abs( gravity * timeToJumpApex );
+
+        print( "Gravity: " + gravity + " jump vel: " + initialJumpVelocity );
+    }
+
 
     private void HandleTopBottomCollisionsWhileAirborn()
     {
@@ -105,7 +107,11 @@ public class PlayerCharacterController2D : MonoBehaviour
 
     private void HandleWallJumping()
     {
-        wallDirX = (thisCharacterController.collisions.left) ? -1 : 1;
+        if( thisCharacterController.collisions.left )
+            wallDirX = -1;
+        else if( thisCharacterController.collisions.right )
+            wallDirX = 1;
+
         isWallSlliding = false;
 
         if( (thisCharacterController.collisions.left || thisCharacterController.collisions.right) && !thisCharacterController.collisions.bottom && velocity.y < 0f )
@@ -180,7 +186,7 @@ public class PlayerCharacterController2D : MonoBehaviour
 
     private void HandleJumping(bool isWallSliding, bool isOnTooSteepSlope, int wallDirX)
     {
-        if(!isJumping && isJumpPressed ) //&& thisCharacterController.collisions.bottom )
+        if(!isJumping && isJumpPressed )
         {
             if(isWallSliding)
             {
@@ -198,7 +204,7 @@ public class PlayerCharacterController2D : MonoBehaviour
                     velocity.x = -wallDirX * wallJumpOff.x;
                     velocity.y = wallJumpOff.y;
                 }
-                else //if input is oposite of the wall (jump away)
+                else //if input is oposite to the wall (jump away)
                 {
                     velocity.x = -wallDirX * wallJumpAway.x;
                     velocity.y = wallJumpAway.y;
@@ -216,11 +222,11 @@ public class PlayerCharacterController2D : MonoBehaviour
             {
                 if(thisCharacterController.collisions.slidingDownSlope)
                 {
-                    if( Mathf.Sign(movementInput) == Mathf.Sign(thisCharacterController.collisions.slopeNormal.x)) //not jumping againts max slope (or you should jump, since we have wall jumping?)
+                    if( Mathf.Sign(movementInput) == -wallDirX ) //not jumping againts max slope (or you should jump, since we have wall jumping?)
                     {
                         //not using Verlet
                         velocity.y = slidingJump.y * thisCharacterController.collisions.slopeNormal.y;
-                        velocity.x = slidingJump.x * thisCharacterController.collisions.slopeNormal.y;
+                        velocity.x = slidingJump.x * thisCharacterController.collisions.slopeNormal.x;
                     }
                 }
                 else
@@ -228,7 +234,7 @@ public class PlayerCharacterController2D : MonoBehaviour
                     isJumping = true;
                     float prevYVelocity = velocity.y;
                     float newYVelocity = velocity.y + initialJumpVelocity;
-                    velocity.y = (prevYVelocity + newYVelocity) * 0.5f;  
+                    velocity.y = (prevYVelocity + newYVelocity) * 0.5f;
                 }
             }
 

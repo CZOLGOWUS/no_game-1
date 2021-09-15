@@ -11,8 +11,16 @@ public class RaycastController : MonoBehaviour
         public Vector2 bottomLeft, bottomRight;
     }
 
+    public struct BoxCastOrigins
+    {
+        public Vector2 bottomCenter, topCenter;
+        public Vector2 leftCenter, rightCenter;
+    }
+
     protected BoxCollider2D thisCollider;
+
     protected RaycastOrigins raycastOrigins;
+    protected BoxCastOrigins boxCastOrigins;
 
     protected int horizontalRayCount = 4;
     protected int verticalRayCount = 4;
@@ -29,6 +37,11 @@ public class RaycastController : MonoBehaviour
     protected float horizontalRaySpacing;
     protected float verticalRaySpacing;
     protected const float skinWidth = 0.015f;
+
+    protected float boundsWidth;
+    protected float boundsHeight;
+
+
 
 
     public virtual void Start()
@@ -52,13 +65,26 @@ public class RaycastController : MonoBehaviour
     }
 
 
+    public void UpdateBoxCastOrigins()
+    {
+        Bounds bounds = thisCollider.bounds;
+        bounds.Expand( skinWidth * -2f );
+
+        boxCastOrigins.bottomCenter = new Vector2( bounds.center.x , bounds.min.y );
+        boxCastOrigins.topCenter = new Vector2( bounds.center.x , bounds.max.y );
+        boxCastOrigins.leftCenter = new Vector2( bounds.min.x , bounds.center.y );
+        boxCastOrigins.rightCenter = new Vector2( bounds.max.x , bounds.center.y );
+
+    }
+
+
     protected void CalculateRaySpacing()
     {
         Bounds bounds = thisCollider.bounds;
         bounds.Expand( skinWidth * -2f );
 
-        float boundsWidth = bounds.size.x;
-        float boundsHeight = bounds.size.y;
+        boundsWidth = bounds.size.x;
+        boundsHeight = bounds.size.y;
 
         horizontalRayCount = Mathf.RoundToInt(boundsHeight / distanceBetwenVerticalRays);
         horizontalRayCount = Mathf.RoundToInt( boundsWidth / distanceBetwenHorizontalRays);

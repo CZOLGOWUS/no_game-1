@@ -4,276 +4,282 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 
-[RequireComponent( typeof( CharacterController2D ) )]
-public class PlayerCharacterController2D : MonoBehaviour
+
+namespace noGame.Characters
 {
-    private CharacterController2D thisCharacterController;
-
-    [Header("Movement")]
-    [SerializeField] private float moveSpeed = 10f;
-    [Range( 0f , 3f )]
-    [SerializeField] private float accelerationTimeAirborn = .2f;
-    [Range( 0f , 3f )]
-    [SerializeField] private float accelerationTimeGrounded = .2f;
-
-    [Header("Jumping")]
-    [SerializeField] private float jumpHeight = 4f;
-    [SerializeField] private float timeToJumpApex = 0.3f;
-    [SerializeField] private float fallGravityMultiplier = 2.0f;
-
-    [Header( "WallJumping" )]
-    [SerializeField] private float wallSlideSpeedMax = 3f;
-    [SerializeField] private float wallStickTime = .2f;
-    [SerializeField] private Vector2 wallJumpClimb;
-    [SerializeField] private Vector2 wallJumpOff;
-    [SerializeField] private Vector2 wallJumpAway;
-
-    [Header( "SLopes" )]
-    [SerializeField] private Vector2 slidingJump;
-    
-    private float timeToWallUnstick;
-
-    private int wallDirX;
-    private bool isWallSlliding;
-
-    private float velocityXSmooth;
-
-    private float gravity;
-    private float initialJumpVelocity = 10f;
-    private bool isJumping = false;
-
-    private float movementInput;
-    [SerializeField] private bool isJumpPressed = false; //button
-    private bool isDownKeyPressed = false; //button
-
-    private Vector2 velocity;
-    private bool isFalling;
-    private float maxCharacterPositionOffset = 100f;
-
-    //for jump to work as intended for now
-    private float tempVar = 1.52f;
-    [SerializeField] private Vector2 autoMove;
-
-    private void Awake()
+    [RequireComponent( typeof( CharacterController2D ) )]
+    public class PlayerCharacterController2D : MonoBehaviour
     {
-        thisCharacterController = GetComponent<CharacterController2D>();
+        private CharacterController2D thisCharacterController;
 
-        SetupJumpVariales();
+        [Header( "Movement" )]
+        [SerializeField] private float moveSpeed = 10f;
+        [Range( 0f , 3f )]
+        [SerializeField] private float accelerationTimeAirborn = .2f;
+        [Range( 0f , 3f )]
+        [SerializeField] private float accelerationTimeGrounded = .2f;
 
-    }
+        [Header( "Jumping" )]
+        [SerializeField] private float jumpHeight = 4f;
+        [SerializeField] private float timeToJumpApex = 0.3f;
+        [SerializeField] private float fallGravityMultiplier = 2.0f;
 
+        [Header( "WallJumping" )]
+        [SerializeField] private float wallSlideSpeedMax = 3f;
+        [SerializeField] private float wallStickTime = .2f;
+        [SerializeField] private Vector2 wallJumpClimb;
+        [SerializeField] private Vector2 wallJumpOff;
+        [SerializeField] private Vector2 wallJumpAway;
 
-    private void FixedUpdate()
-    {
+        [Header( "SLopes" )]
+        [SerializeField] private Vector2 slidingJump;
 
-        //this is here for walljumping to work, i know... dumb implementation
-        HandleInputSmoothing();
+        private float timeToWallUnstick;
 
-        HandleWallJumping();
+        private int wallDirX;
+        private bool isWallSlliding;
 
+        private float velocityXSmooth;
 
-        HandleGravity();
-        HandleJumping( isWallSlliding , thisCharacterController.collisions.slidingDownSlope , wallDirX );
+        private float gravity;
+        private float initialJumpVelocity = 10f;
+        private bool isJumping = false;
 
-        //sending input to CharacterController without modifying Move function
-        thisCharacterController.PhaseDownKeyPressed = isDownKeyPressed;
+        private float movementInput;
+        [SerializeField] private bool isJumpPressed = false; //button
+        private bool isDownKeyPressed = false; //button
 
-        thisCharacterController.Move( (velocity + autoMove) * Time.fixedDeltaTime );
+        private Vector2 velocity;
+        private bool isFalling;
+        private float maxCharacterPositionOffset = 100f;
 
-        HandleTopBottomCollisionsWhileAirborn();
+        //for jump to work as intended for now
+        private float tempVar = 1.52f;
+        [SerializeField] private Vector2 autoMove;
 
-    }
-
-    private void SetupJumpVariales()
-    {
-        gravity = -(2 * jumpHeight) / Mathf.Pow(timeToJumpApex,2);
-        initialJumpVelocity = tempVar * (2 * jumpHeight) / (timeToJumpApex);
-        //initialJumpVelocity = Mathf.Abs( gravity * timeToJumpApex );
-
-        print( "Gravity: " + gravity + " jump vel: " + initialJumpVelocity );
-    }
-
-
-    private void HandleTopBottomCollisionsWhileAirborn()
-    {
-        if( thisCharacterController.collisions.top || thisCharacterController.collisions.bottom )
+        private void Awake()
         {
-            if( thisCharacterController.collisions.slidingDownSlope )
-                velocity.y += thisCharacterController.collisions.slopeNormal.y * -gravity * Time.fixedDeltaTime;
-            else
-                velocity.y = 0f;
+            thisCharacterController = GetComponent<CharacterController2D>();
+
+            SetupJumpVariales();
+
         }
-    }
 
-    private void HandleWallJumping()
-    {
-        if( thisCharacterController.collisions.left )
-            wallDirX = -1;
-        else if( thisCharacterController.collisions.right )
-            wallDirX = 1;
 
-        isWallSlliding = false;
-
-        if( (thisCharacterController.collisions.left || thisCharacterController.collisions.right) && !thisCharacterController.collisions.bottom && velocity.y < 0f )
+        private void FixedUpdate()
         {
-            isWallSlliding = true;
 
-            if( velocity.y < -wallSlideSpeedMax )
+            //this is here for walljumping to work, i know... dumb implementation
+            HandleInputSmoothing();
+
+            HandleWallJumping();
+
+
+            HandleGravity();
+            HandleJumping( isWallSlliding , thisCharacterController.collisions.slidingDownSlope , wallDirX );
+
+            //sending input to CharacterController without modifying Move function
+            thisCharacterController.PhaseDownKeyPressed = isDownKeyPressed;
+
+            thisCharacterController.Move( (velocity + autoMove) * Time.fixedDeltaTime );
+
+            HandleTopBottomCollisionsWhileAirborn();
+
+        }
+
+        private void SetupJumpVariales()
+        {
+            gravity = -(2 * jumpHeight) / Mathf.Pow( timeToJumpApex , 2 );
+            initialJumpVelocity = tempVar * (2 * jumpHeight) / (timeToJumpApex);
+            //initialJumpVelocity = Mathf.Abs( gravity * timeToJumpApex );
+
+            print( "Gravity: " + gravity + " jump vel: " + initialJumpVelocity );
+        }
+
+
+        private void HandleTopBottomCollisionsWhileAirborn()
+        {
+            if( thisCharacterController.collisions.top || thisCharacterController.collisions.bottom )
             {
-                velocity.y = -wallSlideSpeedMax;
-            }
-
-            if( timeToWallUnstick > 0f )
-            {
-                //this should not be happening here
-                velocityXSmooth = 0f;
-
-                velocity.x = 0f;
-
-                if( movementInput != wallDirX && movementInput != 0f )
-                    timeToWallUnstick -= Time.fixedDeltaTime;
+                if( thisCharacterController.collisions.slidingDownSlope )
+                    velocity.y += thisCharacterController.collisions.slopeNormal.y * -gravity * Time.fixedDeltaTime;
                 else
+                    velocity.y = 0f;
+            }
+        }
+
+        private void HandleWallJumping()
+        {
+            if( thisCharacterController.collisions.left )
+                wallDirX = -1;
+            else if( thisCharacterController.collisions.right )
+                wallDirX = 1;
+
+            isWallSlliding = false;
+
+            if( (thisCharacterController.collisions.left || thisCharacterController.collisions.right) && !thisCharacterController.collisions.bottom && velocity.y < 0f )
+            {
+                isWallSlliding = true;
+
+                if( velocity.y < -wallSlideSpeedMax )
+                {
+                    velocity.y = -wallSlideSpeedMax;
+                }
+
+                if( timeToWallUnstick > 0f )
+                {
+                    //this should not be happening here
+                    velocityXSmooth = 0f;
+
+                    velocity.x = 0f;
+
+                    if( movementInput != wallDirX && movementInput != 0f )
+                        timeToWallUnstick -= Time.fixedDeltaTime;
+                    else
+                        timeToWallUnstick = wallStickTime;
+                }
+                else
+                {
                     timeToWallUnstick = wallStickTime;
+                }
+
+
+            }
+        }
+
+        private void HandleInputSmoothing()
+        {
+            float targetVelocityX = movementInput * moveSpeed;
+            float accelerationTime = (thisCharacterController.collisions.bottom) ? accelerationTimeGrounded : accelerationTimeAirborn;
+
+            //if collides with a wall (aka head on collision) then kill momentum
+            if( thisCharacterController.collisions.slopeAngle <= thisCharacterController.MaxClimbAngle )
+            {
+                velocity.x = Mathf.SmoothDamp( velocity.x , targetVelocityX , ref velocityXSmooth , accelerationTime );
             }
             else
             {
-                timeToWallUnstick = wallStickTime;
+                velocity.x = Mathf.SmoothDamp( 0f , targetVelocityX , ref velocityXSmooth , accelerationTime );
+            }
+        }
+
+
+        private void HandleGravity()
+        {
+            isFalling = velocity.y <= 0f;
+
+            //this implementation causes wall jumping to be a bit undesirable
+            if( !isFalling && isJumpPressed )
+            {
+                float prevYVelocity = velocity.y;
+                float newYVelocity = velocity.y + (gravity * Time.fixedDeltaTime);
+                float nextYVelocity = Mathf.Clamp( (prevYVelocity + newYVelocity) * 0.5f , -maxCharacterPositionOffset , maxCharacterPositionOffset );
+                velocity.y = nextYVelocity;
+            }
+            else
+            {
+                float prevYVelocity = velocity.y;
+                float newYVelocity = velocity.y + (gravity * fallGravityMultiplier * Time.fixedDeltaTime);
+                float nextYVelocity = (prevYVelocity + newYVelocity) * 0.5f;
+                velocity.y = nextYVelocity;
             }
 
-
-        }
-    }
-
-    private void HandleInputSmoothing( )
-    {
-        float targetVelocityX = movementInput * moveSpeed;
-        float accelerationTime = (thisCharacterController.collisions.bottom) ? accelerationTimeGrounded : accelerationTimeAirborn;
-
-        //if collides with a wall (aka head on collision) then kill momentum
-        if( thisCharacterController.collisions.slopeAngle <= thisCharacterController.MaxClimbAngle ) 
-        {
-            velocity.x = Mathf.SmoothDamp( velocity.x , targetVelocityX , ref velocityXSmooth , accelerationTime ); 
-        }
-        else
-        {
-            velocity.x = Mathf.SmoothDamp( 0f , targetVelocityX , ref velocityXSmooth , accelerationTime ); 
-        }
-    }
-
-
-    private void HandleGravity()
-    {
-        isFalling = velocity.y <= 0f;
-
-        //this implementation causes wall jumping to be a bit undesirable
-        if( !isFalling && isJumpPressed )
-        {
-            float prevYVelocity = velocity.y;
-            float newYVelocity = velocity.y + (gravity * Time.fixedDeltaTime);
-            float nextYVelocity = Mathf.Clamp((prevYVelocity + newYVelocity) * 0.5f, -maxCharacterPositionOffset , maxCharacterPositionOffset );
-            velocity.y = nextYVelocity;
-        }
-        else
-        {
-            float prevYVelocity = velocity.y;
-            float newYVelocity = velocity.y + (gravity * fallGravityMultiplier * Time.fixedDeltaTime);
-            float nextYVelocity = (prevYVelocity + newYVelocity) * 0.5f;
-            velocity.y = nextYVelocity;
         }
 
-    }
 
-
-    private void HandleJumping(bool isWallSliding, bool isOnTooSteepSlope, int wallDirX)
-    {
-        if(!isJumping && isJumpPressed )
+        private void HandleJumping( bool isWallSliding , bool isOnTooSteepSlope , int wallDirX )
         {
-            if(isWallSliding)
+            if( !isJumping && isJumpPressed )
             {
-                isJumping = true;
-                Vector2 prevVelocity = velocity;
-
-                //TODO: implement Verlet velocity calculation
-                if( wallDirX == movementInput )
-                {
-                    velocity.x = -wallDirX * wallJumpClimb.x;
-                    velocity.y = wallJumpClimb.y;
-                }
-                else if(wallDirX == 0)
-                {
-                    velocity.x = -wallDirX * wallJumpOff.x;
-                    velocity.y = wallJumpOff.y;
-                }
-                else //if input is oposite to the wall (jump away)
-                {
-                    velocity.x = -wallDirX * wallJumpAway.x;
-                    velocity.y = wallJumpAway.y;
-                }
-
-            }
-
-            if (isOnTooSteepSlope)
-            {
-                //Add jumping similar to wall jumping or regular jumping
-            }
-
-
-            if (thisCharacterController.collisions.bottom)
-            {
-                if(thisCharacterController.collisions.slidingDownSlope)
-                {
-                    if( Mathf.Sign(movementInput) == -wallDirX ) //not jumping againts max slope (or you should jump, since we have wall jumping?)
-                    {
-                        //not using Verlet
-                        velocity.y = slidingJump.y * thisCharacterController.collisions.slopeNormal.y;
-                        velocity.x = slidingJump.x * thisCharacterController.collisions.slopeNormal.x;
-                    }
-                }
-                else
+                if( isWallSliding )
                 {
                     isJumping = true;
-                    float prevYVelocity = velocity.y;
-                    float newYVelocity = velocity.y + initialJumpVelocity;
-                    velocity.y = (prevYVelocity + newYVelocity) * 0.5f;
+                    Vector2 prevVelocity = velocity;
+
+                    //TODO: implement Verlet velocity calculation
+                    if( wallDirX == movementInput )
+                    {
+                        velocity.x = -wallDirX * wallJumpClimb.x;
+                        velocity.y = wallJumpClimb.y;
+                    }
+                    else if( wallDirX == 0 )
+                    {
+                        velocity.x = -wallDirX * wallJumpOff.x;
+                        velocity.y = wallJumpOff.y;
+                    }
+                    else //if input is oposite to the wall (jump away)
+                    {
+                        velocity.x = -wallDirX * wallJumpAway.x;
+                        velocity.y = wallJumpAway.y;
+                    }
+
                 }
+
+                if( isOnTooSteepSlope )
+                {
+                    //Add jumping similar to wall jumping or regular jumping
+                }
+
+
+                if( thisCharacterController.collisions.bottom )
+                {
+                    if( thisCharacterController.collisions.slidingDownSlope )
+                    {
+                        if( Mathf.Sign( movementInput ) == -wallDirX ) //not jumping againts max slope (or you should jump, since we have wall jumping?)
+                        {
+                            //not using Verlet
+                            velocity.y = slidingJump.y * thisCharacterController.collisions.slopeNormal.y;
+                            velocity.x = slidingJump.x * thisCharacterController.collisions.slopeNormal.x;
+                        }
+                    }
+                    else
+                    {
+                        isJumping = true;
+                        float prevYVelocity = velocity.y;
+                        float newYVelocity = velocity.y + initialJumpVelocity;
+                        velocity.y = (prevYVelocity + newYVelocity) * 0.5f;
+                    }
+                }
+
             }
-
-        } 
-        else if( (isJumping && !isJumpPressed && thisCharacterController.collisions.bottom ) || isWallSliding)
-        {
-            isJumping = false;
+            else if( (isJumping && !isJumpPressed && thisCharacterController.collisions.bottom) || isWallSliding )
+            {
+                isJumping = false;
+            }
         }
+
+
+        public void OnMovement( InputAction.CallbackContext ctx )
+        {
+            movementInput = ctx.ReadValue<float>();
+        }
+
+
+        public void OnJump( InputAction.CallbackContext ctx )
+        {
+            if( ctx.performed || ctx.started )
+            {
+                isJumpPressed = true;
+            }
+            else if( ctx.canceled )
+            {
+                isJumpPressed = false;
+            }
+        }
+
+        public void OnDownKey( InputAction.CallbackContext ctx )
+        {
+            if( ctx.performed || ctx.started )
+            {
+                isDownKeyPressed = true;
+            }
+            else if( ctx.canceled )
+            {
+                isDownKeyPressed = false;
+            }
+        }
+
+        
+
     }
-
-
-    public void OnMovement( InputAction.CallbackContext ctx )
-    {
-        movementInput = ctx.ReadValue<float>();
-    }
-
-
-    public void OnJump( InputAction.CallbackContext ctx )
-    {
-        if( ctx.performed || ctx.started )
-        {
-            isJumpPressed = true;
-        }
-        else if( ctx.canceled )
-        {
-            isJumpPressed = false;
-        }
-    }
-
-    public void OnDownKey(InputAction.CallbackContext ctx)
-    {
-        if (ctx.performed || ctx.started)
-        {
-            isDownKeyPressed = true;
-        }
-        else if (ctx.canceled)
-        {
-            isDownKeyPressed = false;
-        }
-    }
-
 }

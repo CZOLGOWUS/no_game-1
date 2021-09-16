@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+using noGame.Collisions;
+using noGame.Characters;
+
 public class PlatformController : RaycastController
 {
     private struct PassengerMovement

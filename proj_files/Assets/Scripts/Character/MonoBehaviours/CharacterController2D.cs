@@ -14,7 +14,6 @@ namespace noGame.Characters
         {
             //collisions
             public bool top, bottom, left, right;
-            private bool isVerticalCollisionDisabled, isHorizontalCollisionDisabled;
 
             //slope states
             public bool climbingSlope;
@@ -33,7 +32,6 @@ namespace noGame.Characters
             public void Reset()
             {
                 top = bottom = left = right = climbingSlope = descendingSlope = slidingDownSlope = false;
-                isVerticalCollisionDisabled = isHorizontalCollisionDisabled = false;
                 previousSlopeAngle = slopeAngle;
                 slopeAngle = 0;
                 slopeNormal = Vector2.zero;
@@ -56,11 +54,8 @@ namespace noGame.Characters
         [Header( "Slope Options" )]
         [SerializeField] private float maxSlopeAngle = 70.0f;
 
-        private bool phaseDownKeyPressed = false;
-
 
         public float MaxClimbAngle { get => maxSlopeAngle; }
-        public bool PhaseDownKeyPressed { get => phaseDownKeyPressed; set => phaseDownKeyPressed = value; }
 
 
         //helping variables
@@ -74,7 +69,7 @@ namespace noGame.Characters
         public override void Start()
         {
             base.Start();
-            phaseDownKeyPressed = false;
+
             collisions.faceDirection = 1;
             boxCastContactFilter.SetLayerMask( collisionMask );
 
@@ -111,8 +106,8 @@ namespace noGame.Characters
         {
             if( velocity.y < 0f )
             {
-                RaycastHit2D maxSlopeHitLeft = Physics2D.Raycast( raycastOrigins.bottomLeft , Vector2.down , Mathf.Abs( velocity.y ) + skinWidth , collisionMask );
-                RaycastHit2D maxSlopeHitRight = Physics2D.Raycast( raycastOrigins.bottomRight , Vector2.down , Mathf.Abs( velocity.y ) + skinWidth , collisionMask );
+                RaycastHit2D maxSlopeHitLeft = Physics2D.Raycast( raycastOrigins.bottomLeft , Vector2.down , Mathf.Abs( velocity.y ) + SkinWidth , collisionMask );
+                RaycastHit2D maxSlopeHitRight = Physics2D.Raycast( raycastOrigins.bottomRight , Vector2.down , Mathf.Abs( velocity.y ) + SkinWidth , collisionMask );
 
                 //if only one of these two hit
                 if( maxSlopeHitLeft ^ maxSlopeHitRight )
@@ -136,7 +131,7 @@ namespace noGame.Characters
                         if( slopeAngle != 0f &&
                             slopeAngle <= maxSlopeAngle &&
                             Mathf.Sign( hit.normal.x ) == directionX &&
-                            hit.distance - skinWidth <= Mathf.Tan( slopeAngle * Mathf.Deg2Rad ) * Mathf.Abs( velocity.x ) )
+                            hit.distance - SkinWidth <= Mathf.Tan( slopeAngle * Mathf.Deg2Rad ) * Mathf.Abs( velocity.x ) )
                         {
 
                             float moveDistance = Mathf.Abs( velocity.x );
@@ -186,7 +181,7 @@ namespace noGame.Characters
 
             int directionX = collisions.faceDirection;
             //2*x cuz of box cast
-            float raycastLength = Mathf.Abs( velocity.x ) + skinWidth * 2f;
+            float raycastLength = Mathf.Abs( velocity.x ) + SkinWidth * 2f;
             //previous largest angle of the wall hit this frame in for loop
             float prevAngle = 0f;
 
@@ -196,7 +191,7 @@ namespace noGame.Characters
                 boxCastOrigins.rightCenter;
 
 
-            Vector2 boxCastSize = new Vector2( skinWidth , boundsHeight - skinWidth );
+            Vector2 boxCastSize = new Vector2( SkinWidth , boundsHeight - SkinWidth );
 
             Physics2D.BoxCast( boxRayOrigin , boxCastSize , 0f , Vector2.right * directionX , boxCastContactFilter , boxCastResults , raycastLength );
 
@@ -215,7 +210,7 @@ namespace noGame.Characters
 
                 if( prevAngle < slopeAngle )
                 {
-                    if( hit.collider.CompareTag( "PhaseUpward" ) )
+                    if( hit.collider.CompareTag( "Phasing" ) )
                         continue;
 
                     collisions.SetSlopeAngle( slopeAngle , hit.normal );
@@ -279,7 +274,7 @@ namespace noGame.Characters
             if( velocity.y != 0f )
             {
                 float directionY = Mathf.Sign( velocity.y );
-                float raycastLength = Mathf.Abs( velocity.y ) + skinWidth;
+                float raycastLength = Mathf.Abs( velocity.y ) + SkinWidth;
 
 
                 for( int i = 0 ; i < verticalRayCount ; i++ )
@@ -289,35 +284,26 @@ namespace noGame.Characters
 
                     RaycastHit2D hit = Physics2D.Raycast( rayOrigin , Vector2.up * directionY , raycastLength , collisionMask );
 
-
-                    if( collisions.bottom ) //object stopped falling
-                    {
-                        collisions.phasingDownPlatform = null;
-                    }
+                    //print( collisions.phasingDownPlatform );
 
                     if( hit )
                     {
 
                         Debug.DrawRay( rayOrigin , Vector2.up * directionY , Color.red );
 
-                        if( hit.collider.CompareTag( "PhaseUpward" ) )
+                        if( hit.collider.CompareTag( "Phasing" ) )
                         {
-                            if( directionY == 1 || hit.distance <= 0f )
+                            if( directionY == 1 || hit.distance <= 0f || hit.collider == collisions.phasingDownPlatform )
                                 continue;
-
-                            // This is half-mine (CKTA00) solution that i found in comments of the toutorial. REQUIRES FURTHER TESTING
-                            if( hit.collider == collisions.phasingDownPlatform ) //if this is the same platform we already phasing through, continue
-                                continue;
-
-                            if( phaseDownKeyPressed )
-                            {
-                                collisions.phasingDownPlatform = hit.collider; //setting platform to ignore
-                                continue;
-                            }
+                        }
+                        
+                        if(collisions.bottom)
+                        {
+                            collisions.phasingDownPlatform = null;
                         }
 
 
-                        velocity.y = (hit.distance - skinWidth) * directionY;
+                        velocity.y = (hit.distance - SkinWidth) * directionY;
                         raycastLength = hit.distance;
 
                         if( collisions.climbingSlope )
@@ -327,13 +313,14 @@ namespace noGame.Characters
 
                         collisions.bottom = directionY == -1;
                         collisions.top = directionY == 1;
+
                     }
 
                     //check if changing from slope to slope and if so then change velocity vector for smooth transition
                     if( collisions.climbingSlope )
                     {
                         float directionX = Mathf.Sign( velocity.x );
-                        raycastLength = Mathf.Abs( velocity.x ) + skinWidth;
+                        raycastLength = Mathf.Abs( velocity.x ) + SkinWidth;
 
                         Vector2 newRayOrigin = ((directionX == -1) ? 
                             raycastOrigins.bottomLeft : 
@@ -346,7 +333,7 @@ namespace noGame.Characters
                             float slopeAngle = Vector2.Angle( slopeHit.normal , Vector2.up );
                             if( slopeAngle != collisions.slopeAngle )
                             {
-                                velocity.x = (slopeHit.distance - skinWidth) * directionX;
+                                velocity.x = (slopeHit.distance - SkinWidth) * directionX;
                                 collisions.SetSlopeAngle( slopeAngle , hit.normal );
                             }
                         }
@@ -372,9 +359,9 @@ namespace noGame.Characters
             }
         }
 
-        protected void DisableAllCollisions()
+        public void PhaseThroughtPlatform(Collider2D platform)
         {
-
+            collisions.phasingDownPlatform = platform;
         }
 
 

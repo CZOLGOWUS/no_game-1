@@ -94,7 +94,7 @@ public class PlatformController : RaycastController
         float distanceBetweenWayPoints = Vector3.Distance( globalWaypoints[fromWaypointIndex] , globalWaypoints[toWaypointIndex] );
 
         percentBetwenWaypoints = Mathf.Clamp01( percentBetwenWaypoints + Time.fixedDeltaTime * speed / distanceBetweenWayPoints);
-        float easedPrecentBetwenWaypoints = Ease( percentBetwenWaypoints );
+        float easedPrecentBetwenWaypoints = Smoother.Ease01( percentBetwenWaypoints, easeSpeed );
 
         Vector3 newPos = Vector3.Lerp( globalWaypoints[fromWaypointIndex] , globalWaypoints[toWaypointIndex] , easedPrecentBetwenWaypoints );
 
@@ -149,7 +149,7 @@ public class PlatformController : RaycastController
         //vertical moving handling
         if( velocity.y != 0 )
         {
-            float raycastLength = Mathf.Abs( velocity.y ) + skinWidth;
+            float raycastLength = Mathf.Abs( velocity.y ) + SkinWidth;
 
             for( int i = 0 ; i < verticalRayCount ; i++ )
             {
@@ -169,7 +169,7 @@ public class PlatformController : RaycastController
                         movedPassangers.Add( hit.transform );
 
                         float pushX = (directionY == 1) ? velocity.x : 0f;
-                        float pushY = velocity.y - (hit.distance - skinWidth) * directionY;
+                        float pushY = velocity.y - (hit.distance - SkinWidth) * directionY;
 
                         passengerMovements.Add( new PassengerMovement(
                                                     hit.transform,
@@ -189,7 +189,7 @@ public class PlatformController : RaycastController
         if(velocity.x != 0)
         {
 
-            float raycastLength = Mathf.Abs( velocity.x ) + skinWidth;
+            float raycastLength = Mathf.Abs( velocity.x ) + SkinWidth;
 
             for( int i = 0 ; i < horizontalRayCount ; i++ )
             {
@@ -207,8 +207,8 @@ public class PlatformController : RaycastController
                     {
                         movedPassangers.Add( hit.transform );
 
-                        float pushX = velocity.x - (hit.distance - skinWidth) * directionX;
-                        float pushY = -skinWidth;
+                        float pushX = velocity.x - (hit.distance - SkinWidth) * directionX;
+                        float pushY = -SkinWidth;
 
                         passengerMovements.Add( new PassengerMovement(
                                                     hit.transform ,
@@ -229,7 +229,7 @@ public class PlatformController : RaycastController
 
         if(directionY == -1 || velocity.y == 0f && velocity.x != 0f)
         {
-            float raycastLength = skinWidth * 2f;
+            float raycastLength = SkinWidth * 2f;
 
             for( int i = 0 ; i < verticalRayCount ; i++ )
             {
@@ -268,11 +268,7 @@ public class PlatformController : RaycastController
     }
 
 
-    float Ease(float x)
-    {
-        float a = easeSpeed + 1f;
-        return Mathf.Pow( x , a ) / (Mathf.Pow( x , a ) + Mathf.Pow( 1 - x , a ));
-    }
+
 
 
     private void OnDrawGizmos()

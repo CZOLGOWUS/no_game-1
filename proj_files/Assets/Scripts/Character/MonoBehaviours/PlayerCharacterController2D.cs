@@ -78,9 +78,6 @@ namespace noGame.Characters
             HandleGravity();
             HandleJumping( isWallSlliding , thisCharacterController.collisions.slidingDownSlope , wallDirX );
 
-            //sending input to CharacterController without modifying Move function
-            thisCharacterController.PhaseDownKeyPressed = isDownKeyPressed;
-
             thisCharacterController.Move( (velocity + autoMove) * Time.fixedDeltaTime );
 
             HandleTopBottomCollisionsWhileAirborn();
@@ -272,6 +269,9 @@ namespace noGame.Characters
             if( ctx.performed || ctx.started )
             {
                 isDownKeyPressed = true;
+
+                CheckIfStandingOnPhasePlatform();
+
             }
             else if( ctx.canceled )
             {
@@ -279,7 +279,22 @@ namespace noGame.Characters
             }
         }
 
-        
+        private void CheckIfStandingOnPhasePlatform()
+        {
+            if( thisCharacterController.collisions.bottom )
+            {
+                RaycastHit2D hitLeft = Physics2D.Raycast( thisCharacterController.raycastOrigin.bottomLeft , Vector2.down );
+                RaycastHit2D hitRight = Physics2D.Raycast( thisCharacterController.raycastOrigin.bottomRight , Vector2.down );
 
+                if( hitLeft && hitLeft.collider.CompareTag( "Phasing" )  )
+                {
+                    thisCharacterController.PhaseThroughtPlatform( hitLeft.collider );
+                }
+                else if( hitRight && hitRight.collider.CompareTag( "Phasing" ) )
+                {
+                    thisCharacterController.PhaseThroughtPlatform( hitRight.collider );
+                }
+            }
+        }
     }
 }

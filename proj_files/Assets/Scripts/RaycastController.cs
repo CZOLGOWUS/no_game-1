@@ -8,7 +8,7 @@ namespace noGame.Collisions
     [RequireComponent( typeof( BoxCollider2D ) )]
     public class RaycastController : MonoBehaviour
     {
-        protected struct RaycastOrigins
+        public struct RaycastOrigins
         {
             public Vector2 topLeft, topRight;
             public Vector2 bottomLeft, bottomRight;
@@ -51,8 +51,10 @@ namespace noGame.Collisions
         protected float verticalRaySpacing;
 
 
+        public RaycastOrigins raycastOrigin { get => raycastOrigins; }
+        public BoxCastOrigins boxCastOrigin { get => boxCastOrigins; }
 
-
+        protected static float SkinWidth { get => skinWidth; }
 
         public virtual void Start()
         {

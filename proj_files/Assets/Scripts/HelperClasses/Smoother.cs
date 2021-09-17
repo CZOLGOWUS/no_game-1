@@ -30,4 +30,12 @@ public static class Smoother
         return 1f - x;
     }
 
+
+    public static float Ease01( float x , float easeSpeed )
+    {
+        float a = easeSpeed + 1f;
+        return Mathf.Pow( x , a ) / (Mathf.Pow( x , a ) + Mathf.Pow( 1 - x , a ));
+    }
+
+
 }

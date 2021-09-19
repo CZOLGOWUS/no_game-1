@@ -51,10 +51,16 @@ namespace noGame.Collisions
         protected float verticalRaySpacing;
 
 
+        //public Properties
         public RaycastOrigins raycastOrigin { get => raycastOrigins; }
         public BoxCastOrigins boxCastOrigin { get => boxCastOrigins; }
 
-        protected static float SkinWidth { get => skinWidth; }
+        public float SkinWidth { get => skinWidth; }
+
+
+
+
+
 
         public virtual void Start()
         {

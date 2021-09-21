@@ -51,7 +51,7 @@ namespace noGame.Characters
         [SerializeField] private bool isJumpPressed = false; //button
 
         private Vector2 currentVelocity;
-        private Vector2 appliedVelocity;
+        private Vector2 nextVelocity;
 
         private bool isFalling;
         private float maxCharacterPositionOffset = 100f;
@@ -61,7 +61,7 @@ namespace noGame.Characters
 
 
         float countTime;
-
+        float tempVar = 0.97565f;
 
 
         private void Awake()
@@ -82,18 +82,21 @@ namespace noGame.Characters
 
             
 
+
             HandleInputSmoothing();
 
             HandleGravity();
-
             HandleWallJumping();
-            HandleJumping( isWallSlliding , thisCharacterController.collisions.isSlidingDownSlope , wallDirX );
+
+            //something in this function is causing the jumpHeight diffrence
+            HandleJumping( isWallSlliding ,wallDirX );
 
 
-            appliedVelocity.x = currentVelocity.x;
-            appliedVelocity.y = currentVelocity.y;
+            currentVelocity.x = (nextVelocity.x + currentVelocity.x) * 0.5f;
+            currentVelocity.y = (nextVelocity.y + currentVelocity.y) * 0.5f;
 
-            thisCharacterController.Move( (autoMove + appliedVelocity) * Time.fixedDeltaTime );
+
+            thisCharacterController.Move( (autoMove + currentVelocity) * Time.deltaTime );
 
 
             HandleVerticalImpactVelocity();
@@ -103,27 +106,11 @@ namespace noGame.Characters
         private void SetupJumpVariales()
         {
             gravity = -(2 * jumpHeight) / Mathf.Pow( timeToJumpApex , 2 );
-            initialJumpVelocity = (2 * jumpHeight) / (timeToJumpApex);
+            initialJumpVelocity = ((2 * jumpHeight) / (timeToJumpApex));// * tempVar;
 
             print( "Gravity: " + gravity + " jump vel: " + initialJumpVelocity );
         }
 
-
-        private void HandleVerticalImpactVelocity()
-        {
-            if( thisCharacterController.collisions.top || thisCharacterController.isGrounded )
-            {
-                if( thisCharacterController.collisions.isSlidingDownSlope )
-                {
-                     appliedVelocity.y += thisCharacterController.collisions.slopeNormal.y * -gravity * Time.deltaTime;
-                }
-                else
-                {
-                    currentVelocity.y = 0f;
-                    appliedVelocity.y = 0f;
-                }
-            }
-        }
 
         private void HandleWallJumping()
         {
@@ -134,14 +121,14 @@ namespace noGame.Characters
 
             isWallSlliding = false;
 
-            if( (thisCharacterController.collisions.left || thisCharacterController.collisions.right) && !thisCharacterController.isGrounded && currentVelocity.y < 0f )
+            if( (thisCharacterController.collisions.left || thisCharacterController.collisions.right) && !thisCharacterController.isGrounded && nextVelocity.y < 0f )
             {
                 isWallSlliding = true;
 
                 if( currentVelocity.y < -wallSlideSpeedMax )
                 {
                     currentVelocity.y = -wallSlideSpeedMax;
-                    appliedVelocity.y = -wallSlideSpeedMax;
+                    nextVelocity.y = -wallSlideSpeedMax;
                 }
 
                 if( timeToWallUnstick > 0f )
@@ -150,7 +137,7 @@ namespace noGame.Characters
                     velocityXSmooth = 0f;
 
                     currentVelocity.x = 0f;
-                    appliedVelocity.x = 0f;
+                    nextVelocity.x = 0f;
 
                     if( movementInput != wallDirX && movementInput != 0f )
                         timeToWallUnstick -= Time.deltaTime;
@@ -175,39 +162,40 @@ namespace noGame.Characters
             if( thisCharacterController.collisions.slopeAngle <= thisCharacterController.MaxClimbAngle )
             {
                 currentVelocity.x = Mathf.SmoothDamp( currentVelocity.x , targetVelocityX , ref velocityXSmooth , accelerationTime );
-                appliedVelocity.x = Mathf.SmoothDamp( currentVelocity.x , targetVelocityX , ref velocityXSmooth , accelerationTime );
+                nextVelocity.x = Mathf.SmoothDamp( nextVelocity.x , targetVelocityX , ref velocityXSmooth , accelerationTime );
             }
             else
             {
                 currentVelocity.x = Mathf.SmoothDamp( 0f , targetVelocityX , ref velocityXSmooth , accelerationTime );
-                appliedVelocity.x = Mathf.SmoothDamp( 0f , targetVelocityX , ref velocityXSmooth , accelerationTime );
+                nextVelocity.x = Mathf.SmoothDamp( 0f , targetVelocityX , ref velocityXSmooth , accelerationTime );
             }
         }
 
 
         private void HandleGravity()
         {
-            isFalling = currentVelocity.y <= 0f;
+            isFalling = nextVelocity.y <= 0f;
 
             print( "isGround: " + thisCharacterController.isGrounded );
             if( !isFalling && isJumpPressed )
             {
-                ApplyYVelocity( gravity * Time.deltaTime );
+                nextVelocity.y += gravity * Time.deltaTime;
             }
-            else if( Mathf.Abs(currentVelocity.y) < maxCharacterPositionOffset )
+            else if( Mathf.Abs(nextVelocity.y) < maxCharacterPositionOffset )
             {
-                ApplyYVelocity( gravity * fallGravityMultiplier * Time.deltaTime );
+                print( "here" );
+                nextVelocity.y += gravity * fallGravityMultiplier * Time.deltaTime;
             }
             else
             {
-                appliedVelocity.y = Mathf.Clamp( appliedVelocity.y , -maxCharacterPositionOffset , maxCharacterPositionOffset );
+                nextVelocity.y = Mathf.Clamp( nextVelocity.y , -maxCharacterPositionOffset , maxCharacterPositionOffset );
                 currentVelocity.y = Mathf.Clamp( currentVelocity.y , -maxCharacterPositionOffset , maxCharacterPositionOffset );
             }
 
         }
 
 
-        private void HandleJumping( bool isWallSliding , bool isOnTooSteepSlope , int wallDirX )
+        private void HandleJumping( bool isWallSliding , int wallDirX )
         {
             if( !isJumping && isJumpPressed )
             {
@@ -218,29 +206,23 @@ namespace noGame.Characters
                     //TODO: implement Verlet velocity calculation
                     if( wallDirX == movementInput )
                     {
-                        currentVelocity.x = -wallDirX * wallJumpClimb.x;
-                        currentVelocity.y = wallJumpClimb.y;
-                        appliedVelocity.x = -wallDirX * wallJumpClimb.x;
-                        appliedVelocity.y = wallJumpClimb.y;
+                        nextVelocity.x = -wallDirX * wallJumpClimb.x;
+                        nextVelocity.y = wallJumpClimb.y;
                     }
                     else if( wallDirX == 0 )
                     {
-                        currentVelocity.x = -wallDirX * wallJumpOff.x;
-                        currentVelocity.y = wallJumpOff.y;
-                        appliedVelocity.x = -wallDirX * wallJumpOff.x;
-                        appliedVelocity.y = wallJumpOff.y;
+                        nextVelocity.x = -wallDirX * wallJumpOff.x;
+                        nextVelocity.y = wallJumpOff.y;
                     }
                     else //if input is oposite to the wall (jump away)
                     {
-                        currentVelocity.x = -wallDirX * wallJumpOff.x;
-                        currentVelocity.y = wallJumpOff.y;
-                        appliedVelocity.x = -wallDirX * wallJumpOff.x;
-                        appliedVelocity.y = wallJumpOff.y;
+                        nextVelocity.x = -wallDirX * wallJumpOff.x;
+                        nextVelocity.y = wallJumpOff.y;
                     }
 
                 }
 
-                if( isOnTooSteepSlope )
+                if( thisCharacterController.collisions.isSlidingDownSlope )
                 {
                     //Add jumping similar to wall jumping or regular jumping
                 }
@@ -253,17 +235,14 @@ namespace noGame.Characters
                     {
                         if( Mathf.Sign( movementInput ) == -wallDirX ) //not jumping againts max slope (or you should jump, since we have wall jumping?)
                         {
-                            currentVelocity.x = slidingJump.x * thisCharacterController.collisions.slopeNormal.x;
-                            currentVelocity.y = slidingJump.y * thisCharacterController.collisions.slopeNormal.y;
-                            appliedVelocity.x = slidingJump.x * thisCharacterController.collisions.slopeNormal.x;
-                            appliedVelocity.y = slidingJump.y * thisCharacterController.collisions.slopeNormal.y;
+                            nextVelocity.x = slidingJump.x * thisCharacterController.collisions.slopeNormal.x;
+                            nextVelocity.y = slidingJump.y * thisCharacterController.collisions.slopeNormal.y;
                         }
                     }
                     else
                     {
 
-                        currentVelocity.y = initialJumpVelocity;
-                        appliedVelocity.y = initialJumpVelocity;
+                        nextVelocity.y += initialJumpVelocity;
 
                         isJumping = true;
                     }
@@ -273,6 +252,23 @@ namespace noGame.Characters
             else if( (isJumping && !isJumpPressed && thisCharacterController.isGrounded) || isWallSliding )
             {
                 isJumping = false;
+            }
+        }
+
+
+        private void HandleVerticalImpactVelocity()
+        {
+            if( thisCharacterController.collisions.top || thisCharacterController.isGrounded )
+            {
+                if( thisCharacterController.collisions.isSlidingDownSlope )
+                {
+                    nextVelocity.y += thisCharacterController.collisions.slopeNormal.y * -gravity * Time.deltaTime;
+                }
+                else
+                {
+                    //currentVelocity.y = 0f;
+                    nextVelocity.y = 0f;
+                }
             }
         }
 
@@ -337,7 +333,7 @@ namespace noGame.Characters
         {
             Vector2 prevVelocity = currentVelocity;
             currentVelocity = currentVelocity + force;
-            appliedVelocity = (prevVelocity + currentVelocity) * 0.5f;
+            nextVelocity = (prevVelocity + currentVelocity) * 0.5f;
 
         }
 
@@ -345,7 +341,7 @@ namespace noGame.Characters
         {
             float prevYVelocity = currentVelocity.y;
             currentVelocity.y = currentVelocity.y + force;
-            appliedVelocity.y = (prevYVelocity + currentVelocity.y) * 0.5f;
+            nextVelocity.y = (prevYVelocity + currentVelocity.y) * 0.5f;
 
         }
 
@@ -353,7 +349,7 @@ namespace noGame.Characters
         {
             float prevXVelocity = currentVelocity.x;
             currentVelocity.x = currentVelocity.x + force;
-            appliedVelocity.x = (prevXVelocity + currentVelocity.x) * 0.5f;
+            nextVelocity.x = (prevXVelocity + currentVelocity.x) * 0.5f;
 
         }
 

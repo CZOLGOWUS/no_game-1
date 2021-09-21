@@ -298,11 +298,11 @@ namespace noGame.Characters
 
         }
 
-        public float directionY;
+
         private void HandleVerticalCollisions( ref Vector2 velocity )
         {
             //print( "velocity : " + velocity.y );
-            directionY = velocity.y <= 0f ? -1 : 1;
+            float directionY = Mathf.Sign( velocity.y );//velocity.y <= 0f ? -1 : 1;
             //print("directionY : " + directionY );
 
             float raycastLength = Mathf.Abs( velocity.y ) + SkinWidth * 2f;

@@ -546,11 +546,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3522361025129137828, guid: fad84ad08584e2946814af9f41895098, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 17.78
+      value: 18.016666
       objectReference: {fileID: 0}
     - target: {fileID: 3522361025129137828, guid: fad84ad08584e2946814af9f41895098, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.75
+      value: 0.025625683
       objectReference: {fileID: 0}
     - target: {fileID: 3522361025129137828, guid: fad84ad08584e2946814af9f41895098, type: 3}
       propertyPath: m_LocalPosition.z
@@ -638,7 +638,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8329171120981333470, guid: fad84ad08584e2946814af9f41895098, type: 3}
       propertyPath: distanceBetwenVerticalRays
-      value: 2
+      value: 0.25
       objectReference: {fileID: 0}
     - target: {fileID: 8329171120981333470, guid: fad84ad08584e2946814af9f41895098, type: 3}
       propertyPath: isWallslidingWithNoXMovment
@@ -1344,11 +1344,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3144256570988933269, guid: 7ce4ff6ebbd7aa14988ce33322968169, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 17.78
+      value: 18.016666
       objectReference: {fileID: 0}
     - target: {fileID: 3144256570988933269, guid: 7ce4ff6ebbd7aa14988ce33322968169, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.7800002
+      value: 0.055625893
       objectReference: {fileID: 0}
     - target: {fileID: 3144256570988933269, guid: 7ce4ff6ebbd7aa14988ce33322968169, type: 3}
       propertyPath: m_LocalPosition.z

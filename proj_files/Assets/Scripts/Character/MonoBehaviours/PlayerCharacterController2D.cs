@@ -47,8 +47,8 @@ namespace noGame.Characters
         private bool isJumping = false;
 
         private float movementInput;
+        private bool isDownKeyPressed;
         [SerializeField] private bool isJumpPressed = false; //button
-        private bool isDownKeyPressed = false; //button
 
         private Vector2 currentVelocity;
         private Vector2 appliedVelocity;
@@ -59,6 +59,11 @@ namespace noGame.Characters
         //for jump to work as intended for now
         [SerializeField] private Vector2 autoMove;
 
+
+        float countTime;
+
+
+
         private void Awake()
         {
             thisCharacterController = GetComponent<CharacterController2D>();
@@ -67,25 +72,31 @@ namespace noGame.Characters
 
         }
 
+        private void Update()
+        {
+            
+        }
 
         private void FixedUpdate()
         {
 
-            //this is here for walljumping to work, i know... dumb implementation
+            
+
             HandleInputSmoothing();
 
-            HandleWallJumping();
-
-
             HandleGravity();
-            HandleJumping( isWallSlliding , thisCharacterController.collisions.slidingDownSlope , wallDirX );
+
+            HandleWallJumping();
+            HandleJumping( isWallSlliding , thisCharacterController.collisions.isSlidingDownSlope , wallDirX );
+
 
             appliedVelocity.x = currentVelocity.x;
             appliedVelocity.y = currentVelocity.y;
 
             thisCharacterController.Move( (autoMove + appliedVelocity) * Time.fixedDeltaTime );
 
-            HandleTopBottomCollisionsWhileAirborn();
+
+            HandleVerticalImpactVelocity();
 
         }
 
@@ -93,22 +104,24 @@ namespace noGame.Characters
         {
             gravity = -(2 * jumpHeight) / Mathf.Pow( timeToJumpApex , 2 );
             initialJumpVelocity = (2 * jumpHeight) / (timeToJumpApex);
-            //initialJumpVelocity = Mathf.Abs( gravity * timeToJumpApex );
 
             print( "Gravity: " + gravity + " jump vel: " + initialJumpVelocity );
         }
 
 
-        private void HandleTopBottomCollisionsWhileAirborn()
+        private void HandleVerticalImpactVelocity()
         {
-            if( thisCharacterController.collisions.top || thisCharacterController.collisions.bottom )
+            if( thisCharacterController.collisions.top || thisCharacterController.isGrounded )
             {
-                if( thisCharacterController.collisions.slidingDownSlope )
+                if( thisCharacterController.collisions.isSlidingDownSlope )
                 {
-                    ApplyVelocity( thisCharacterController.collisions.slopeNormal.y * -gravity * Time.deltaTime  * Vector2.up );
+                     appliedVelocity.y += thisCharacterController.collisions.slopeNormal.y * -gravity * Time.deltaTime;
                 }
                 else
+                {
                     currentVelocity.y = 0f;
+                    appliedVelocity.y = 0f;
+                }
             }
         }
 
@@ -121,13 +134,14 @@ namespace noGame.Characters
 
             isWallSlliding = false;
 
-            if( (thisCharacterController.collisions.left || thisCharacterController.collisions.right) && !thisCharacterController.collisions.bottom && currentVelocity.y < 0f )
+            if( (thisCharacterController.collisions.left || thisCharacterController.collisions.right) && !thisCharacterController.isGrounded && currentVelocity.y < 0f )
             {
                 isWallSlliding = true;
 
                 if( currentVelocity.y < -wallSlideSpeedMax )
                 {
                     currentVelocity.y = -wallSlideSpeedMax;
+                    appliedVelocity.y = -wallSlideSpeedMax;
                 }
 
                 if( timeToWallUnstick > 0f )
@@ -136,6 +150,7 @@ namespace noGame.Characters
                     velocityXSmooth = 0f;
 
                     currentVelocity.x = 0f;
+                    appliedVelocity.x = 0f;
 
                     if( movementInput != wallDirX && movementInput != 0f )
                         timeToWallUnstick -= Time.deltaTime;
@@ -154,16 +169,18 @@ namespace noGame.Characters
         private void HandleInputSmoothing()
         {
             float targetVelocityX = movementInput * moveSpeed;
-            float accelerationTime = (thisCharacterController.collisions.bottom) ? accelerationTimeGrounded : accelerationTimeAirborn;
+            float accelerationTime = (thisCharacterController.isGrounded) ? accelerationTimeGrounded : accelerationTimeAirborn;
 
             //smooth input, if collides with a wall (aka head on collision) then kill momentum
             if( thisCharacterController.collisions.slopeAngle <= thisCharacterController.MaxClimbAngle )
             {
                 currentVelocity.x = Mathf.SmoothDamp( currentVelocity.x , targetVelocityX , ref velocityXSmooth , accelerationTime );
+                appliedVelocity.x = Mathf.SmoothDamp( currentVelocity.x , targetVelocityX , ref velocityXSmooth , accelerationTime );
             }
             else
             {
                 currentVelocity.x = Mathf.SmoothDamp( 0f , targetVelocityX , ref velocityXSmooth , accelerationTime );
+                appliedVelocity.x = Mathf.SmoothDamp( 0f , targetVelocityX , ref velocityXSmooth , accelerationTime );
             }
         }
 
@@ -172,17 +189,18 @@ namespace noGame.Characters
         {
             isFalling = currentVelocity.y <= 0f;
 
-            //this implementation causes wall jumping to be a bit undesirable
+            print( "isGround: " + thisCharacterController.isGrounded );
             if( !isFalling && isJumpPressed )
             {
-                ApplyVelocity( gravity * Time.deltaTime * Vector2.up );
+                ApplyYVelocity( gravity * Time.deltaTime );
             }
-            else if(Mathf.Abs(currentVelocity.y) < maxCharacterPositionOffset )
+            else if( Mathf.Abs(currentVelocity.y) < maxCharacterPositionOffset )
             {
-                ApplyVelocity( gravity * fallGravityMultiplier * Time.deltaTime * Vector2.up );
+                ApplyYVelocity( gravity * fallGravityMultiplier * Time.deltaTime );
             }
             else
             {
+                appliedVelocity.y = Mathf.Clamp( appliedVelocity.y , -maxCharacterPositionOffset , maxCharacterPositionOffset );
                 currentVelocity.y = Mathf.Clamp( currentVelocity.y , -maxCharacterPositionOffset , maxCharacterPositionOffset );
             }
 
@@ -200,15 +218,24 @@ namespace noGame.Characters
                     //TODO: implement Verlet velocity calculation
                     if( wallDirX == movementInput )
                     {
-                        ApplyVelocity( new Vector2( -wallDirX * wallJumpClimb.x, wallJumpClimb.y) );
+                        currentVelocity.x = -wallDirX * wallJumpClimb.x;
+                        currentVelocity.y = wallJumpClimb.y;
+                        appliedVelocity.x = -wallDirX * wallJumpClimb.x;
+                        appliedVelocity.y = wallJumpClimb.y;
                     }
                     else if( wallDirX == 0 )
                     {
-                        ApplyVelocity( new Vector2( -wallDirX * wallJumpOff.x , wallJumpOff.y ) );
+                        currentVelocity.x = -wallDirX * wallJumpOff.x;
+                        currentVelocity.y = wallJumpOff.y;
+                        appliedVelocity.x = -wallDirX * wallJumpOff.x;
+                        appliedVelocity.y = wallJumpOff.y;
                     }
                     else //if input is oposite to the wall (jump away)
                     {
-                        ApplyVelocity( new Vector2( -wallDirX * wallJumpAway.x , wallJumpAway.y ) );
+                        currentVelocity.x = -wallDirX * wallJumpOff.x;
+                        currentVelocity.y = wallJumpOff.y;
+                        appliedVelocity.x = -wallDirX * wallJumpOff.x;
+                        appliedVelocity.y = wallJumpOff.y;
                     }
 
                 }
@@ -219,27 +246,31 @@ namespace noGame.Characters
                 }
 
 
-                if( thisCharacterController.collisions.bottom )
+                if( thisCharacterController.isGrounded )
                 {
-                    if( thisCharacterController.collisions.slidingDownSlope )
+
+                    if( thisCharacterController.collisions.isSlidingDownSlope )
                     {
                         if( Mathf.Sign( movementInput ) == -wallDirX ) //not jumping againts max slope (or you should jump, since we have wall jumping?)
                         {
-                            ApplyVelocity( new Vector2(
-                                slidingJump.x * thisCharacterController.collisions.slopeNormal.x ,
-                                slidingJump.y * thisCharacterController.collisions.slopeNormal.y ) );
+                            currentVelocity.x = slidingJump.x * thisCharacterController.collisions.slopeNormal.x;
+                            currentVelocity.y = slidingJump.y * thisCharacterController.collisions.slopeNormal.y;
+                            appliedVelocity.x = slidingJump.x * thisCharacterController.collisions.slopeNormal.x;
+                            appliedVelocity.y = slidingJump.y * thisCharacterController.collisions.slopeNormal.y;
                         }
                     }
                     else
                     {
-                        ApplyYVelocity( initialJumpVelocity );
+
+                        currentVelocity.y = initialJumpVelocity;
+                        appliedVelocity.y = initialJumpVelocity;
 
                         isJumping = true;
                     }
                 }
 
             }
-            else if( (isJumping && !isJumpPressed && thisCharacterController.collisions.bottom) || isWallSliding )
+            else if( (isJumping && !isJumpPressed && thisCharacterController.isGrounded) || isWallSliding )
             {
                 isJumping = false;
             }
@@ -281,7 +312,7 @@ namespace noGame.Characters
 
         private void CheckIfStandingOnPhasePlatform()
         {
-            if( thisCharacterController.collisions.bottom )
+            if( thisCharacterController.isGrounded )
             {
                 RaycastHit2D hitLeft = Physics2D.Raycast( thisCharacterController.raycastOrigin.bottomLeft + Vector2.down * thisCharacterController.SkinWidth * 2f , Vector2.down );
                 RaycastHit2D hitRight = Physics2D.Raycast( thisCharacterController.raycastOrigin.bottomRight + Vector2.down * thisCharacterController.SkinWidth * 2f , Vector2.down );

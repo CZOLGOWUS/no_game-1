@@ -638,7 +638,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8329171120981333470, guid: fad84ad08584e2946814af9f41895098, type: 3}
       propertyPath: distanceBetwenVerticalRays
-      value: 0.1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 8329171120981333470, guid: fad84ad08584e2946814af9f41895098, type: 3}
       propertyPath: isWallslidingWithNoXMovment
@@ -646,7 +646,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8329171120981333470, guid: fad84ad08584e2946814af9f41895098, type: 3}
       propertyPath: distanceBetwenHorizontalRays
-      value: 0.1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 9092965227570520634, guid: fad84ad08584e2946814af9f41895098, type: 3}
       propertyPath: tempVar
@@ -2441,7 +2441,7 @@ GameObject:
   - component: {fileID: 888522515}
   m_Layer: 8
   m_Name: JumpHeightTestingPlatform
-  m_TagString: Untagged
+  m_TagString: Platform
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3272,11 +3272,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2943947814528935679, guid: 21c1a275e7f5e9c44923a3c8f6ecc9c6, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.38
+      value: 0.74
       objectReference: {fileID: 0}
     - target: {fileID: 2943947814528935679, guid: 21c1a275e7f5e9c44923a3c8f6ecc9c6, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 14.51
+      value: 13.05
       objectReference: {fileID: 0}
     - target: {fileID: 2943947814528935679, guid: 21c1a275e7f5e9c44923a3c8f6ecc9c6, type: 3}
       propertyPath: m_LocalPosition.z
@@ -4499,11 +4499,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2943947814528935679, guid: 21c1a275e7f5e9c44923a3c8f6ecc9c6, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.84
+      value: -0.33
       objectReference: {fileID: 0}
     - target: {fileID: 2943947814528935679, guid: 21c1a275e7f5e9c44923a3c8f6ecc9c6, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 11.8
+      value: 10.19
       objectReference: {fileID: 0}
     - target: {fileID: 2943947814528935679, guid: 21c1a275e7f5e9c44923a3c8f6ecc9c6, type: 3}
       propertyPath: m_LocalPosition.z

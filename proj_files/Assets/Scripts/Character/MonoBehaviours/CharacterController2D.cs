@@ -17,8 +17,8 @@ namespace noGame.Characters
 
             //slope states
             public bool isAscendingSlope;
-            public bool descendingSlope;
-            public bool slidingDownSlope;
+            public bool isDescendingSlope;
+            public bool isSlidingDownSlope;
 
             public Collider2D phasingDownPlatform;
 
@@ -36,7 +36,7 @@ namespace noGame.Characters
 
             public void Reset()
             {
-                top = bottom = left = right = isAscendingSlope = descendingSlope = slidingDownSlope = false;
+                top = bottom = left = right = isAscendingSlope = isDescendingSlope = isSlidingDownSlope = false;
                 previousSlopeAngle = slopeAngle;
                 slopeAngle = 0;
                 slopeNormal = Vector2.zero;
@@ -72,7 +72,7 @@ namespace noGame.Characters
         public float MaxClimbAngle { get => maxSlopeAngle; }
         public string PlatformTag { get => platfromTag; }
 
-
+        public bool isGrounded { get => collisions.bottom; }
 
 
 
@@ -91,6 +91,7 @@ namespace noGame.Characters
 
         internal void Move( Vector2 velocity , bool isOnPlatform = false )
         {
+            //print( "velocity in the beggining : " + velocity.y );
             #region SetUp
 
             UpdateRaycastOrigins();
@@ -101,7 +102,7 @@ namespace noGame.Characters
 
             #endregion
 
-            HandleCollisions(ref velocity );
+            HandleCollisions( ref velocity );
 
             FinalMove( velocity );
 
@@ -140,9 +141,9 @@ namespace noGame.Characters
                         SlideDownMaxSlope( maxSlopeHitRight , ref velocity );
 
 
-                if( !collisions.slidingDownSlope )
+                if( !collisions.isSlidingDownSlope )
                 {
-                    float directionX = Mathf.Sign( velocity.x );
+                    float directionX = velocity.x >= 0f ? 1 : -1;
                     Vector2 rayOrigin = (directionX == -1) ? raycastOrigins.bottomRight : raycastOrigins.bottomLeft;
 
                     RaycastHit2D hit = Physics2D.Raycast( rayOrigin , Vector2.down , Mathf.Infinity , collisionMask );
@@ -156,7 +157,7 @@ namespace noGame.Characters
                         {
                             velocity = AdjustVelocityToSlopeDescending( velocity , slopeAngle );
 
-                            collisions.descendingSlope = true;
+                            collisions.isDescendingSlope = true;
                             collisions.bottom = true;
                         }
                     }
@@ -168,7 +169,7 @@ namespace noGame.Characters
 
         private bool IsDescendingSlope( Vector2 velocity , float directionX , RaycastHit2D hit , float slopeAngle )
         {
-            return 
+            return
                 (slopeAngle != 0f) &&
                 (slopeAngle <= maxSlopeAngle) &&
                 (Mathf.Sign( hit.normal.x ) == directionX) &&
@@ -197,7 +198,7 @@ namespace noGame.Characters
                 if( slopeAngle > maxSlopeAngle )
                 {
                     velocity.x = Mathf.Sign( hit.normal.x ) * (Mathf.Abs( velocity.y ) - hit.distance) / Mathf.Tan( slopeAngle * Mathf.Deg2Rad );
-                    collisions.slidingDownSlope = true;
+                    collisions.isSlidingDownSlope = true;
                     collisions.slopeAngle = slopeAngle;
                 }
             }
@@ -218,7 +219,7 @@ namespace noGame.Characters
                 boxCastOrigins.rightCenter;
 
 
-            Vector2 boxCastSize = new Vector2( SkinWidth , boundsHeight - SkinWidth );
+            Vector2 boxCastSize = new Vector2( SkinWidth , boundsHeight - SkinWidth * 2f );
 
             //cast the box
             Physics2D.BoxCast( boxRayOrigin , boxCastSize , 0f , Vector2.right * directionX , boxCastContactFilter , boxCastResults , raycastLength );
@@ -242,7 +243,7 @@ namespace noGame.Characters
                 collisions.SetSlopeAngle( slopeAngle , hit.normal );
 
                 //calculate slope displacemant angle if less than max Angle
-                HandleSlopeAscending( ref velocity ,hit, slopeAngle );
+                HandleSlopeAscending( ref velocity , hit , slopeAngle );
 
                 if( !collisions.isAscendingSlope || slopeAngle > maxSlopeAngle )
                 {
@@ -268,7 +269,7 @@ namespace noGame.Characters
         /// </summary>
         /// <param name="velocity">velocity vector</param>
         /// <param name="slopeAngle">angle of the slope that we want to climb</param>
-        private void HandleSlopeAscending( ref Vector2 velocity ,RaycastHit2D hit, float slopeAngle )
+        private void HandleSlopeAscending( ref Vector2 velocity , RaycastHit2D hit , float slopeAngle )
         {
             if( slopeAngle > maxSlopeAngle )
             {
@@ -297,56 +298,56 @@ namespace noGame.Characters
 
         }
 
-
+        public float directionY;
         private void HandleVerticalCollisions( ref Vector2 velocity )
         {
-            if( velocity.y != 0f )
+            //print( "velocity : " + velocity.y );
+            directionY = velocity.y <= 0f ? -1 : 1;
+            //print("directionY : " + directionY );
+
+            float raycastLength = Mathf.Abs( velocity.y ) + SkinWidth * 2f;
+
+
+            for( int i = 0 ; i < verticalRayCount ; i++ )
             {
-                float directionY = Mathf.Sign( velocity.y );
-                float raycastLength = Mathf.Abs( velocity.y ) + SkinWidth;
+                //get ray origin of the n-th ray depending on direction
+                Vector2 rayOrigin = (directionY == -1) ? raycastOrigins.bottomLeft : raycastOrigins.topLeft;
+                rayOrigin += Vector2.right * (verticalRaySpacing * i + velocity.x);
+
+                //cast the n-th ray
+                RaycastHit2D hit = Physics2D.Raycast( rayOrigin , Vector2.up * directionY , raycastLength , collisionMask );
 
 
-                for( int i = 0 ; i < verticalRayCount ; i++ )
+                if( hit )
                 {
-                    //get ray origin of the n-th ray depending on direction
-                    Vector2 rayOrigin = (directionY == -1) ? raycastOrigins.bottomLeft : raycastOrigins.topLeft;
-                    rayOrigin += Vector2.right * (verticalRaySpacing * i + velocity.x);
+                    #region debbuging
+                    Debug.DrawRay( rayOrigin , Vector2.up * directionY , Color.red );
+                    #endregion
 
-                    //cast the n-th ray
-                    RaycastHit2D hit = Physics2D.Raycast( rayOrigin , Vector2.up * directionY , raycastLength , collisionMask );
+                    raycastLength = hit.distance;
 
+                    if( collisions.bottom )
+                        collisions.ResetPhasingPlatformState();
 
-                    if( hit )
-                    {
-                        #region debbuging
-                        Debug.DrawRay( rayOrigin , Vector2.up * directionY , Color.red );
-                        #endregion
+                    //phase thruogh if:
+                    if( hit.collider.CompareTag( platfromTag ) && (directionY == 1 || hit.distance <= 0f || hit.collider == collisions.phasingDownPlatform) )
+                        continue;
 
-                        raycastLength = hit.distance;
+                    AdjustVelocityToWalkingSurface( ref velocity , directionY , ref hit );
 
-                        if( collisions.bottom )
-                            collisions.ResetPhasingPlatformState();
-
-                        //phase thruogh if:
-                        if( hit.collider.CompareTag( platfromTag ) && (directionY == 1 || hit.distance <= 0f || hit.collider == collisions.phasingDownPlatform) )
-                            continue;
-
-                        AdjustVelocityToWalkingSurface( ref velocity , directionY , ref hit );
-
-                        collisions.bottom = directionY == -1;
-                        collisions.top = directionY == 1;
-
-                    }
-
-                    //check if changing from slope to slope and if so then change velocity vector for smooth transition
-                    if( CheckForToSlopeTransition( ref velocity , hit , out RaycastHit2D slopeHit ) )
-                    {
-                        velocity = AdjustVelocityToNewSlope( velocity , hit , slopeHit );
-                    }
+                    collisions.bottom = directionY == -1;
+                    collisions.top = directionY == 1;
 
                 }
 
+                //check if changing from slope to slope and if so then change velocity vector for smooth transition
+                if( CheckForToSlopeTransition( ref velocity , hit , out RaycastHit2D slopeHit ) )
+                {
+                    velocity = AdjustVelocityToNewSlope( velocity , hit , slopeHit );
+                }
+
             }
+
 
         }
 

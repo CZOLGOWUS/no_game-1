@@ -104,8 +104,8 @@ namespace noGame.Collisions
             boundsWidth = bounds.size.x;
             boundsHeight = bounds.size.y;
 
-            horizontalRayCount = Mathf.RoundToInt( boundsHeight / distanceBetwenVerticalRays );
             horizontalRayCount = Mathf.RoundToInt( boundsWidth / distanceBetwenHorizontalRays );
+            verticalRayCount = Mathf.RoundToInt( boundsHeight / distanceBetwenVerticalRays );
 
 
             horizontalRayCount = Mathf.Clamp( horizontalRayCount , 2 , int.MaxValue );

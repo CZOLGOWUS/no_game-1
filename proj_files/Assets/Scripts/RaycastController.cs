@@ -28,7 +28,6 @@ namespace noGame.Collisions
         protected BoxCastOrigins boxCastOrigins;
 
         protected const float skinWidth = 0.015f;
-        protected Vector3 oldVelocity;
 
         //bounds size
         protected float boundsWidth;

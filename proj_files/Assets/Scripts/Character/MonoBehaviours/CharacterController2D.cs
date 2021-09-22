@@ -98,7 +98,6 @@ namespace noGame.Characters
             UpdateBoxCastOrigins();
 
             collisions.Reset();
-            oldVelocity = velocity;
 
             #endregion
 
@@ -409,7 +408,8 @@ namespace noGame.Characters
 
         private void FinalMove( Vector2 velocity )
         {
-            transform.position += new Vector3( velocity.x , velocity.y );
+            //transform.position += new Vector3( velocity.x , velocity.y );
+            transform.Translate( velocity );
         }
 
 

@@ -28,18 +28,18 @@ namespace noGame.Characters
         [SerializeField] private float wallSlideSpeedMax = 3f;
         [SerializeField] private float wallStickTime = .2f;
         [Space]
-        [Tooltip("X : force added to velocity on X axis ; Y : height of wall jump")]
+        [Tooltip( "X : force added to velocity on X axis , Y : height of wall jump" )]
         [SerializeField] private Vector2 wallJumpClimb;
-        [Tooltip("X : force added to velocity on X axis ; Y : height of wall jump")]
+        [Tooltip( "X : force added to velocity on X axis , Y : height of wall jump" )]
         [SerializeField] private Vector2 wallJumpOff;
-        [Tooltip("X : force added to velocity on X axis ; Y : height of wall jump")]
+        [Tooltip( "X : force added to velocity on X axis , Y : height of wall jump" )]
         [SerializeField] private Vector2 wallJumpAway;
 
         [Header( "SLopes" )]
         [SerializeField] private Vector2 slidingJump;
 
-        private float wallJumpClimbInitialYVelocity; 
-        private float wallJumpOffInitialYVelocity; 
+        private float wallJumpClimbInitialYVelocity;
+        private float wallJumpOffInitialYVelocity;
         private float wallJumpAwayInitialYVelocity;
         private float slopeSlidingJumpYVelocity;
 
@@ -76,20 +76,26 @@ namespace noGame.Characters
         {
             thisCharacterController = GetComponent<CharacterController2D>();
 
+
+        }
+
+        private void Update()
+        {
+            //this is here for debuging purposes
             SetupJumpVariales();
 
         }
 
         private void FixedUpdate()
         {
-            movementInput = Mathf.Clamp(movementInput + autoMove.x,-1f,1f);
+            movementInput = Mathf.Clamp( movementInput + autoMove.x , -1f , 1f );
 
             HandleInputSmoothing();
 
 
             HandleWallJumping();
 
-            HandleJumping( isWallSlliding ,wallDirX );
+            HandleJumping( isWallSlliding , wallDirX );
 
             //methods using verlet integration
             #region setup
@@ -114,20 +120,20 @@ namespace noGame.Characters
             print( "Gravity: " + gravity + " jump vel: " + initialJumpVelocity );
 
             //climb
-            float timeToApex = Mathf.Sqrt( (-2f * wallJumpClimb.y) / gravity );
+            float timeToApex = Mathf.Sqrt( (-2f * Mathf.Abs( wallJumpClimb.y )) / gravity );
             wallJumpClimbInitialYVelocity = (2f * wallJumpClimb.y) / timeToApex + wallSlideSpeedMax;
 
             //away
-            timeToApex = Mathf.Sqrt( (-2f * wallJumpAway.y) / gravity );
+            timeToApex = Mathf.Sqrt( (-2f * Mathf.Abs( wallJumpAway.y )) / gravity );
             wallJumpAwayInitialYVelocity = (2f * wallJumpAway.y) / timeToApex + wallSlideSpeedMax;
 
             //off
-            timeToApex = Mathf.Sqrt( (-2f * wallJumpOff.y) / gravity );
+            timeToApex = Mathf.Sqrt( (-2f * Mathf.Abs( wallJumpOff.y )) / gravity );
             wallJumpOffInitialYVelocity = (2f * wallJumpOff.y) / timeToApex + wallSlideSpeedMax;
-            
+
             //slide Jump
-            timeToApex = Mathf.Sqrt( (-2f * wallJumpOff.y) / gravity );
-            wallJumpOffInitialYVelocity = (2f * wallJumpOff.y) / timeToApex + wallSlideSpeedMax;
+            timeToApex = Mathf.Sqrt( (-2f * Mathf.Abs( wallJumpOff.y )) / gravity );
+            slopeSlidingJumpYVelocity = (2f * wallJumpOff.y) / timeToApex + wallSlideSpeedMax;
 
         }
 
@@ -154,7 +160,6 @@ namespace noGame.Characters
                 {
                     //this should not be happening here
                     velocityXSmooth = 0f;
-
                     currentVelocity.x = 0f;
 
                     if( movementInput != wallDirX && movementInput != 0f )
@@ -196,9 +201,9 @@ namespace noGame.Characters
             {
                 ApplyYVelocityVerlet( gravity * Time.deltaTime );
             }
-            else if( Mathf.Abs(currentVelocity.y) < maxCharacterPositionOffset )
+            else if( Mathf.Abs( currentVelocity.y ) < maxCharacterPositionOffset )
             {
-                ApplyYVelocityVerlet( (isJumpPressed ? 1f : fallGravityMultiplier ) * gravity * Time.deltaTime );
+                ApplyYVelocityVerlet( fallGravityMultiplier * gravity * Time.deltaTime );
             }
             else
             {
@@ -218,7 +223,7 @@ namespace noGame.Characters
 
                     if( wallDirX == movementInput ) //jump climb
                     {
-                        AddForce( ref currentVelocity  , -wallDirX * wallJumpClimb.x , wallJumpClimbInitialYVelocity );
+                        AddForce( ref currentVelocity , -wallDirX * wallJumpClimb.x , wallJumpClimbInitialYVelocity );
                     }
                     else if( wallDirX == 0 ) //jump away
                     {
@@ -245,8 +250,9 @@ namespace noGame.Characters
                         if( Mathf.Sign( movementInput ) == -wallDirX ) //not jumping againts max slope (or you should jump, since we have wall jumping?)
                         {
                             Vector2 scaler = Vector2.Scale( slidingJump , thisCharacterController.collisions.slopeNormal );
+                            scaler.y = slopeSlidingJumpYVelocity;
 
-                            AddForce(ref currentVelocity, scaler );
+                            AddForce( ref currentVelocity , scaler );
                         }
                     }
                     else

@@ -61,6 +61,7 @@ namespace noGame.Characters
 
 
         //dependencies
+        [Tooltip( "tag platforms with this tag that are supposed to be \"phaseable\"" )]
         [SerializeField] private string platfromTag = "Platform";
 
 
@@ -71,7 +72,6 @@ namespace noGame.Characters
 
         public float MaxClimbAngle { get => maxSlopeAngle; }
         public string PlatformTag { get => platfromTag; }
-
         public bool isGrounded { get => collisions.bottom; }
 
 

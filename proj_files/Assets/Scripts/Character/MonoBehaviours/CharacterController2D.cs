@@ -103,6 +103,8 @@ namespace noGame.Characters
 
             HandleCollisions( ref velocity );
 
+            
+
             FinalMove( velocity );
 
             HandlePlatformGroundedState( isOnPlatform );
@@ -112,18 +114,26 @@ namespace noGame.Characters
 
         private void HandleCollisions( ref Vector2 velocity )
         {
+            print("VELOCITY BEFORE: " + velocity.x + "  " + velocity.y);
+            //if (Mathf.Abs(velocity.x) < 0.0001f)
+            //    velocity.x = 0f;
+            //if (Mathf.Abs(velocity.y) < 0.0001f)
+            //    velocity.y = 0f;
+            //print("VELOCITY BEFORE but fixed: " + velocity.x + "  " + velocity.y);
+
             HandleDescendSlope( ref velocity );
 
             //set facing direction
-            if( velocity.x != 0f )
+            if ( velocity.x != 0f )
             {
                 collisions.faceDirection = Math.Sign( velocity.x );
             }
 
             HandleHorizontalCollisions( ref velocity );
-
+            print("VELOCITY AFTER horizontal: " + velocity.x + "  " + velocity.y);
             HandleVerticalCollisionsBox( ref velocity );
             //HandleVerticalCollisions( ref velocity );
+            print("VELOCITY AFTER vertical: " + velocity.x + "  " + velocity.y);
         }
 
 
@@ -210,7 +220,7 @@ namespace noGame.Characters
 
             int directionX = collisions.faceDirection;
             //2*x cuz of box cast
-            float boxCastLength = Mathf.Abs( velocity.x ) + SkinWidth;
+            float boxCastLength = Mathf.Abs( velocity.x ) + 2.0f * SkinWidth;
 
 
             //get cast origin dependent on direction of the next theorical position
@@ -272,7 +282,7 @@ namespace noGame.Characters
         /// <param name="slopeAngle">angle of the slope that we want to climb</param>
         private void HandleSlopeAscending( ref Vector2 velocity , float slopeAngle )
         {
-            if( slopeAngle > maxSlopeAngle )
+            if( slopeAngle > maxSlopeAngle || slopeAngle == 0f )
             {
                 return;
             }
@@ -324,7 +334,7 @@ namespace noGame.Characters
                     if( hit.collider.CompareTag( platfromTag ) && (directionY == 1 || hit.distance <= 0f || hit.collider == collisions.phasingDownPlatform) )
                         continue;
 
-                    AdjustVelocityToWalkingSurface( ref velocity , directionY , hit.distance );
+                    AdjustVelocityToWalkingSurface( ref velocity , directionY , hit.distance);
 
                     collisions.bottom = directionY == -1;
                     collisions.top = directionY == 1;
@@ -334,7 +344,7 @@ namespace noGame.Characters
                 //check if changing from slope to slope and if so then change velocity vector for smooth transition
                 if( CheckForToSlopeTransition( ref velocity , hit , out RaycastHit2D slopeHit ) )
                 {
-                    velocity = AdjustVelocityToNewSlope( velocity , hit , slopeHit );
+                    AdjustVelocityToNewSlope( ref velocity , hit , slopeHit );
                 }
 
             }
@@ -361,11 +371,14 @@ namespace noGame.Characters
             Debug.DrawRay( castOrigin - Vector2.right * boundsWidth / 2f , Vector2.up * directionY * boxCastDistance , Color.blue );
             #endregion
 
-            for( int i = 0 ; i < boxCastResults.Count ; i++ )
+            for ( int i = 0 ; i < boxCastResults.Count ; i++ )
             {
                 RaycastHit2D hit = boxCastResults[i];
-                //float distance = Mathf.Abs(castOrigin.y - hit.point.y); // causes a lot of bugs!
+                //float distance = Mathf.Abs(castOrigin.y  - hit.point.y); // causes a lot of bugs!
                 float distance = hit.distance;
+
+                Debug.DrawLine(castOrigin, hit.point, Color.green);
+
                 debugVerHit = boxCastResults[i];
 
                 if( collisions.bottom )
@@ -376,6 +389,7 @@ namespace noGame.Characters
                     continue;
 
                 AdjustVelocityToWalkingSurface( ref velocity , directionY , distance );
+                print("VELOCITY AFTER adjust ["+i+"]: " + velocity.x + "  " + velocity.y);
 
                 collisions.bottom = directionY == -1;
                 collisions.top = directionY == 1;
@@ -385,7 +399,7 @@ namespace noGame.Characters
                 //check if changing from slope to slope and if so then change velocity vector for smooth transition
                 if( CheckForToSlopeTransition( ref velocity , hit , out RaycastHit2D slopeHit ) )
                 {
-                    velocity = AdjustVelocityToNewSlope( velocity , hit , slopeHit );
+                    AdjustVelocityToNewSlope(ref velocity , hit , slopeHit );
                 }
 
             }
@@ -398,7 +412,10 @@ namespace noGame.Characters
         {
             velocity.y = (distance - SkinWidth) * directionY;
             if( collisions.isAscendingSlope )
-                velocity.x = velocity.y / Mathf.Tan( collisions.slopeAngle * Mathf.Deg2Rad ) * Mathf.Sign( velocity.x );
+            {
+                velocity.x = velocity.y / Mathf.Tan(collisions.slopeAngle * Mathf.Deg2Rad) * Mathf.Sign(velocity.x);
+            }
+                
         }
 
 
@@ -434,7 +451,7 @@ namespace noGame.Characters
         }
 
 
-        private Vector2 AdjustVelocityToNewSlope( Vector2 velocity , RaycastHit2D hit , RaycastHit2D slopeHit )
+        private void AdjustVelocityToNewSlope( ref Vector2 velocity , RaycastHit2D hit , RaycastHit2D slopeHit )
         {
             int directionX = Math.Sign( velocity.x );
             float slopeAngle = Vector2.Angle( slopeHit.normal , Vector2.up );
@@ -445,7 +462,6 @@ namespace noGame.Characters
                 collisions.SetSlopeAngle( slopeAngle , hit.normal );
             }
 
-            return velocity;
         }
 
 

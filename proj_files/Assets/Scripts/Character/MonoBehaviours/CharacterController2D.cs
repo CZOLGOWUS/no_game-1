@@ -122,8 +122,8 @@ namespace noGame.Characters
 
             HandleHorizontalCollisions( ref velocity );
 
-            //HandleVerticalCollisionsBox( ref velocity );
-            HandleVerticalCollisions( ref velocity );
+            HandleVerticalCollisionsBox( ref velocity );
+            //HandleVerticalCollisions( ref velocity );
         }
 
 
@@ -210,7 +210,7 @@ namespace noGame.Characters
 
             int directionX = collisions.faceDirection;
             //2*x cuz of box cast
-            float boxCastLength = Mathf.Abs( velocity.x ) + SkinWidth * 2f;
+            float boxCastLength = Mathf.Abs( velocity.x ) + SkinWidth;
 
 
             //get cast origin dependent on direction of the next theorical position
@@ -232,6 +232,8 @@ namespace noGame.Characters
             {
 
                 RaycastHit2D hit = boxCastResults[i];
+                //float distance = Mathf.Abs(hit.point.x - boxRayOrigin.x); // causes a lot of bugs!
+                float distance = hit.distance;
                 float slopeAngle = Vector2.Angle( hit.normal , Vector2.up );
 
                 if( hit.collider.CompareTag( platfromTag ) )
@@ -240,11 +242,11 @@ namespace noGame.Characters
                 collisions.SetSlopeAngle( slopeAngle , hit.normal );
 
                 //calculate slope displacemant angle if less than max Angle
-                HandleSlopeAscending( ref velocity , hit , slopeAngle );
+                HandleSlopeAscending( ref velocity , slopeAngle );
 
                 if( !collisions.isAscendingSlope || slopeAngle > maxSlopeAngle )
                 {
-                    velocity.x = hit.distance * directionX;
+                    velocity.x = distance * directionX;
 
                     collisions.left = directionX == -1;
                     collisions.right = directionX == 1;
@@ -259,6 +261,8 @@ namespace noGame.Characters
         }
 
 
+
+
         /// <summary>
         /// 
         /// calculate new slope displacemant angle if less than max Angle
@@ -266,7 +270,7 @@ namespace noGame.Characters
         /// </summary>
         /// <param name="velocity">velocity vector</param>
         /// <param name="slopeAngle">angle of the slope that we want to climb</param>
-        private void HandleSlopeAscending( ref Vector2 velocity , RaycastHit2D hit , float slopeAngle )
+        private void HandleSlopeAscending( ref Vector2 velocity , float slopeAngle )
         {
             if( slopeAngle > maxSlopeAngle )
             {
@@ -320,7 +324,7 @@ namespace noGame.Characters
                     if( hit.collider.CompareTag( platfromTag ) && (directionY == 1 || hit.distance <= 0f || hit.collider == collisions.phasingDownPlatform) )
                         continue;
 
-                    AdjustVelocityToWalkingSurface( ref velocity , directionY , ref hit );
+                    AdjustVelocityToWalkingSurface( ref velocity , directionY , hit.distance );
 
                     collisions.bottom = directionY == -1;
                     collisions.top = directionY == 1;
@@ -359,18 +363,19 @@ namespace noGame.Characters
 
             for( int i = 0 ; i < boxCastResults.Count ; i++ )
             {
-
                 RaycastHit2D hit = boxCastResults[i];
+                //float distance = Mathf.Abs(castOrigin.y - hit.point.y); // causes a lot of bugs!
+                float distance = hit.distance;
                 debugVerHit = boxCastResults[i];
 
                 if( collisions.bottom )
                     collisions.ResetPhasingPlatformState();
 
                 //phase thruogh if:
-                if( hit.collider.CompareTag( platfromTag ) && (directionY == 1 || hit.distance <= 0f || hit.collider == collisions.phasingDownPlatform) )
+                if( hit.collider.CompareTag( platfromTag ) && (directionY == 1 || distance <= 0f || hit.collider == collisions.phasingDownPlatform) )
                     continue;
 
-                AdjustVelocityToWalkingSurface( ref velocity , directionY , ref hit );
+                AdjustVelocityToWalkingSurface( ref velocity , directionY , distance );
 
                 collisions.bottom = directionY == -1;
                 collisions.top = directionY == 1;
@@ -389,9 +394,9 @@ namespace noGame.Characters
 
 
 
-        private void AdjustVelocityToWalkingSurface( ref Vector2 velocity , float directionY , ref RaycastHit2D hit )
+        private void AdjustVelocityToWalkingSurface( ref Vector2 velocity , float directionY , float distance )
         {
-            velocity.y = (hit.distance - SkinWidth) * directionY;
+            velocity.y = (distance - SkinWidth) * directionY;
             if( collisions.isAscendingSlope )
                 velocity.x = velocity.y / Mathf.Tan( collisions.slopeAngle * Mathf.Deg2Rad ) * Mathf.Sign( velocity.x );
         }

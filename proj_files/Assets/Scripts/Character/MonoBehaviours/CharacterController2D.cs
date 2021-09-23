@@ -121,6 +121,8 @@ namespace noGame.Characters
             }
 
             HandleHorizontalCollisions( ref velocity );
+
+            //HandleVerticalCollisionsBox( ref velocity );
             HandleVerticalCollisions( ref velocity );
         }
 
@@ -142,7 +144,7 @@ namespace noGame.Characters
 
                 if( !collisions.isSlidingDownSlope )
                 {
-                    float directionX = velocity.x >= 0f ? 1 : -1;
+                    float directionX = Mathf.Abs( velocity.x );
                     Vector2 rayOrigin = (directionX == -1) ? raycastOrigins.bottomRight : raycastOrigins.bottomLeft;
 
                     RaycastHit2D hit = Physics2D.Raycast( rayOrigin , Vector2.down , Mathf.Infinity , collisionMask );
@@ -154,7 +156,7 @@ namespace noGame.Characters
 
                         if( IsDescendingSlope( velocity , directionX , hit , slopeAngle ) )
                         {
-                            velocity = AdjustVelocityToSlopeDescending( velocity , slopeAngle );
+                            AdjustVelocityToSlopeDescending( ref velocity , slopeAngle );
 
                             collisions.isDescendingSlope = true;
                             collisions.bottom = true;
@@ -172,18 +174,17 @@ namespace noGame.Characters
                 (slopeAngle != 0f) &&
                 (slopeAngle <= maxSlopeAngle) &&
                 (Mathf.Sign( hit.normal.x ) == directionX) &&
-                hit.distance - SkinWidth <= Mathf.Tan( slopeAngle * Mathf.Deg2Rad ) * Mathf.Abs( velocity.x );
+                hit.distance - SkinWidth <= Mathf.Tan( slopeAngle * Mathf.Deg2Rad ) * Mathf.Abs( velocity.x ); // vy/vx * vx ?
         }
 
 
-        private static Vector2 AdjustVelocityToSlopeDescending( Vector2 velocity , float slopeAngle )
+        private void AdjustVelocityToSlopeDescending( ref Vector2 velocity , float slopeAngle )
         {
             float moveDistance = Mathf.Abs( velocity.x );
             float descendVelocityY = Mathf.Sin( slopeAngle * Mathf.Deg2Rad ) * moveDistance;
 
             velocity.x = Mathf.Cos( slopeAngle * Mathf.Deg2Rad ) * moveDistance * Mathf.Sign( velocity.x );
             velocity.y -= descendVelocityY;
-            return velocity;
         }
 
 
@@ -209,25 +210,22 @@ namespace noGame.Characters
 
             int directionX = collisions.faceDirection;
             //2*x cuz of box cast
-            float raycastLength = Mathf.Abs( velocity.x ) + SkinWidth * 2f;
+            float boxCastLength = Mathf.Abs( velocity.x ) + SkinWidth * 2f;
 
 
             //get cast origin dependent on direction of the next theorical position
-            Vector2 boxRayOrigin = (directionX == -1) ?
-                boxCastOrigins.leftCenter :
-                boxCastOrigins.rightCenter;
-
+            Vector2 boxRayOrigin = (directionX == -1) ? boxCastOrigins.leftCenter : boxCastOrigins.rightCenter;
 
             Vector2 boxCastSize = new Vector2( SkinWidth , boundsHeight - SkinWidth * 2f );
 
+
             //cast the box
-            Physics2D.BoxCast( boxRayOrigin , boxCastSize , 0f , Vector2.right * directionX , boxCastContactFilter , boxCastResults , raycastLength );
+            Physics2D.BoxCast( boxRayOrigin , boxCastSize , 0f , Vector2.right * directionX , boxCastContactFilter , boxCastResults , boxCastLength );
 
             #region debuging
-            float debugBoxLength = 0.1f;
-            Debug.DrawRay( boxRayOrigin + Vector2.up * boundsHeight * 0.5f , Vector2.right * debugBoxLength * collisions.faceDirection , Color.red );
-            Debug.DrawRay( boxRayOrigin - Vector2.up * boundsHeight * 0.5f , Vector2.right * debugBoxLength * collisions.faceDirection , Color.red );
-            Debug.DrawRay( boxRayOrigin + new Vector2( collisions.faceDirection * debugBoxLength , boundsHeight * 0.5f ) , Vector2.down * boundsHeight , Color.red );
+            Debug.DrawRay( boxRayOrigin + Vector2.up * boundsHeight * 0.5f , Vector2.right * boxCastLength * collisions.faceDirection , Color.red );
+            Debug.DrawRay( boxRayOrigin - Vector2.up * boundsHeight * 0.5f , Vector2.right * boxCastLength * collisions.faceDirection , Color.red );
+            Debug.DrawRay( boxRayOrigin + new Vector2( collisions.faceDirection * boxCastLength , boundsHeight * 0.5f ) , Vector2.down * boundsHeight , Color.red );
             #endregion
 
             for( int i = 0 ; i < boxCastResults.Count ; i++ )
@@ -272,14 +270,6 @@ namespace noGame.Characters
         {
             if( slopeAngle > maxSlopeAngle )
             {
-                //trying to solve the jumping up the slope movement
-                if( collisions.faceDirection == -Math.Sign( hit.normal.x ) )
-                {
-                    float slideDistance = Mathf.Abs( velocity.x );
-                    float slideVelocity = Mathf.Sin( slopeAngle * Mathf.Deg2Rad ) * slideDistance;
-
-                    velocity.x = Mathf.Cos( slopeAngle * Mathf.Deg2Rad ) * slideDistance * Mathf.Sign( velocity.x );
-                }
                 return;
             }
 
@@ -300,12 +290,10 @@ namespace noGame.Characters
 
         private void HandleVerticalCollisions( ref Vector2 velocity )
         {
-            //print( "velocity : " + velocity.y );
-            float directionY = Mathf.Sign( velocity.y );//velocity.y <= 0f ? -1 : 1;
-            //print("directionY : " + directionY );
+
+            float directionY = Mathf.Sign( velocity.y );
 
             float raycastLength = Mathf.Abs( velocity.y ) + SkinWidth * 2f;
-
 
             for( int i = 0 ; i < verticalRayCount ; i++ )
             {
@@ -320,7 +308,7 @@ namespace noGame.Characters
                 if( hit )
                 {
                     #region debbuging
-                    Debug.DrawRay( rayOrigin , Vector2.up * directionY , Color.red );
+                    Debug.DrawRay( rayOrigin , Vector2.up * directionY * raycastLength , Color.red );
                     #endregion
 
                     raycastLength = hit.distance;
@@ -349,6 +337,56 @@ namespace noGame.Characters
 
 
         }
+
+        RaycastHit2D debugVerHit;
+        private void HandleVerticalCollisionsBox( ref Vector2 velocity )
+        {
+            float directionY = Mathf.Sign( velocity.y - skinWidth );
+
+            float boxCastDistance = Mathf.Abs( velocity.y ) + skinWidth;
+
+            Vector2 boxCastSize = new Vector2( boundsWidth - 2f * skinWidth , skinWidth );
+            Vector2 castOrigin = (directionY == -1) ? boxCastOrigin.bottomCenter : boxCastOrigin.topCenter;
+
+
+            Physics2D.BoxCast( castOrigin , boxCastSize , 0f , Vector2.up * directionY , boxCastContactFilter , boxCastResults , boxCastDistance );
+
+            #region debbuging
+            Debug.DrawRay( castOrigin + Vector2.right * boundsWidth / 2f , Vector2.up * directionY * boxCastDistance , Color.blue );
+            Debug.DrawRay( castOrigin - Vector2.right * boundsWidth / 2f + Vector2.up * directionY * boxCastDistance , Vector2.right * boundsWidth , Color.blue );
+            Debug.DrawRay( castOrigin - Vector2.right * boundsWidth / 2f , Vector2.up * directionY * boxCastDistance , Color.blue );
+            #endregion
+
+            for( int i = 0 ; i < boxCastResults.Count ; i++ )
+            {
+
+                RaycastHit2D hit = boxCastResults[i];
+                debugVerHit = boxCastResults[i];
+
+                if( collisions.bottom )
+                    collisions.ResetPhasingPlatformState();
+
+                //phase thruogh if:
+                if( hit.collider.CompareTag( platfromTag ) && (directionY == 1 || hit.distance <= 0f || hit.collider == collisions.phasingDownPlatform) )
+                    continue;
+
+                AdjustVelocityToWalkingSurface( ref velocity , directionY , ref hit );
+
+                collisions.bottom = directionY == -1;
+                collisions.top = directionY == 1;
+
+
+
+                //check if changing from slope to slope and if so then change velocity vector for smooth transition
+                if( CheckForToSlopeTransition( ref velocity , hit , out RaycastHit2D slopeHit ) )
+                {
+                    velocity = AdjustVelocityToNewSlope( velocity , hit , slopeHit );
+                }
+
+            }
+
+        }
+
 
 
         private void AdjustVelocityToWalkingSurface( ref Vector2 velocity , float directionY , ref RaycastHit2D hit )
@@ -421,12 +459,17 @@ namespace noGame.Characters
             }
         }
 
+
         public void PhaseThroughtPlatform( Collider2D platform )
         {
             collisions.phasingDownPlatform = platform;
         }
 
 
+        private void OnDrawGizmos()
+        {
+            Gizmos.DrawSphere( debugVerHit.point , 0.05f );
+        }
 
     }
 }

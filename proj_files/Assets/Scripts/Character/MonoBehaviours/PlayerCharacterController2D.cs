@@ -76,13 +76,13 @@ namespace noGame.Characters
         {
             thisCharacterController = GetComponent<CharacterController2D>();
 
+            //this is here for debuging purposes
+            SetupJumpVariales();
 
         }
 
         private void Update()
         {
-            //this is here for debuging purposes
-            SetupJumpVariales();
 
         }
 
@@ -201,13 +201,12 @@ namespace noGame.Characters
             {
                 ApplyYVelocityVerlet( gravity * Time.deltaTime );
             }
-            else if( Mathf.Abs( currentVelocity.y ) < maxCharacterPositionOffset )
-            {
-                ApplyYVelocityVerlet( fallGravityMultiplier * gravity * Time.deltaTime );
-            }
             else
             {
-                currentVelocity.y = Mathf.Clamp( currentVelocity.y , -maxCharacterPositionOffset , maxCharacterPositionOffset );
+                ApplyYVelocityVerlet( fallGravityMultiplier * gravity * Time.deltaTime );
+
+                if( Mathf.Abs( currentVelocity.y ) < maxCharacterPositionOffset )
+                    currentVelocity.y = Mathf.Clamp( currentVelocity.y , -maxCharacterPositionOffset , maxCharacterPositionOffset );
             }
 
         }

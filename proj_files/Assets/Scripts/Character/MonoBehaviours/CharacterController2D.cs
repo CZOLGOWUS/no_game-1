@@ -114,7 +114,6 @@ namespace noGame.Characters
 
         private void HandleCollisions( ref Vector2 velocity )
         {
-            print("VELOCITY BEFORE: " + velocity.x + "  " + velocity.y);
             //if (Mathf.Abs(velocity.x) < 0.0001f)
             //    velocity.x = 0f;
             //if (Mathf.Abs(velocity.y) < 0.0001f)
@@ -130,10 +129,8 @@ namespace noGame.Characters
             }
 
             HandleHorizontalCollisions( ref velocity );
-            print("VELOCITY AFTER horizontal: " + velocity.x + "  " + velocity.y);
             HandleVerticalCollisionsBox( ref velocity );
             //HandleVerticalCollisions( ref velocity );
-            print("VELOCITY AFTER vertical: " + velocity.x + "  " + velocity.y);
         }
 
 
@@ -146,12 +143,14 @@ namespace noGame.Characters
 
                 //if only one of these two hit
                 if( maxSlopeHitLeft ^ maxSlopeHitRight )
-                    if( maxSlopeHitLeft )
-                        SlideDownMaxSlope( maxSlopeHitLeft , ref velocity );
+                {
+                    if (maxSlopeHitLeft)
+                        SlideDownMaxSlope(maxSlopeHitLeft, ref velocity);
                     else
-                        SlideDownMaxSlope( maxSlopeHitRight , ref velocity );
+                        SlideDownMaxSlope(maxSlopeHitRight, ref velocity); 
+                } 
 
-
+                print("isSliding: "+collisions.isSlidingDownSlope);
                 if( !collisions.isSlidingDownSlope )
                 {
                     float directionX = Mathf.Abs( velocity.x );
@@ -204,8 +203,10 @@ namespace noGame.Characters
             {
                 float slopeAngle = Vector2.Angle( hit.normal , Vector2.up );
                 collisions.SetSlopeAngle( slopeAngle , hit.normal );
+                print("Slope angle: "+ slopeAngle);
+                Debug.DrawLine(hit.point, hit.point + hit.normal, Color.magenta);
 
-                if( slopeAngle > maxSlopeAngle )
+                if ( slopeAngle > maxSlopeAngle )
                 {
                     velocity.x = Mathf.Sign( hit.normal.x ) * (Mathf.Abs( velocity.y ) - hit.distance) / Mathf.Tan( slopeAngle * Mathf.Deg2Rad );
                     collisions.isSlidingDownSlope = true;
@@ -352,9 +353,10 @@ namespace noGame.Characters
 
         }
 
-        RaycastHit2D debugVerHit;
+        RaycastHit2D[] debugVerHit;
         private void HandleVerticalCollisionsBox( ref Vector2 velocity )
         {
+            
             float directionY = Mathf.Sign( velocity.y - skinWidth );
 
             float boxCastDistance = Mathf.Abs( velocity.y ) + skinWidth;
@@ -362,15 +364,22 @@ namespace noGame.Characters
             Vector2 boxCastSize = new Vector2( boundsWidth - 2f * skinWidth , skinWidth );
             Vector2 castOrigin = (directionY == -1) ? boxCastOrigin.bottomCenter : boxCastOrigin.topCenter;
 
-
-            Physics2D.BoxCast( castOrigin , boxCastSize , 0f , Vector2.up * directionY , boxCastContactFilter , boxCastResults , boxCastDistance );
+            boxCastResults.Clear();
+            RaycastHit2D[] allColisions = Physics2D.BoxCastAll(castOrigin, boxCastSize, 0f, Vector2.up * directionY, boxCastDistance, collisionMask);
+            debugVerHit = allColisions;
 
             #region debbuging
-            Debug.DrawRay( castOrigin + Vector2.right * boundsWidth / 2f , Vector2.up * directionY * boxCastDistance , Color.blue );
-            Debug.DrawRay( castOrigin - Vector2.right * boundsWidth / 2f + Vector2.up * directionY * boxCastDistance , Vector2.right * boundsWidth , Color.blue );
-            Debug.DrawRay( castOrigin - Vector2.right * boundsWidth / 2f , Vector2.up * directionY * boxCastDistance , Color.blue );
+            Debug.DrawRay(castOrigin + Vector2.right * boundsWidth / 2f, Vector2.up * directionY * boxCastDistance, Color.blue);
+            Debug.DrawRay(castOrigin - Vector2.right * boundsWidth / 2f + Vector2.up * directionY * boxCastDistance, Vector2.right * boundsWidth, Color.blue);
+            Debug.DrawRay(castOrigin - Vector2.right * boundsWidth / 2f, Vector2.up * directionY * boxCastDistance, Color.blue);
             #endregion
 
+            if (allColisions != null && allColisions.Length>0)
+            {
+                boxCastResults.AddRange(allColisions);
+            }
+
+            //print("COUNT OF COLLISIONS: "+ boxCastResults.Count);
             for ( int i = 0 ; i < boxCastResults.Count ; i++ )
             {
                 RaycastHit2D hit = boxCastResults[i];
@@ -379,7 +388,6 @@ namespace noGame.Characters
 
                 Debug.DrawLine(castOrigin, hit.point, Color.green);
 
-                debugVerHit = boxCastResults[i];
 
                 if( collisions.bottom )
                     collisions.ResetPhasingPlatformState();
@@ -389,7 +397,6 @@ namespace noGame.Characters
                     continue;
 
                 AdjustVelocityToWalkingSurface( ref velocity , directionY , distance );
-                print("VELOCITY AFTER adjust ["+i+"]: " + velocity.x + "  " + velocity.y);
 
                 collisions.bottom = directionY == -1;
                 collisions.top = directionY == 1;
@@ -489,7 +496,9 @@ namespace noGame.Characters
 
         private void OnDrawGizmos()
         {
-            Gizmos.DrawSphere( debugVerHit.point , 0.05f );
+            //if(debugVerHit!=null)
+            //    for(int i =0; i<debugVerHit.Length; i++)
+            //        Gizmos.DrawSphere( debugVerHit[i].point , 0.05f);
         }
 
     }

@@ -58,6 +58,7 @@ namespace noGame.Characters
         [Space]
         [Header( "Slope Options" )]
         [SerializeField] private float maxSlopeAngle = 70.0f;
+        [SerializeField] private float maxSlideUpSlopeAngle = 90f;
 
 
         //dependencies
@@ -102,7 +103,7 @@ namespace noGame.Characters
 
             HandleCollisions( ref velocity );
 
-            
+
 
             FinalMove( velocity );
 
@@ -116,7 +117,7 @@ namespace noGame.Characters
             HandleDescendSlope( ref velocity );
 
             //set facing direction
-            if ( velocity.x != 0f )
+            if( velocity.x != 0f )
             {
                 collisions.faceDirection = Math.Sign( velocity.x );
             }
@@ -136,18 +137,18 @@ namespace noGame.Characters
                 //if only one of these two hit
                 if( maxSlopeHitLeft ^ maxSlopeHitRight )
                 {
-                    if (maxSlopeHitLeft)
-                        SlideDownMaxSlope(maxSlopeHitLeft, ref velocity);
+                    if( maxSlopeHitLeft )
+                        SlideDownMaxSlope( maxSlopeHitLeft , ref velocity );
                     else
-                        SlideDownMaxSlope(maxSlopeHitRight, ref velocity); 
+                        SlideDownMaxSlope( maxSlopeHitRight , ref velocity );
                 }
                 //if two were ghit pick one with shorter distance
                 else if( maxSlopeHitLeft && maxSlopeHitRight )
                 {
-                    if(maxSlopeHitLeft.distance < maxSlopeHitRight.distance)
-                        SlideDownMaxSlope( maxSlopeHitLeft , ref velocity);
+                    if( maxSlopeHitLeft.distance < maxSlopeHitRight.distance )
+                        SlideDownMaxSlope( maxSlopeHitLeft , ref velocity );
                     else
-                        SlideDownMaxSlope( maxSlopeHitRight , ref velocity);
+                        SlideDownMaxSlope( maxSlopeHitRight , ref velocity );
                 }
 
                 if( !collisions.isSlidingDownSlope )
@@ -202,9 +203,12 @@ namespace noGame.Characters
             {
                 float slopeAngle = Vector2.Angle( hit.normal , Vector2.up );
                 collisions.SetSlopeAngle( slopeAngle , hit.normal );
-                Debug.DrawLine(hit.point, hit.point + hit.normal, Color.magenta);
 
-                if ( slopeAngle > maxSlopeAngle )
+                #region draw wall normal
+                Debug.DrawLine( hit.point , hit.point + hit.normal , Color.magenta );
+                #endregion
+
+                if( slopeAngle > maxSlopeAngle )
                 {
                     velocity.x = Mathf.Sign( hit.normal.x ) * (Mathf.Abs( velocity.y ) - hit.distance) / Mathf.Tan( slopeAngle * Mathf.Deg2Rad );
                     collisions.isSlidingDownSlope = true;
@@ -222,9 +226,8 @@ namespace noGame.Characters
             float boxCastLength = Mathf.Abs( velocity.x ) + 2.0f * SkinWidth;
 
 
-            //get cast origin dependent on direction of the next theorical position
+            //box cast setup
             Vector2 boxRayOrigin = (directionX == -1) ? boxCastOrigins.leftCenter : boxCastOrigins.rightCenter;
-
             Vector2 boxCastSize = new Vector2( SkinWidth , boundsHeight - SkinWidth * 2f );
 
 
@@ -255,14 +258,20 @@ namespace noGame.Characters
 
                 if( !collisions.isAscendingSlope || slopeAngle > maxSlopeAngle )
                 {
-                    velocity.x = distance * directionX;
+                    if( slopeAngle > maxSlopeAngle && velocity.y > 0f && slopeAngle < maxSlideUpSlopeAngle )
+                    {
+                        //adjust if slope that is before Actor is too steep
+                        velocity.x = ((velocity.y / (Mathf.Tan( slopeAngle * Mathf.Deg2Rad ))) + hit.distance) * Mathf.Sign( velocity.x );
+                    }
+                    else //adjust for just "pure" horizontal collision
+                        velocity.x = distance * directionX;
 
                     collisions.left = directionX == -1;
                     collisions.right = directionX == 1;
                 }
                 else
                 {
-                    //adjust if slope that is before Actor is too steep
+                    //adjust for slope ascending
                     velocity.y = Mathf.Tan( collisions.slopeAngle * Mathf.Deg2Rad ) * Mathf.Abs( velocity.x );
                 }
             }
@@ -355,9 +364,9 @@ namespace noGame.Characters
 
             if( collisions.isAscendingSlope )
             {
-                velocity.x = velocity.y / Mathf.Tan(collisions.slopeAngle * Mathf.Deg2Rad) * Mathf.Sign(velocity.x);
+                velocity.x = velocity.y / Mathf.Tan( collisions.slopeAngle * Mathf.Deg2Rad ) * Mathf.Sign( velocity.x );
             }
-                
+
         }
 
 

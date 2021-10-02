@@ -264,7 +264,19 @@ namespace noGame.Characters
                         velocity.x = ((velocity.y / (Mathf.Tan( slopeAngle * Mathf.Deg2Rad ))) + hit.distance) * Mathf.Sign( velocity.x );
                     }
                     else //adjust for just "pure" horizontal collision
+                    {
+                        #region debuging before weird change
+                        print("Velocity.x before weird change: " + velocity.x);
+                        #endregion
+
                         velocity.x = distance * directionX;
+
+                        #region debuging after weird change
+                        print("Velocity.x after weird change: " + velocity.x);
+                        // This "weird" change happens only after player was ascending slope and while standing still jumped. In the moment of the jump, x velocity changes in direction of the slope
+                        #endregion
+                    }
+
 
                     collisions.left = directionX == -1;
                     collisions.right = directionX == 1;

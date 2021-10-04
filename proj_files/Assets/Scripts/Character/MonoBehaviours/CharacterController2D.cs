@@ -233,6 +233,9 @@ namespace noGame.Characters
 
             //cast the box
             Physics2D.BoxCast( boxRayOrigin , boxCastSize , 0f , Vector2.right * directionX , boxCastContactFilter , boxCastResults , boxCastLength );
+            
+            //sorts array from Min to Max
+            boxCastResults.Sort((hit1,hit2) => { return hit1.normal.y.CompareTo( hit2.normal.y ); } );
 
             #region debuging
             Debug.DrawRay( boxRayOrigin + Vector2.up * boundsHeight * 0.5f , Vector2.right * boxCastLength * collisions.faceDirection , Color.red );
@@ -265,26 +268,21 @@ namespace noGame.Characters
                     }
                     else //adjust for just "pure" horizontal collision
                     {
-                        #region debuging before weird change
-                        print("Velocity.x before weird change: " + velocity.x);
-                        #endregion
+                        velocity.x = (distance - skinWidth) * directionX;
 
-                        velocity.x = distance * directionX;
-
-                        #region debuging after weird change
-                        print("Velocity.x after weird change: " + velocity.x);
-                        // This "weird" change happens only after player was ascending slope and while standing still jumped. In the moment of the jump, x velocity changes in direction of the slope
-                        #endregion
+                        //if horizontal wall hit and is ascending : adjust y velocity
+                        if( slopeAngle >= 90f && collisions.isAscendingSlope && collisions.previousSlopeAngle != slopeAngle)
+                            velocity.y = Mathf.Sin(collisions.slopeAngle * Mathf.Deg2Rad) * velocity.x * directionX;
                     }
 
 
                     collisions.left = directionX == -1;
                     collisions.right = directionX == 1;
                 }
-                else
+                else if(collisions.isAscendingSlope)
                 {
                     //adjust for slope ascending
-                    velocity.y = Mathf.Tan( collisions.slopeAngle * Mathf.Deg2Rad ) * Mathf.Abs( velocity.x );
+                    velocity.y = Mathf.Tan( collisions.slopeAngle * Mathf.Deg2Rad ) * velocity.x *  directionX;
                 }
             }
 

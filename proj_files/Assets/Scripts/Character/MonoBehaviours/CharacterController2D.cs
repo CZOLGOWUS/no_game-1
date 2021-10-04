@@ -235,7 +235,7 @@ namespace noGame.Characters
             Physics2D.BoxCast( boxRayOrigin , boxCastSize , 0f , Vector2.right * directionX , boxCastContactFilter , boxCastResults , boxCastLength );
             
             //sorts array from Min to Max
-            boxCastResults.Sort((hit1,hit2) => { return hit1.normal.y.CompareTo( hit2.normal.y ); } );
+            boxCastResults.Sort((hit1,hit2) => { return hit2.normal.y.CompareTo( hit1.normal.y ); } );
 
             #region debuging
             Debug.DrawRay( boxRayOrigin + Vector2.up * boundsHeight * 0.5f , Vector2.right * boxCastLength * collisions.faceDirection , Color.red );
@@ -325,7 +325,7 @@ namespace noGame.Characters
 
             float directionY = Mathf.Sign( velocity.y );
 
-            float raycastLength = Mathf.Abs( velocity.y ) + SkinWidth * 2f;
+            float raycastLength = Mathf.Abs( velocity.y ) + SkinWidth;
 
             for( int i = 0 ; i < verticalRayCount ; i++ )
             {

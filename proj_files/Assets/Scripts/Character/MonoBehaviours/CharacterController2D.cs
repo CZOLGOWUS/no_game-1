@@ -268,7 +268,7 @@ namespace noGame.Characters
                     }
                     else //adjust for just "pure" horizontal collision
                     {
-                        velocity.x = (distance - skinWidth) * directionX;
+                        velocity.x = distance * directionX;
 
                         //if horizontal wall hit and is ascending : adjust y velocity
                         if( slopeAngle >= 90f && collisions.isAscendingSlope && collisions.previousSlopeAngle != slopeAngle)

@@ -232,9 +232,9 @@ namespace noGame.Characters
 
             //cast the box
             Physics2D.BoxCast( boxRayOrigin , boxCastSize , 0f , Vector2.right * directionX , boxCastContactFilter , boxCastResults , boxCastLength );
-            
+
             //sorts array from Min angle to Max angle
-            boxCastResults.Sort((hit1,hit2) => { return hit2.normal.y.CompareTo( hit1.normal.y ); } );
+            boxCastResults.Sort( ( hit1 , hit2 ) => { return hit2.normal.y.CompareTo( hit1.normal.y ); } );
 
             #region debuging
             Debug.DrawRay( boxRayOrigin + Vector2.up * boundsHeight * 0.5f , Vector2.right * boxCastLength * collisions.faceDirection , Color.red );
@@ -254,24 +254,28 @@ namespace noGame.Characters
                 collisions.SetSlopeAngle( slopeAngle , hit.normal );
 
                 //calculate slope displacemant(velocity vector) angle if less than max Angle
-                HandleSlopeAscending( ref velocity , slopeAngle);
+                HandleSlopeAscending( ref velocity , slopeAngle );
 
+                //check if terain hit is a wall or angle of the wall is too much too climb
                 if( !collisions.isAscendingSlope || slopeAngle > maxSlopeAngle )
-                {
-                    velocity.x = distance * directionX;
-
-                    //if horizontal wall hit and is maxSlope or verticalWall then adjust y velocity
-                    if(  collisions.isAscendingSlope && collisions.previousSlopeAngle != slopeAngle )
-                    {
-                        velocity.y = Mathf.Sin( slopeAngle * Mathf.Deg2Rad ) * velocity.x * directionX;
-                    }
-
-                    collisions.left = directionX == -1;
-                    collisions.right = directionX == 1;
-                }
+                    SnapToHorizontalHit( ref velocity , directionX , distance , slopeAngle );
 
             }
 
+        }
+
+        private void SnapToHorizontalHit( ref Vector2 velocity , int directionX , float distanceToHit , float slopeAngle )
+        {
+            velocity.x = distanceToHit * directionX;
+
+            //if horizontal wall hit and is maxSlope or verticalWall then adjust y velocity
+            if( collisions.isAscendingSlope && collisions.previousSlopeAngle != slopeAngle )
+            {
+                velocity.y = Mathf.Sin( slopeAngle * Mathf.Deg2Rad ) * velocity.x * directionX;
+            }
+
+            collisions.left = directionX == -1;
+            collisions.right = directionX == 1;
         }
 
 

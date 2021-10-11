@@ -103,8 +103,6 @@ namespace noGame.Characters
 
             HandleCollisions( ref velocity );
 
-
-
             FinalMove( velocity );
 
             HandlePlatformGroundedState( isOnPlatform );
@@ -123,6 +121,7 @@ namespace noGame.Characters
             }
 
             HandleHorizontalCollisions( ref velocity );
+
             HandleVerticalCollisions( ref velocity );
         }
 
@@ -234,7 +233,7 @@ namespace noGame.Characters
             //cast the box
             Physics2D.BoxCast( boxRayOrigin , boxCastSize , 0f , Vector2.right * directionX , boxCastContactFilter , boxCastResults , boxCastLength );
             
-            //sorts array from Min to Max
+            //sorts array from Min angle to Max angle
             boxCastResults.Sort((hit1,hit2) => { return hit2.normal.y.CompareTo( hit1.normal.y ); } );
 
             #region debuging
@@ -245,9 +244,7 @@ namespace noGame.Characters
 
             for( int i = 0 ; i < boxCastResults.Count ; i++ )
             {
-
                 RaycastHit2D hit = boxCastResults[i];
-                //float distance = Mathf.Abs(hit.point.x - boxRayOrigin.x); // causes a lot of bugs!
                 float distance = hit.distance;
                 float slopeAngle = Vector2.Angle( hit.normal , Vector2.up );
 
@@ -256,34 +253,23 @@ namespace noGame.Characters
 
                 collisions.SetSlopeAngle( slopeAngle , hit.normal );
 
-                //calculate slope displacemant angle if less than max Angle
-                HandleSlopeAscending( ref velocity , slopeAngle );
+                //calculate slope displacemant(velocity vector) angle if less than max Angle
+                HandleSlopeAscending( ref velocity , slopeAngle);
 
                 if( !collisions.isAscendingSlope || slopeAngle > maxSlopeAngle )
                 {
-                    if( slopeAngle > maxSlopeAngle && velocity.y > 0f && slopeAngle < maxSlideUpSlopeAngle )
-                    {
-                        //adjust if slope that is before Actor is too steep
-                        velocity.x = ((velocity.y / (Mathf.Tan( slopeAngle * Mathf.Deg2Rad ))) + hit.distance) * Mathf.Sign( velocity.x );
-                    }
-                    else //adjust for just "pure" horizontal collision
-                    {
-                        velocity.x = distance * directionX;
+                    velocity.x = distance * directionX;
 
-                        //if horizontal wall hit and is ascending : adjust y velocity
-                        if( slopeAngle >= 90f && collisions.isAscendingSlope && collisions.previousSlopeAngle != slopeAngle)
-                            velocity.y = Mathf.Sin(collisions.slopeAngle * Mathf.Deg2Rad) * velocity.x * directionX;
+                    //if horizontal wall hit and is maxSlope or verticalWall then adjust y velocity
+                    if(  collisions.isAscendingSlope && collisions.previousSlopeAngle != slopeAngle )
+                    {
+                        velocity.y = Mathf.Sin( slopeAngle * Mathf.Deg2Rad ) * velocity.x * directionX;
                     }
-
 
                     collisions.left = directionX == -1;
                     collisions.right = directionX == 1;
                 }
-                else if(collisions.isAscendingSlope)
-                {
-                    //adjust for slope ascending
-                    velocity.y = Mathf.Tan( collisions.slopeAngle * Mathf.Deg2Rad ) * velocity.x *  directionX;
-                }
+
             }
 
         }

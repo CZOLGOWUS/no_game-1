@@ -254,7 +254,7 @@ namespace noGame.Characters
                 collisions.SetSlopeAngle( slopeAngle , hit.normal );
 
                 //calculate slope displacemant(velocity vector) angle if less than max Angle
-                HandleSlopeAscending( ref velocity , slopeAngle );
+                HandleSlopeAscending( ref velocity , slopeAngle , hit , directionX );
 
                 //check if terain hit is a wall or angle of the wall is too much too climb
                 if( !collisions.isAscendingSlope || slopeAngle > maxSlopeAngle )
@@ -288,7 +288,7 @@ namespace noGame.Characters
         /// </summary>
         /// <param name="velocity">velocity vector</param>
         /// <param name="slopeAngle">angle of the slope that we want to climb</param>
-        private void HandleSlopeAscending( ref Vector2 velocity , float slopeAngle )
+        private void HandleSlopeAscending( ref Vector2 velocity , float slopeAngle , RaycastHit2D hit , int VelocityDirectionX)
         {
             if( slopeAngle > maxSlopeAngle || slopeAngle == 0f )
             {
@@ -301,7 +301,7 @@ namespace noGame.Characters
             if( velocity.y <= climbVelocityY )
             {
                 velocity.y = climbVelocityY;
-                velocity.x = Mathf.Cos( slopeAngle * Mathf.Deg2Rad ) * moveDistance * Mathf.Sign( velocity.x );
+                velocity.x = Mathf.Cos( slopeAngle * Mathf.Deg2Rad ) * moveDistance * Mathf.Sign( velocity.x ) + hit.distance * VelocityDirectionX;
                 collisions.bottom = true;
                 collisions.isAscendingSlope = true;
 

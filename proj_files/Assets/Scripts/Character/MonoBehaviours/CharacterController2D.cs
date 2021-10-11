@@ -301,7 +301,7 @@ namespace noGame.Characters
             if( velocity.y <= climbVelocityY )
             {
                 velocity.y = climbVelocityY;
-                velocity.x = Mathf.Cos( slopeAngle * Mathf.Deg2Rad ) * moveDistance * Mathf.Sign( velocity.x ) + hit.distance * VelocityDirectionX;
+                velocity.x = Mathf.Cos( slopeAngle * Mathf.Deg2Rad ) * moveDistance * Mathf.Sign( velocity.x ) + (hit.distance - skinWidth) * VelocityDirectionX;
                 collisions.bottom = true;
                 collisions.isAscendingSlope = true;
 

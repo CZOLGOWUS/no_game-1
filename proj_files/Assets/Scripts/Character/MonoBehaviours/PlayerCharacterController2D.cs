@@ -66,7 +66,8 @@ namespace noGame.Characters
         private float maxCharacterPositionOffset = 100f;
 
         //for jump to work as intended for now
-        [SerializeField] private Vector2 autoMove;
+        [Range(-1f,1f)]
+        [SerializeField] private float autoMove;
 
 
         float countTime;
@@ -88,7 +89,7 @@ namespace noGame.Characters
 
         private void FixedUpdate()
         {
-            movementInput = Mathf.Clamp( movementInput + autoMove.x , -1f , 1f );
+            movementInput = Mathf.Clamp( movementInput + autoMove , -1f , 1f );
 
             HandleInputSmoothing();
 
@@ -147,7 +148,7 @@ namespace noGame.Characters
 
             isWallSlliding = false;
 
-            if( (thisCharacterController.collisions.left || thisCharacterController.collisions.right) && !thisCharacterController.isGrounded && currentVelocity.y < 0f )
+            if( (thisCharacterController.collisions.left || thisCharacterController.collisions.right) && !thisCharacterController.isGrounded && currentVelocity.y < 0f && thisCharacterController.collisions.slopeAngle <= 90f )
             {
                 isWallSlliding = true;
 

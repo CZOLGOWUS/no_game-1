@@ -29,6 +29,10 @@ namespace noGame.Characters
             //direction of actor
             public int faceDirection;
 
+            //step
+            public bool isSteppingUp;
+            public Vector2 stepBoost;
+
             public void ResetPhasingPlatformState()
             {
                 phasingDownPlatform = null;
@@ -37,6 +41,8 @@ namespace noGame.Characters
             public void Reset()
             {
                 top = bottom = left = right = isAscendingSlope = isDescendingSlope = isSlidingDownSlope = false;
+                isSteppingUp = false;
+                stepBoost = Vector2.zero;
                 previousSlopeAngle = slopeAngle;
                 slopeAngle = 0;
                 slopeNormal = Vector2.zero;
@@ -60,6 +66,8 @@ namespace noGame.Characters
         [SerializeField] private float maxSlopeAngle = 70.0f;
         [SerializeField] private float maxSlideUpSlopeAngle = 90f;
 
+        [Header("Step Options")]
+        [SerializeField] private float maxStepHeight = 0.5f;
 
         //dependencies
         [Tooltip( "tag platforms with this tag that are supposed to be \"phaseable\"" )]
@@ -242,7 +250,8 @@ namespace noGame.Characters
             Debug.DrawRay( boxRayOrigin + new Vector2( collisions.faceDirection * boxCastLength , boundsHeight * 0.5f ) , Vector2.down * boundsHeight , Color.red );
             #endregion
 
-            for( int i = 0 ; i < boxCastResults.Count ; i++ )
+            collisions.stepBoost.x = velocity.x;
+            for ( int i = 0 ; i < boxCastResults.Count ; i++ )
             {
                 RaycastHit2D hit = boxCastResults[i];
                 float distance = hit.distance;
@@ -256,12 +265,31 @@ namespace noGame.Characters
                 //calculate slope displacemant(velocity vector) angle if less than max Angle
                 HandleSlopeAscending( ref velocity , slopeAngle , hit , directionX );
 
+                //calculate height of the step
+                float stepHeight = hit.collider.bounds.max.y - boxCastOrigins.bottomCenter.y;
+                
+                //check if able to step up
+                if(IsOnStep(stepHeight, directionX))
+                    continue;
+
                 //check if terain hit is a wall or angle of the wall is too much too climb
-                if( !collisions.isAscendingSlope || slopeAngle > maxSlopeAngle )
+                if ( !collisions.isAscendingSlope || slopeAngle > maxSlopeAngle )
                     SnapToHorizontalHit( ref velocity , directionX , distance , slopeAngle );
 
             }
 
+        }
+
+        private bool IsOnStep(float stepHeight, int directionX)
+        {
+            if (stepHeight < maxStepHeight && !collisions.isAscendingSlope)
+            {
+                collisions.isSteppingUp = true;
+                //add velocity later, in VerticalCollisions
+                collisions.stepBoost.y = stepHeight + skinWidth;
+                collisions.stepBoost.x += directionX * skinWidth;
+            }
+            return collisions.isSteppingUp;
         }
 
         private void SnapToHorizontalHit( ref Vector2 velocity , int directionX , float distanceToHit , float slopeAngle )
@@ -355,6 +383,16 @@ namespace noGame.Characters
                 }
 
             }
+
+            HandleStep(ref velocity);
+        }
+
+        private void HandleStep(ref Vector2 velocity)
+        {
+            if (collisions.isSteppingUp)
+            {
+                velocity += collisions.stepBoost;
+            }
         }
 
 
@@ -378,7 +416,6 @@ namespace noGame.Characters
 
                 if( slopeHit )
                     return true;
-
             }
 
             slopeHit = hit;
